@@ -5,12 +5,16 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>详细信息</title>
     <meta name="viewport" content="initial-scale=1, maximum-scale=1">
-    <link rel="shortcut icon" href="/favicon.ico">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
     <link rel="stylesheet" href="https://g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
     <link rel="stylesheet" href="https://g.alicdn.com/msui/sm/0.6.2/css/sm-extend.min.css">
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=OPGcwYs4aCyxZRb4oq4fXBgj5fuGSM9W"></script>
+	<style>
+		body, html,#allmap {width: 100%;height: 100%;margin:0;font-family:"微软雅黑";font-size:14px;}
+		#l-map{height:300px;width:100%;}
+	</style>
 
 </head>
 <body>
@@ -48,7 +52,7 @@
                             <div class="item-inner">
                                 <div class="item-title label">电话</div>
                                 <div class="item-input">
-                                    <input type="text" value="15592294006" disabled>
+                                    <input type="text" value="18391371158" disabled>
                                 </div>
                             </div>
                         </div>
@@ -79,7 +83,7 @@
             </div>
 
             <div class="card facebook-card">
-                <div class="card-content"><img src="img/address.png" width="100%"></div>
+                <div class="card-content" id="l-map"></div>
             </div>
         </div>
     </div>
@@ -88,6 +92,22 @@
 <script type='text/javascript' src='https://g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
 <script type='text/javascript' src='https://g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
 <script type='text/javascript' src='https://g.alicdn.com/msui/sm/0.6.2/js/sm-extend.min.js' charset='utf-8'></script>
-<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript">
+// 百度地图API功能
+	var map = new BMap.Map("l-map");
+	var point = new BMap.Point(110.110115,34.796409);
+	var marker = new BMap.Marker(point);  // 创建标注
+	map.addOverlay(marker);              // 将标注添加到地图中
+	map.centerAndZoom(point, 17);
+	var opts = {
+	  width : 100,     // 信息窗口宽度
+	  height: 80,     // 信息窗口高度
+	  title : "新朝清汤羊肉" , // 信息窗口标题
+	}
+	var infoWindow = new BMap.InfoWindow("地址：朝邑镇南大街初中北50米<br/>联系电话：18391371158<br/>联系人：刘新朝", opts);  // 创建信息窗口对象 
+	marker.addEventListener("click", function(){          
+		map.openInfoWindow(infoWindow,point); //开启信息窗口
+	});
+</script>
 </body>
 </html>
