@@ -1,4 +1,0 @@
-baseURL = 'https://hellodeveye.github.io/'
-languageCode = 'zh-cn'
-title = 'Hello Xiao CM!'
-theme = 'stack'
