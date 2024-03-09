@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
-        <title>My New Hugo Site</title>
+        <title>Hello Xiao CM!</title>
         <link>https://hellodeveye.github.io/</link>
-        <description>Recent content on My New Hugo Site</description>
+        <description>Recent content on Hello Xiao CM!</description>
         <generator>Hugo -- gohugo.io</generator>
-        <language>en-us</language>
-        <lastBuildDate>Fri, 08 Mar 2024 15:42:34 +0800</lastBuildDate><atom:link href="https://hellodeveye.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
+        <language>zh-cn</language>
+        <lastBuildDate>Sat, 09 Mar 2024 11:32:13 +0800</lastBuildDate><atom:link href="https://hellodeveye.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>My First Post</title>
-        <link>https://hellodeveye.github.io/posts/my-first-post/</link>
+        <link>https://hellodeveye.github.io/post/my-first-post/</link>
         <pubDate>Fri, 08 Mar 2024 15:42:34 +0800</pubDate>
         
-        <guid>https://hellodeveye.github.io/posts/my-first-post/</guid>
+        <guid>https://hellodeveye.github.io/post/my-first-post/</guid>
         <description>&lt;p&gt;&lt;em&gt;Hello World!&lt;/em&gt;&lt;/p&gt;
 </description>
         </item>
