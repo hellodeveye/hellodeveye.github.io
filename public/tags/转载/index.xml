@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>转载 on 无常是常</title>
+        <link>https://xiaocm.com/tags/%E8%BD%AC%E8%BD%BD/</link>
+        <description>Recent content in 转载 on 无常是常</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>XCM 陕ICP备16008414号</copyright>
+        <lastBuildDate>Wed, 24 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://xiaocm.com/tags/%E8%BD%AC%E8%BD%BD/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Java的字符串常量池位于哪里，堆或堆栈？</title>
+        <link>https://xiaocm.com/p/java%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%B8%B8%E9%87%8F%E6%B1%A0%E4%BD%8D%E4%BA%8E%E5%93%AA%E9%87%8C%E5%A0%86%E6%88%96%E5%A0%86%E6%A0%88/</link>
+        <pubDate>Wed, 24 Mar 2021 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/java%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%B8%B8%E9%87%8F%E6%B1%A0%E4%BD%8D%E4%BA%8E%E5%93%AA%E9%87%8C%E5%A0%86%E6%88%96%E5%A0%86%E6%A0%88/</guid>
+        <description>&lt;blockquote&gt;
+&lt;p&gt;转载自: &lt;a class=&#34;link&#34; href=&#34;https://www.baeldung.com/java-string-constant-pool-heap-stack&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://www.baeldung.com/java-string-constant-pool-heap-stack&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;1简介&#34;&gt;1.简介&lt;/h3&gt;
+&lt;p&gt;每当我们声明一个变量或创建一个对象时，它就会存储在内存中。在较高的级别上，Java将内存分为两个块：&lt;code&gt;stack&lt;/code&gt;和&lt;code&gt;heap&lt;/code&gt;。&lt;strong&gt;两种存储器均存储特定类型的数据&lt;/strong&gt;，并且具有不同的存储和访问模式。&lt;/p&gt;
+&lt;h3 id=&#34;2字符串常量池&#34;&gt;2.字符串常量池&lt;/h3&gt;
+&lt;p&gt;该字符串常量池是一个特殊的存储区。**当我们声明&lt;code&gt;String&lt;/code&gt;时，JVM在池中创建对象并将其引用存储在堆栈中。**在内存中创建每个&lt;em&gt;String&lt;/em&gt;对象之前，JVM执行一些步骤来减少内存开销。&lt;/p&gt;
+&lt;p&gt;字符串常量池在其实现中使用HashMap。&lt;em&gt;HashMap的&lt;/em&gt;每个存储桶&lt;em&gt;均&lt;/em&gt;包含具有相同哈希码的&lt;em&gt;String&lt;/em&gt;列表。在Java的早期版本中，池的存储区域是固定大小的，并且通常会导致*“无法为对象堆保留足够的空间”* 错误。&lt;/p&gt;
+&lt;p&gt;**当系统加载类时，所有类的*String*文字都将进入应用程序级池。**这是因为不同类的相等&lt;em&gt;String&lt;/em&gt;文字必须是相同的&lt;em&gt;Object&lt;/em&gt;。在这些情况下，池中的数据应可用于每个类而没有任何依赖关系。&lt;/p&gt;
+&lt;p&gt;通常，堆栈存储短期的数据。它包括局部基本变量，堆对象的引用以及执行中的方法。堆允许动态分配内存，在运行时存储Java对象和JRE类。&lt;/p&gt;
+&lt;p&gt;堆允许全局访问，并且在应用程序的生存期内，堆中的数据存储可用于所有线程，而堆栈上的数据存储具有私有作用域，只有所有者线程可以访问它们。&lt;/p&gt;
+&lt;p&gt;堆栈将数据存储在连续的存储块中，并允许随机访问。如果类需要池中的随机&lt;em&gt;String&lt;/em&gt;，则由于堆栈的LIFO（后进先出）规则，该类可能不可用。相反，堆会动态分配内存，并允许我们以任何方式访问数据。&lt;/p&gt;
+&lt;p&gt;假设我们有一个由不同类型的变量组成的代码段。堆栈将存储&lt;em&gt;int&lt;/em&gt;文字的值以及&lt;em&gt;String&lt;/em&gt;和Demo对象的引用*。&lt;em&gt;任何对象的值都将存储在堆中，所有&lt;/em&gt;String*文字都放入堆中的池中：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20210324222316.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;线程完成执行后，将立即释放在堆栈上创建的变量。相反，垃圾收集器回收堆中的资源。同样，垃圾收集器从池中收集未引用的项目。&lt;/p&gt;
+&lt;p&gt;**池的默认大小在不同平台上可能会有所不同。**无论如何，它仍然比可用堆栈大小大得多。在JDK 7之前，该池是permgen空间的一部分，从JDK 7到现在，它是主堆内存的一部分。&lt;/p&gt;
+&lt;h2 id=&#34;3结论&#34;&gt;3.结论&lt;/h2&gt;
+&lt;p&gt;在这篇简短的文章中，我们了解了&lt;em&gt;String&lt;/em&gt;常量池的存储区域。堆栈和堆具有不同的特性来存储和访问数据。从内存分配到其访问和可用性，堆是最适合存储String常量池的区域。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;实际上，池从未成为堆栈内存的一部分。&lt;/strong&gt;&lt;/p&gt;
+</description>
+        </item>
+        <item>
+        <title>《刻意练习》：以学习编程为例</title>
+        <link>https://xiaocm.com/p/%E5%88%BB%E6%84%8F%E7%BB%83%E4%B9%A0%E4%BB%A5%E5%AD%A6%E4%B9%A0%E7%BC%96%E7%A8%8B%E4%B8%BA%E4%BE%8B/</link>
+        <pubDate>Sun, 17 Jan 2021 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/%E5%88%BB%E6%84%8F%E7%BB%83%E4%B9%A0%E4%BB%A5%E5%AD%A6%E4%B9%A0%E7%BC%96%E7%A8%8B%E4%B8%BA%E4%BE%8B/</guid>
+        <description>&lt;blockquote&gt;
+&lt;p&gt;转载自: &lt;a class=&#34;link&#34; href=&#34;%e8%bd%ac%e8%bd%bd%e4%ba%8e:https://juejin.im/post/5c3ca16ff265da617573f9a4&#34; &gt;https://juejin.im/post/5c3ca16ff265da617573f9a4&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;《刻意练习》是一本神奇的魔法书，它用大量的事实案例和数据来证明了刻意练习能给一个人带来的巨大改变。更为难能可贵的是，它不仅仅只是介绍刻意练习的好处，还给读者介绍了刻意练习的方法和注意事项，可以说是干货满满的一本书。&lt;/p&gt;
+&lt;p&gt;本文想以“学习编程”为例，结合《刻意练习》这本书教给我们的方式方法，阐述如何通过刻意练习来提高自己的编程水平。&lt;/p&gt;
+&lt;h3 id=&#34;关于练习&#34;&gt;关于练习&lt;/h3&gt;
+&lt;p&gt;**不断重复只是“天真的练习”，无法带来进步。“正确的练习”需要好导师、有目标、有反馈。**所以如果想要提高编程水平，光靠一味闷着头努力写代码是不够的，有些人写了几年的CRUD，可能整体的技术水平还不及刚毕业的同学。&lt;/p&gt;
+&lt;p&gt;一个好的导师很难得，他不仅要自己在编程水平是有一定的成就，还应该具有一些教育方面的经验，才能更好的指导你。一般来说，大一点的公司都会有老人带新人的机制，可以利用这个来找一个比较好的前辈带一带。另外就是通过看书或看视频其实也是一种很不错的学习方式，写书和出视频的老师自然是具备上述条件的。&lt;/p&gt;
+&lt;p&gt;有目标指的是应该要有明确的目标，而不是一个宽泛的目标。比如“我要提高Java水平”明显就是一个宽泛的目标，无法量化。明确的目标应该是什么样子呢？比如，我要学习JVM的基础知识，我要学完23种设计模式等等。一个好的目标还应该是可分解的，有时间或成果量化的。比如，我需要在一个月内学习完Java多线程技术，第一周学习多线程模型，第二周学习多线程基本的类和接口，第三周阅读JDK里面关于多线程方面的工具类的源码，第四周写多线程案例Demo，最后产出一个Java多线程系列笔记或者博客。&lt;/p&gt;
+&lt;p&gt;有反馈指的是可以量化的反馈。比如写一篇技术博客，有多少阅读量，点赞量，评论量？写一个开源项目有多少star，做一个LeetCode有没有通过，耗时如何？&lt;/p&gt;
+&lt;p&gt;上述算是对“有目的的练习”的一个阐述。刻意练习是在有目的的练习基础上的。总结起来，有目的的练习应该具有以下四个特点：&lt;/p&gt;
+&lt;p&gt;1.有目的的练习具有定义明确的特定目标
+2.有目的的练习是专注的
+3.有目的的练习包含反馈
+4.有目的的练习需要走出舒适区&lt;/p&gt;
+&lt;p&gt;对于任何类型的练习，这是一条基本的真理：&lt;strong&gt;如果你从来不迫使自己走出舒适区，便永远无法进步。&lt;/strong&gt;&lt;/p&gt;
+&lt;h3 id=&#34;关于心理表征&#34;&gt;关于心理表征&lt;/h3&gt;
+&lt;p&gt;《刻意练习》这本书用了大量的篇幅来介绍心理表征。作者认为，刻意练习的核心之一在于通过练习来创建大量的心理表征，然后再使用这些心理表征反过来帮助练习。&lt;/p&gt;
+&lt;p&gt;那心理表征到底是什么？&lt;/p&gt;
+&lt;p&gt;我认为**它是一个人学习某样东西的时候，自己心中形成的一个体系架构。**比如我们学习算法，就会形成一个关于算法的体系架构，也就是心理表征。而当我们再学习到Mysql的底层索引原理的时候，就会想到算法关于平衡树方面的知识；当我们学习JDK源码里关于集合框架的时候，就会想到链表、栈与队列、红黑树等等。&lt;/p&gt;
+&lt;p&gt;我们的知识形成了一个循环，学得越多，懂得越多。当我们积累了大量的知识以后，再学一样有关联的东西，就能快速学会。&lt;/p&gt;
+&lt;h3 id=&#34;刻意练习&#34;&gt;刻意练习&lt;/h3&gt;
+&lt;p&gt;刻意练习提倡“边干边学”，**它使人们熟悉练习的习惯，并思考如何练习。**这与我们学习编程的理念是一样的，几乎没有人会对你说：你只需要看书，看博客，看视频就能学会编程。有经验的前辈一般会告诉你，要有输入，也要有输出。学习了的东西，要通过写代码或者做笔记或者写博客的方式，让知识变成你自己的，更加牢固。&lt;/p&gt;
+&lt;p&gt;你通过写代码，不断地写代码来提高自己的编程水平，然后通过思考，反思来决定该如何写代码才能写得更好。&lt;/p&gt;
+&lt;p&gt;传统的方法也一直是先找出关于正确方法的信息，然后很大程度上让学生去运用那些知识。&lt;strong&gt;刻意练习则完全相反，它只聚焦于绩效和表现，以及怎样提高绩效和表现。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;编程也是一样，老板和上级其实真正在意的并不是你懂多少理论，而是你写得代码质量好不好，你能不能快速地实现他们需要的功能，能不能解决技术难题。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;你的代码写得比别人快，你的代码写得比别人漂亮，你能快速解决别人不能解决的难题，那你就牛逼。&lt;/strong&gt;&lt;/p&gt;
+&lt;h3 id=&#34;关于专注与坚持&#34;&gt;关于专注与坚持&lt;/h3&gt;
+&lt;p&gt;刻意练习里面有一个观点颠覆了我以前的认知。我一度认为，一个人能不能专注，能不能坚持做一件事，除了热爱，那必然是意志力越高的人越能专注和坚持。&lt;/p&gt;
+&lt;p&gt;然而刻意练习告诉我，**意志力根本不存在！**所谓意志力，其实是保持动机与专注的结果。&lt;/p&gt;
+&lt;p&gt;我们先来看看如何让自己保持专注，**不专注的练习是没有效果的。**刻意练习提供了一个观点，&lt;strong&gt;如果练习的时间更短，那就会有更好的注意力。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;对于这个观点我是绝对认同的。比如看书，如果想一次性看完一本书，那对于一般人来说绝对是非常困难的。但是如果把它拆成一章一章，每天看一点，那就会好很多。而在日常的工作中或者学习中，我们可以使用“番茄钟”来管理自己的时间与保持专注。这里不具体介绍番茄钟，有兴趣的同学自己去了解一下，亲测有用！一个番茄钟25分钟，不多不少刚刚好。&lt;/p&gt;
+&lt;p&gt;再来谈谈动机。对于一个程序员来说，动机是再明显不过的了：升职加薪变大佬。但有时候这个动机并不能转化为一种强有力的动力来促使我们去学习，去提高技术水平。而某些太强烈的动机（比如想跳槽）又很难持续保持。&lt;/p&gt;
+&lt;p&gt;《刻意练习》告诉我们，&lt;strong&gt;我们要保持动机，要么强化继续前行的理由，要么弱化停下脚步的理由。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;仍然以学习算法为例。要强化继续前行的理由，我们可以在学习到一定阶段给自己一些小的奖励，比如刷完100个算法题，给自己买个好的键盘或者耳机。还有来自朋友、同事、家人乃至默认人的鼓励也很重要。我在网上写博客分享给大家，如果读者的点赞或者好评，那也是非常能激励我们继续学习的！&lt;/p&gt;
+&lt;p&gt;而弱化停下脚步的理由。比如练习累了就合理休息一下，学习累了就暂时玩一下，如果觉得自己一个人学技术太孤独，就找一群小伙伴一起学习或者加入一个技术社区。目标要精心设置且合理，这样才能得到达到目标的成就感，不会因为达不到目标而气馁放弃。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;愿你以梦为马，剑指天涯。&lt;/strong&gt;&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

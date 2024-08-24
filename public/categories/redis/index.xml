@@ -1,0 +1,775 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Redis on 无常是常</title>
+        <link>https://xiaocm.com/categories/redis/</link>
+        <description>Recent content in Redis on 无常是常</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>XCM 陕ICP备16008414号</copyright>
+        <lastBuildDate>Thu, 09 Jul 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://xiaocm.com/categories/redis/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Redis分布式锁</title>
+        <link>https://xiaocm.com/p/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</link>
+        <pubDate>Thu, 09 Jul 2020 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</guid>
+        <description>&lt;h3 id=&#34;简介&#34;&gt;简介&lt;/h3&gt;
+&lt;p&gt;在一些分布式系统中，应用与应用之间是相互独立部署的，Java应用运行在不同的JVM中，所以，在操作一些共享资源的时候，使用JDK提供的Lock工具类时就有些力不从心，这时候就需要借助外力来实现分布式一致性问题。&lt;/p&gt;
+&lt;p&gt;通常会使用以下三种方式进行实现：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;基于数据库实现分布式锁(悲观锁机制)&lt;/li&gt;
+&lt;li&gt;Zookeeper分布式锁&lt;/li&gt;
+&lt;li&gt;Redis分布式锁&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;下面简单对比几种方式的优缺点：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;方式&lt;/th&gt;
+&lt;th&gt;优点&lt;/th&gt;
+&lt;th&gt;缺点&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;数据库&lt;/td&gt;
+&lt;td&gt;实现简单、易于理解&lt;/td&gt;
+&lt;td&gt;对数据库压力大&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Redis&lt;/td&gt;
+&lt;td&gt;易于理解&lt;/td&gt;
+&lt;td&gt;自己实现、不支持阻塞&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Zookeeper&lt;/td&gt;
+&lt;td&gt;支持阻塞&lt;/td&gt;
+&lt;td&gt;需要理解Zookeeper、程序复杂&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Curator&lt;/td&gt;
+&lt;td&gt;提供锁的方法&lt;/td&gt;
+&lt;td&gt;依赖Zookeeper、强一致&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Redisson&lt;/td&gt;
+&lt;td&gt;提供锁的方法、可阻塞&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;安全和活性的保证&#34;&gt;安全和活性的保证&lt;/h3&gt;
+&lt;p&gt;Redis官方文档提出以下三点作为分布式锁的最低保证：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;互斥&lt;/strong&gt;，在任何给定时刻，只有一个客户端可以持有锁&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;无死锁&lt;/strong&gt;，最终，即使锁定资源的客户端崩溃或分区，也始终可以获得锁&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;容错能力&lt;/strong&gt;，只要大多数Redis节点都处于运行状态，客户端就可以获取和释放锁&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;基于主备架构实现的不足&#34;&gt;基于主备架构实现的不足&lt;/h3&gt;
+&lt;p&gt;使用Redis实现分布式锁最简单的方法就是加锁的时候创建一个带有过期时间Key(这样是为了防止出现死锁)，当客户端需要释放锁的时候删除这个Key。&lt;/p&gt;
+&lt;p&gt;从表面上看没有什么问题，但是当Redis出现宕机的时候怎么办？为了解决单点故障问题，我们可以添加一个从节点，当主节点不可用的时候，切换到从节点，但是这样实际上是不可行的，因为Redis使用的是异步复制。&lt;/p&gt;
+&lt;p&gt;该模型明显存在的竞争条件:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;客户端A获取主节点的锁&lt;/li&gt;
+&lt;li&gt;主节点将Key同步到从节点之前发生宕机&lt;/li&gt;
+&lt;li&gt;从节点切换成主节点&lt;/li&gt;
+&lt;li&gt;客户端B获取到相同资源的锁，此时A和B同时持有锁，&lt;strong&gt;违反了安全性&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;单实例方案&#34;&gt;单实例方案&lt;/h3&gt;
+&lt;p&gt;假设可以克服以上单节点不足的问题，我们可以使用以下命令实现分布式锁：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;SET resource_name my_random_value NX PX 30000
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;该命令仅在Key不存在(NX)、且到期时间(PX)为30000毫秒的情况下才设置Key。Key的值为一个随机数，该值要求必须全局唯一，使用全局唯一值是为了在删除Key的时候，Key的值是我们之前设置的值时，才删除Key。(Tips:&lt;strong&gt;我们总不能删除其他客户端设置的Key吧？&lt;/strong&gt;)&lt;/p&gt;
+&lt;p&gt;可以使用以下Lua脚本完成，因为Lua脚本可以保证两个操作的原子性。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;if redis.call(&amp;#34;get&amp;#34;,KEYS[1]) == ARGV[1] then
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    return redis.call(&amp;#34;del&amp;#34;,KEYS[1])
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;else
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    return 0
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;end
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;redlock算法&#34;&gt;RedLock算法&lt;/h3&gt;
+&lt;p&gt;在算法的分布式版本中，我们假设有5个Master节点，这些节点是完全独立的，我们将各个节点部署在不同的服务器中，以保证他们同时出现故障的概率。&lt;/p&gt;
+&lt;p&gt;为了获取锁，客户端执行以下操作：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;客户端获取当前时间的时间戳&lt;/li&gt;
+&lt;li&gt;客户端尝试在N（N=5）个节点上以相同的Key和Value获取一个锁(此处和单实例方式相同)&lt;/li&gt;
+&lt;li&gt;客户端通过从当前时间中减去在步骤1中获得的时间戳，来计算获取锁所花费的时间，当客户端能够在大多数实例（至少3个）中获取锁时 ，并且获取锁所花费的总时间小于锁有效时间，则认为已获取锁。&lt;/li&gt;
+&lt;li&gt;如果获取了锁，则将其有效时间视为初始有效时间减去经过的时间&lt;/li&gt;
+&lt;li&gt;如果客户端由于某种原因（无法锁定N / 2 + 1实例或有效时间为负数）而未能获得该锁，它将尝试解锁所有实例&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;释放锁&#34;&gt;释放锁&lt;/h3&gt;
+&lt;p&gt;释放锁很简单，只需在所有实例中释放锁（即使之前在某个实例中没有获取到锁）。&lt;/p&gt;
+&lt;h3 id=&#34;redlock注意点&#34;&gt;RedLock注意点&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;先假设client获取所有实例，所有实例包含相同的key和过期时间(TTL) ,但每个实例set命令时间不同导致不能同时过期，第一个set命令之前是T1,最后一个set命令后为T2,则此client有效获取锁的最小时间为TTL-(T2-T1)-时钟漂移&lt;/li&gt;
+&lt;li&gt;对于以N/2+ 1(也就是一半以 上)的方式判断获取锁成功，是因为如果小于一半判断为成功的话，有可能出现多个client都成功获取锁的情况，从而使锁失效&lt;/li&gt;
+&lt;li&gt;一个client锁定大多数事例耗费的时间大于或接近锁的过期时间，就认为锁无效，并且解锁这个redis实例(不执行业务) ;只要在TTL时间内成功获取一半以上的锁便是有效锁;否则无效&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;系统具有活性的三大特征&#34;&gt;系统具有活性的三大特征&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;能够自动释放锁&lt;/li&gt;
+&lt;li&gt;再获取锁失败（不到一半以上），或任务完成后能够释放锁，不用等到其自动过期&lt;/li&gt;
+&lt;li&gt;再客户端重试获取锁之前（第一次失败到第二次失败之间的间隔时间）大于获取锁消耗的时间&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;p&gt;参考Redis官方文档 &lt;a class=&#34;link&#34; href=&#34;https://redis.io/topics/distlock&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://redis.io/topics/distlock&lt;/a&gt;
+RedLock分析      [http://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html][http://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html]&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+        </item>
+        <item>
+        <title>Redis哨兵</title>
+        <link>https://xiaocm.com/p/redis%E5%93%A8%E5%85%B5/</link>
+        <pubDate>Tue, 07 Jul 2020 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/redis%E5%93%A8%E5%85%B5/</guid>
+        <description>&lt;h3 id=&#34;sentinel的分布式特征&#34;&gt;Sentinel的分布式特征&lt;/h3&gt;
+&lt;p&gt;Redis Sentinel是一个分布式系统：
+Sentinel本身的设计是在为多个Sentinel进程协同合作的配置中运行。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;当多个哨兵就给定的主机不再可用的事实达成共识时，将执行故障检测，降低了误报的可能性。&lt;/li&gt;
+&lt;li&gt;即使不是所有的Sentinel进程都在工作，Sentinel仍可正常工作，从而使系统能够应对故障。毕竟，拥有故障转移系统本身就是一个单点故障，&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;运行哨兵&#34;&gt;运行哨兵&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;redis-sentinel /path/to/sentinel.conf
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;code&gt;redis-sentinel&lt;/code&gt;是&lt;code&gt;redis-server&lt;/code&gt;的一个软链接，所以也可以使用以下方法：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;redis-server /path/to/sentinel.conf --sentinel
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;两种方法的工作原理相同。&lt;/p&gt;
+&lt;p&gt;但是，再运行&lt;code&gt;Sentinel&lt;/code&gt;时&lt;strong&gt;必须&lt;/strong&gt;指定配置文件，因为系统将使用此文件来保存当前状态，以便在重新启动时重新加载。如果未指定文件，则会启动失败。&lt;/p&gt;
+&lt;p&gt;Sentinels默认情况下会&lt;strong&gt;监听TCP端口26379连接&lt;/strong&gt;，因此必须打开26379端口。&lt;/p&gt;
+&lt;h3 id=&#34;sentinel的基础知识&#34;&gt;Sentinel的基础知识&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;一个健壮的集群至少需要三个Sentinel实例&lt;/li&gt;
+&lt;li&gt;应该将三个Sentinel实例部署在不同的机器上&lt;/li&gt;
+&lt;li&gt;因为Redis使用的是异步复制，所以不能保证在故障转移期间保证数据的写入。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;配置哨兵&#34;&gt;配置哨兵&lt;/h3&gt;
+&lt;p&gt;Redis的源码包包含一个sentinel.conf文件可用于配置Sentinel，典型的最小配置如下所示：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sentinel monitor mymaster 127.0.0.1 6379 2
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sentinel down-after-milliseconds mymaster 60000
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sentinel failover-timeout mymaster 180000
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sentinel parallel-syncs mymaster 1
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;sentinel monitor含义如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sentinel monitor &amp;lt;master-group-name&amp;gt; &amp;lt;ip&amp;gt; &amp;lt;port&amp;gt; &amp;lt;quorum&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;code&gt;&amp;lt;master-group-name&amp;gt;&lt;/code&gt; 指主节点名称，&lt;code&gt;&amp;lt;ip&amp;gt;&lt;/code&gt; IP地址 &lt;code&gt;&amp;lt;port&amp;gt;&lt;/code&gt;端口号，重点说一下&lt;code&gt;&amp;lt;quorum&amp;gt;&lt;/code&gt;：
+假如有5个Sentinel进程，并且给定主服务器的quorum置为2，则将发生以下情况：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果有两个哨兵同时发现主节点不可访问，则其中一个哨兵将尝试启动故障转移。&lt;/li&gt;
+&lt;li&gt;如果有三个哨兵同时发现主节点不可访问，则将启动故障转移。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sentinel down-after-milliseconds
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;code&gt;down-after-milliseconds&lt;/code&gt;是指Sentinel在指定的时间内没有获得实例的响应，则认为实例已关闭。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sentinel parallel-syncs
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;code&gt;parallel-syncs&lt;/code&gt; 设置每次可以对几个副本进行同步数据&lt;/p&gt;
+&lt;h3 id=&#34;redis-哨兵部署示例&#34;&gt;Redis 哨兵部署示例&lt;/h3&gt;
+&lt;h4 id=&#34;经典三节点最小部署&#34;&gt;经典三节点最小部署&lt;/h4&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                           +----+
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                           | M1 |
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                           | S1 |
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                           +----+
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                              |
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    +----+    |    +----+
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    | R2 |----+----| R3 |
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    | S2 |         | S3 |
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    +----+         +----+
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                   Configuration: quorum = 2
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;如果主M1发生故障，则S2和S3将达成协议，并能够开启故障转移，从而使客户端能够继续使用。&lt;/p&gt;
+&lt;h4 id=&#34;模拟发生网络分区&#34;&gt;模拟发生网络分区&lt;/h4&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                             +----+
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                             | M1 |
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                             | S1 | &amp;lt;- C1 (writes will be lost)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                             +----+
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                |
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                /
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                /
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    +------+    |    +----+
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    | [M2] |----+----| R3 |
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    | S2   |         | S3 |
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    +------+         +----+
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;在这种情况下，网络分区隔离了旧的主数据库M1，因此副本R2被提升为主数据库。但是，与旧主服务器位于同一分区中的客户端（例如C1）可能会继续向旧主服务器写入数据。该数据将永远丢失，因为当分区恢复正常时，主服务器将被重新配置为新主服务器的副本，从而造成数据丢失。&lt;/p&gt;
+&lt;p&gt;使用以下Redis复制功能可以缓解此问题，如果主服务器检测到副本数量没有达到指定的副本数据，则停止接受数据写入。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 最小副本数量
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;min-replicas-to-write 1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 发送异步确认的最大时间
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;min-replicas-max-lag 10
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description>
+        </item>
+        <item>
+        <title>Redis复制</title>
+        <link>https://xiaocm.com/p/redis%E5%A4%8D%E5%88%B6/</link>
+        <pubDate>Sat, 07 Jul 2018 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/redis%E5%A4%8D%E5%88%B6/</guid>
+        <description>&lt;h3 id=&#34;replication&#34;&gt;Replication&lt;/h3&gt;
+&lt;p&gt;Redis使用主从复制非常简单，它允许从实例成为主实例的副本，每当链接断开时，从节点将自动重新连接到主服务器上。并且无论主服务器发生什么情况，从节点都尝试完全复制所有数据。&lt;/p&gt;
+&lt;h3 id=&#34;redis主从复制使用以下三种机制&#34;&gt;Redis主从复制使用以下三种机制：&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;当主从实例连接良好时，主节点向从节点发送&lt;strong&gt;命令流&lt;/strong&gt;来进行更新，是为了复制由于Key过期或回收等其他操作对数据产生影响。&lt;/li&gt;
+&lt;li&gt;当主从实例断开时，从节点重新连接后只会尝试获取链接断开期间错开的命令流。&lt;/li&gt;
+&lt;li&gt;如果无法进行部分重新同步，则会要求完全重新同步。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;默认情况下，Redis会使用&lt;em&gt;&lt;strong&gt;异步复制&lt;/strong&gt;&lt;/em&gt;，Redis从节点会异步地确认接收的数据。因此，主节点不会等待从节点处理完成。但是，如果需要知道从节点都处理了那些命令，也可以选择同步复制。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;redis-复制的几个特征&#34;&gt;Redis 复制的几个特征：&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;Redis是使用异步复制&lt;/li&gt;
+&lt;li&gt;一个主节点可以有多个从节点&lt;/li&gt;
+&lt;li&gt;从节点还可以有子节点，从Redis 4.0开始，所有子节点将从主节点接收完全相同的复制流。&lt;/li&gt;
+&lt;li&gt;Redis主从复制是无阻塞的，意味着在进行复制或同步是仍然可以进行数据查询&lt;/li&gt;
+&lt;li&gt;复制既可以用于可伸缩性，也可以用于只读查询的多个副本（读写分离）&lt;/li&gt;
+&lt;li&gt;可以配置主节点不进行数据保存或只启用AOF，然后将数据保存到副本，但是注意:当服务器重启后，从节点服务器重新同步数据时，同时会清空从节点数据。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;redis-复制的原理&#34;&gt;Redis 复制的原理：&lt;/h3&gt;
+&lt;p&gt;每个Redis Master 节点都有一个replication ID:这是一个较大的伪随机字符串，用于标记当前数据集。每个Master 还有一个偏移量，该偏移量会针对复制流中要发送到副本的每个字节的增量而增加。
+以便更新副本的状态。即使未连接任何副本，复制偏移也会增加。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# Replication
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;role:master
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;connected_slaves:1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;slave0:ip=39.105.157.176,port=6379,state=online,offset=61238,lag=0
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 主 Replication ID
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;master_replid:649255ffb2183786d00203aa51715169b06f4f47
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 副 Replication ID
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;master_replid2:0000000000000000000000000000000000000000
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;master_repl_offset:61238
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;second_repl_offset:-1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;repl_backlog_active:1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;repl_backlog_size:1048576
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;repl_backlog_first_byte_offset:1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;repl_backlog_histlen:61238
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;当从节点连接主节点时，会使用&lt;code&gt;PSYNC&lt;/code&gt;命令来发送当前旧的主节点的Replication ID和offset，这样主节点只会同步相差的数据量，如果主节点缓冲区的副本引用（Replication ID）不存在，则会进行全量同步。&lt;/p&gt;
+&lt;h4 id=&#34;全量同步的工作流程如下&#34;&gt;全量同步的工作流程如下：&lt;/h4&gt;
+&lt;p&gt;主节点开始后台生成RDB文件。同时，它开始缓冲从客户端收到的所有新写入命令。后台保存完成后，主数据库将数据库文件传输到从节点，从节点将其保存在磁盘上，然后将其加载到内存中。然后，主服务器将所有缓冲的命令发送到副本。&lt;/p&gt;
+&lt;h3 id=&#34;replication-id-说明&#34;&gt;Replication ID 说明：&lt;/h3&gt;
+&lt;p&gt;如果两个实例具有相同的Replication ID和offset，则它们具有完全相同的数据。但是为什么会有两个Replication ID(主和副)？&lt;/p&gt;
+&lt;p style=&#34;text-indent:2em&#34;&gt;因为两个实例A和B具有相同的Replication ID，但一个实例的offset为1000，另一个实例的offset为1023，则意味着第一个实例缺少应用于数据集的某些命令。这也意味着，仅通过应用一些命令，A即可达到与B完全相同的状态。&lt;/p&gt;
+&lt;p style=&#34;text-indent:2em&#34;&gt;Redis实例具有两个Replication ID的原因是由于副本被提升为主副本。故障转移后，升级后的副本仍需要记住其过去的Replication ID，因为该Replication ID是以前的主副本之一。这样，当其他副本将与新的主副本同步时，它们将尝试使用旧的主Replication ID执行部分重新同步。因为将副本提升为主副本时，它会将其辅助ID设置为其主ID，并记住发生此ID切换时的offset。稍后它将选择一个新的随机Replication ID，因为新的历史记录开始了。处理新的副本连接时，主机将其ID和offset与当前ID和辅助ID相匹配（为安全起见，直到给定的偏移量）。简而言之，这意味着在故障转移后，连接到新提升的主服务器的副本不必执行完全同步。&lt;/p&gt;
+&lt;h3 id=&#34;无盘复制&#34;&gt;无盘复制&lt;/h3&gt;
+&lt;p&gt;通常，完全重新同步需要在磁盘上创建RDB文件，然后从磁盘重新加载相同的RDB，以便为副本提供数据。
+但是对于硬盘速度慢，但是在内网环境下，可以采用无盘复制，这样可以直接通过Socket将RDB发送给从节点，而无需使用硬盘作为中间存储。&lt;/p&gt;
+&lt;h3 id=&#34;配置&#34;&gt;配置&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;replicaof 192.168.1.1 6379
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;也可以使用&lt;code&gt;REPLICAOF&lt;/code&gt;命令进行同步。
+可以使用&lt;code&gt;repl-diskless-sync&lt;/code&gt;配置参数启用无盘复制。在&lt;code&gt;repl-diskless-sync-delay &lt;/code&gt;参数控制第一个副本之后，为了等待更多副本到达而开始传输的延迟。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;masterauth &amp;lt;password&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;设置主节点的密码，也可以使用redis-cli输入&lt;code&gt;config set masterauth &amp;lt;password&amp;gt;&lt;/code&gt;进行设置。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 在当前至少有N个副本连接到主服务器时才接受写查询
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;min-replicas-to-write &amp;lt;number of replicas&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 在有N个副本延迟少于M秒时，则接受写入
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;min-replicas-max-lag &amp;lt;number of seconds&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description>
+        </item>
+        <item>
+        <title>Redis安装与配置</title>
+        <link>https://xiaocm.com/p/redis%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE/</link>
+        <pubDate>Fri, 06 Jul 2018 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/redis%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE/</guid>
+        <description>&lt;h3 id=&#34;下载&#34;&gt;下载&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;从&lt;a class=&#34;link&#34; href=&#34;http://www.redis.io&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Redis官网&lt;/a&gt;下载redis 最新稳定版本&lt;/li&gt;
+&lt;li&gt;解压到 /usr/local/ 目录下&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;安装&#34;&gt;安装&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;make &amp;amp;&amp;amp; make test &amp;amp;&amp;amp; make install
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;make时报如下错误:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;zmalloc.h:50:31: error: jemalloc/jemalloc.h: No such file or directory
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;zmalloc.h:55:2: error: #error &amp;#34;Newer version of jemalloc required&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;make[1]: *** [adlist.o] Error 1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;make[1]: Leaving directory `/data0/src/redis-2.6.2/src&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;make: *** [all] Error 2
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;原因是jemalloc重载了Linux下的ANSI C的malloc和free函数。
+解决办法：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;make MALLOC=libc
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;redis-生产环境启动方案&#34;&gt;redis 生产环境启动方案&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;redis utils 目录下，有个redis_init_script脚本&lt;/li&gt;
+&lt;li&gt;将redis_init_script脚本拷贝到linux的/etc/init.d 目录中，将redis_init_script重命名为redis_6379,   6379是我们希望redis 的实例端口号&lt;/li&gt;
+&lt;li&gt;创建两个目录 /etc/redis (存放redis 配置的目录), /var/redis/6379 (存放redis的持久文件)&lt;/li&gt;
+&lt;li&gt;修改redis.conf配置文件（默认在根目录下），拷贝到/etc/redis目录下，修改名称为6379.conf&lt;/li&gt;
+&lt;li&gt;修改redis.conf中的部分配置为生产环境&lt;/li&gt;
+&lt;/ol&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;参数&lt;/th&gt;
+&lt;th&gt;值&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;daemonize&lt;/td&gt;
+&lt;td&gt;yes&lt;/td&gt;
+&lt;td&gt;让redis以daemon进程运行&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;pidfile&lt;/td&gt;
+&lt;td&gt;/var/run/redis_6379.pid&lt;/td&gt;
+&lt;td&gt;设置redis的pid文件位置&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;port&lt;/td&gt;
+&lt;td&gt;6379&lt;/td&gt;
+&lt;td&gt;设置redis的监听端口号&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;dir&lt;/td&gt;
+&lt;td&gt;/var/redis/6379&lt;/td&gt;
+&lt;td&gt;设置持久化文件的存储位置&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;ol start=&#34;6&#34;&gt;
+&lt;li&gt;启动redis:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cd /etc/init.d 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;chmod 777 redis_6379 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;./redis_6379 start
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ol start=&#34;7&#34;&gt;
+&lt;li&gt;确认redis 进程是否启动: &lt;code&gt;ps -ef  |  grep redis&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;让redis跟随系统启动自动启动，在redis_6379 脚本中，最上面加入两行注释&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# chkconfig:    2345 90 10
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# description: Redis is a persistent key-value database
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;chkconfig redis_6379 on   
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;主从架构主节点和从节点最好保证一致的版本&#34;&gt;主从架构（主节点和从节点最好保证一致的版本）&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;在 slave node 上配置:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;slaveof 192.168.1.1 6379
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;强制读写分离&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;基于主从复制架构，实现读写分离
+redis slave node 只读，默认开启，&lt;code&gt;slave-read-only&lt;/code&gt;
+开启了只读的redis slave node，会拒绝所有的写操作，这样可以强制搭建成读写分离架构&lt;/p&gt;
+&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;
+&lt;p&gt;集成安全认证
+master 上启用安全认证策略，&lt;code&gt;requirepass&lt;/code&gt;
+master 连接口令 &lt;code&gt;masterauth&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;读写分离架构的测试
+先启动主节点，再启动从节点，在搭建生产环境的时候，不要忘记修改一个配置：&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;bind 127.0.0.1
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;每个redis.conf 中的bind &lt;code&gt;127.0.0.1&lt;/code&gt; -&amp;gt; bind自己的ip，并且防火墙打开6379端口&lt;/p&gt;
+&lt;h3 id=&#34;redis-cli的使用&#34;&gt;redis-cli的使用&lt;/h3&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;命令&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;redis-cli shutdown&lt;/td&gt;
+&lt;td&gt;连接本机的6379端口停止redis进程&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;redis-cli -h 127.0.0.1 -p 6379&lt;/td&gt;
+&lt;td&gt;指定要连接的ip和端口号&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;redis-cli ping&lt;/td&gt;
+&lt;td&gt;ping redis的端口，看是否正常&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;redis-cli&lt;/td&gt;
+&lt;td&gt;进入交互式命令行&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;set k1 v1&lt;/td&gt;
+&lt;td&gt;设置一个key:value&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;get k1&lt;/td&gt;
+&lt;td&gt;获取key的值&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+</description>
+        </item>
+        <item>
+        <title>Redis持久化</title>
+        <link>https://xiaocm.com/p/redis%E6%8C%81%E4%B9%85%E5%8C%96/</link>
+        <pubDate>Fri, 06 Jul 2018 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/redis%E6%8C%81%E4%B9%85%E5%8C%96/</guid>
+        <description>&lt;h2 id=&#34;redis的持久化机制-rdb&#34;&gt;Redis的持久化机制-RDB&lt;/h2&gt;
+&lt;h3 id=&#34;1什么是rdb&#34;&gt;1.什么是RDB&lt;/h3&gt;
+&lt;p&gt;The RDB persistence performs point-in-time snapshots of your dataset at specified intervals.(RDB持久化是以指定的时间间隔执行数据集的时间点快照。)
+简单来说，RDB是每隔一段时间，会把内存中的数据写入磁盘的临时文件作为快照，恢复时把快照文件读取到内存中。如果机器宕机，那么内存中的数据就会丢失，使用RDB机制后，重启后数据会恢复。&lt;/p&gt;
+&lt;h3 id=&#34;2备份与恢复&#34;&gt;2.备份与恢复&lt;/h3&gt;
+&lt;p&gt;内存备份 &amp;ndash;&amp;gt; &lt;font color=&#34;#e58484&#34;&gt;磁盘临时文件&lt;/font&gt;
+临时文件 &amp;ndash;&amp;gt; &lt;font color=&#34;#e58484&#34;&gt;恢复到内存&lt;/font&gt;&lt;/p&gt;
+&lt;h3 id=&#34;3rdb优劣势&#34;&gt;3.RDB优劣势&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;优势&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;每隔一段时间全量备份&lt;/li&gt;
+&lt;li&gt;容灾简单，适合进行远程冷备份&lt;/li&gt;
+&lt;li&gt;子进程备份的时候，主进程不会有任何IO操作（不会有写入或修改），保证备份数据的完整性&lt;/li&gt;
+&lt;li&gt;相对AOF来说，当有更大的文件时候可以快速重启恢复&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;劣势&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;发生故障时，可能会丢失最后一次备份数据&lt;/li&gt;
+&lt;li&gt;子进程所占用的内存会和父进程一模一样，会造成CPU负担&lt;/li&gt;
+&lt;li&gt;由于定时全量备份是重量级操作，所以对于实时备份，就无法处理了&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;4rdb的配置&#34;&gt;4.RDB的配置&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;保存位置可以自定义配置:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;dir&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;var&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;redis&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;6379&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dump&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rdb&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;保存机制&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;#   save &amp;lt;seconds&amp;gt; &amp;lt;changes&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;#   900秒（15分钟）后，如果至少有 1 个Key发生改变
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;#   300秒（5分钟）后，如果至少有 10 个Key发生改变
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;#   60秒（1分钟）后，如果至少有 10000 个Key发生改变
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;save 900 1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;save 300 10
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;save 60 10000
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;redis的持久化机制-aof&#34;&gt;Redis的持久化机制-AOF&lt;/h2&gt;
+&lt;h3 id=&#34;1什么是aof&#34;&gt;1.什么是AOF&lt;/h3&gt;
+&lt;p&gt;The AOF persistence logs every write operation received by the server, that will be played again at server startup, reconstructing the original dataset. Commands are logged using the same format as the Redis protocol itself, in an append-only fashion. Redis is able to rewrite the log in the background when it gets too big.&lt;/p&gt;
+&lt;p&gt;AOF持久化会记录服务器接收到的每个写入操作，这些操作将在服务器启动时再次执行，以重新构建原始的数据。命令记录的格式与Redis协议本身的格式相同，采用追加方式。当日志文件过大时，Redis可以在后台进行&lt;code&gt;rewrite&lt;/code&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;2备份与恢复-1&#34;&gt;2.备份与恢复&lt;/h3&gt;
+&lt;p&gt;日志备份 &amp;ndash;&amp;gt; &lt;font color=&#34;#e58484&#34;&gt;命令追加方式&lt;/font&gt;
+日志文件 &amp;ndash;&amp;gt; &lt;font color=&#34;#e58484&#34;&gt;根据命令日志文件重新构建&lt;/font&gt;&lt;/p&gt;
+&lt;h3 id=&#34;3aof优劣势&#34;&gt;3.AOF优劣势&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;优势&lt;/strong&gt;
+&lt;ol&gt;
+&lt;li&gt;使用AOF数据持久化更加完整&lt;/li&gt;
+&lt;li&gt;可以使用不同的fsync策略，使用默认策略fsync时，每秒的写入性能仍然很好（fsync是使用后台线程执行的，并且在没有进行fsync的情况下，主线程将尽力执行写入操作）但是会损失一秒的写入时间&lt;/li&gt;
+&lt;li&gt;AOF是使用日志追加的方式，如果断电或其他原因导致日志只写了一半，可以使用&lt;code&gt;redis-check-aof&lt;/code&gt;工具进行修复&lt;/li&gt;
+&lt;li&gt;Redis太大时，Redis可以在后台自动重写AOF。 Redis继续追加到旧文件时，会生成一个新的文件，其中包含创建当前数据集&lt;strong&gt;所需的最少操作集&lt;/strong&gt;，一旦准备好第二个文件，Redis会切换这两个文件并开始追加到新的那一个&lt;/li&gt;
+&lt;li&gt;即使使用&lt;code&gt;FLUSHALL&lt;/code&gt;命令清空了所有数据，也可以通过修改AOF文件进行数据恢复&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;劣势&lt;/strong&gt;
+&lt;ol&gt;
+&lt;li&gt;AOF相比RDB占用空间更大&lt;/li&gt;
+&lt;li&gt;使用fsync策略后，相比RDB性能差一些&lt;/li&gt;
+&lt;li&gt;当服务器宕机后，使用AOF恢复的数据可能不完整&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;4aof的配置&#34;&gt;4.AOF的配置&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;开启AOF&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;appendonly yes
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;配置fsync策略&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# If unsure, use &amp;#34;everysec&amp;#34;.
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 如果不确定，推荐使用 &amp;#34;everysec&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# appendfsync always
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;appendfsync everysec
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# appendfsync no
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;AOF rewrite配置&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 设置一个百分比
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;auto-aof-rewrite-percentage 100
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 设置AOF 的最小大小
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;auto-aof-rewrite-min-size 64mb
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ol start=&#34;4&#34;&gt;
+&lt;li&gt;Redis 启动加载配置&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 优先加载AOF 文件
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;aof-use-rdb-preamble yes
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;两种持久化方式改如何选择&#34;&gt;两种持久化方式改如何选择&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;如果对数据可靠性要求很高，则应同时使用两种持久性方式。&lt;/li&gt;
+&lt;li&gt;如果在灾难情况下仍然可以承受几分钟的数据丢失，则可以仅使用RDB。&lt;/li&gt;
+&lt;li&gt;不推荐单独使用AOF，因为AOF在数据恢复时，有时候会出现Bugs。&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

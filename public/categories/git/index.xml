@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Git on 无常是常</title>
+        <link>https://xiaocm.com/categories/git/</link>
+        <description>Recent content in Git on 无常是常</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>XCM 陕ICP备16008414号</copyright>
+        <lastBuildDate>Tue, 12 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://xiaocm.com/categories/git/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>我每天使用的11个Git Commands</title>
+        <link>https://xiaocm.com/p/%E6%88%91%E6%AF%8F%E5%A4%A9%E4%BD%BF%E7%94%A8%E7%9A%8411%E4%B8%AAgit-commands/</link>
+        <pubDate>Tue, 12 Apr 2022 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/%E6%88%91%E6%AF%8F%E5%A4%A9%E4%BD%BF%E7%94%A8%E7%9A%8411%E4%B8%AAgit-commands/</guid>
+        <description>&lt;blockquote&gt;
+&lt;p&gt;本文是为我的年轻人（或任何新手）准备的，他们可以有效地使用git命令行，并简要介绍了我如何使用这些命令。
+&lt;a class=&#34;link&#34; href=&#34;https://medium.com/@mmpatil34/11-git-commands-i-use-daily-9bbd7590c8eb&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://medium.com/@mmpatil34/11-git-commands-i-use-daily-9bbd7590c8eb&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;1-git-fetch-origin&#34;&gt;1. git fetch origin&lt;/h3&gt;
+&lt;p&gt;从特定的仓库拉取所有的branchs/tags, 这里的仓库是“origin”, 我每天从这个命令开始, 它可以让本地和远程仓库状态保持一致.&lt;/p&gt;
+&lt;h3 id=&#34;2-git-status&#34;&gt;2. git status&lt;/h3&gt;
+&lt;p&gt;显示当前分支自上次提交到现在的文件改动列表,在切换分支、创建新分支、进行新更改或拉取更改之前, 此命令可以检查是否有文件需要被stash.&lt;/p&gt;
+&lt;h3 id=&#34;3-git-checkout&#34;&gt;3. git checkout&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;git checkout -b &amp;lt;new branch name&amp;gt; origin/&amp;lt;source branch name&amp;gt;&lt;/code&gt;
+从特定源分支创建一个新分支,这块的“origin”代表默认仓库.
+&lt;code&gt;git checkout — — &amp;lt;name of the file&amp;gt;&lt;/code&gt;
+当本地有文件变动时,可以使用这个命令丢弃当前改变,恢复文件到之前状态.
+&lt;code&gt;git checkout &amp;lt;branch name&amp;gt;&lt;/code&gt;
+切换本地到指定分支.&lt;/p&gt;
+&lt;h3 id=&#34;4-git-pull-origin-branch-name&#34;&gt;4. git pull origin &lt;branch name&gt;&lt;/h3&gt;
+&lt;p&gt;将更改从远程分支拉到本地分支，并在更改兼容的情况下调用&lt;code&gt;git merge&lt;/code&gt;。
+&lt;code&gt;git pull 和 git fetch&lt;/code&gt;的不同之处是:&lt;code&gt; git pull = git fetch + git merge&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&#34;5-git-add-name-of-the-file&#34;&gt;5. git add &lt;name of the file&gt;&lt;/h3&gt;
+&lt;p&gt;文件修改完成后,就可以使用&lt;code&gt;git add&lt;/code&gt;命令将文件添加到特定提交中,使用&lt;code&gt;git status&lt;/code&gt;命令可以很方便的获取到要添加指定提交的文件名.&lt;/p&gt;
+&lt;h3 id=&#34;6-git-commit&#34;&gt;6. git commit&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;git commit -m &amp;quot;&amp;lt;提交内容的描述&amp;gt;&amp;quot;&lt;/code&gt;
+提交本地改变,并指定和提交内容相关的描述.&lt;/p&gt;
+&lt;h3 id=&#34;7-git-push-origin-branch-name&#34;&gt;7. git push origin &lt;branch name&gt;&lt;/h3&gt;
+&lt;p&gt;将本地提交推送到远程存储库,这里的仓库是“origin”.&lt;/p&gt;
+&lt;h3 id=&#34;8-git-cherry-pick&#34;&gt;8. git cherry-pick&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;a - b - c - d   Master
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;         \
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;           e - f - g Feature
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;现在将提交f应用到master分支。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 切换到 master 分支
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ git checkout master
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# Cherry pick 操作
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ git cherry-pick f
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;上面的操作完成以后，代码库就变成了下面的样子。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; a - b - c - d - f   Master
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;         \
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;           e - f - g Feature
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git cherry-pick -m 1 &amp;lt;commit_id&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;如果原始提交是一个合并节点，来自于两个分支的合并，那么 Cherry pick 默认将失败，因为它不知道应该采用哪个分支的代码变动。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;-m&lt;/code&gt;配置项告诉 Git，应该采用哪个分支的变动。它的参数parent-number是一个从1开始的整数，代表原始提交的父分支编号。&lt;/p&gt;
+&lt;p&gt;上面命令表示，Cherry pick 采用提交commitHash来自编号1的父分支的变动。
+一般来说，1号父分支是接受变动的分支（the branch being merged into），2号父分支是作为变动来源的分支（the branch being merged from）。&lt;/p&gt;
+&lt;h3 id=&#34;9-git-revert-commit-id&#34;&gt;9. git revert &lt;commit id&gt;&lt;/h3&gt;
+&lt;p&gt;引入一个新的提交来撤回已经push的提交.&lt;/p&gt;
+&lt;h3 id=&#34;10-git-reset--soft-head1&#34;&gt;10. git reset — soft HEAD~1&lt;/h3&gt;
+&lt;p&gt;撤消一次本地提交而不会丢失文件中的变更.&lt;/p&gt;
+&lt;h3 id=&#34;11-git-reset--hard-head1&#34;&gt;11. git reset — hard HEAD~1&lt;/h3&gt;
+&lt;p&gt;撤销一次本地提交并且丢弃文件中的变更.
+希望对你有帮助. 感谢阅读😁&lt;/p&gt;
+</description>
+        </item>
+        <item>
+        <title>Git修改commit信息</title>
+        <link>https://xiaocm.com/p/git%E4%BF%AE%E6%94%B9commit%E4%BF%A1%E6%81%AF/</link>
+        <pubDate>Fri, 23 Oct 2020 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/git%E4%BF%AE%E6%94%B9commit%E4%BF%A1%E6%81%AF/</guid>
+        <description>&lt;h4 id=&#34;修改commit信息主要有这几种情况&#34;&gt;修改commit信息主要有这几种情况:&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;刚刚commit，还没有push，使用&lt;code&gt;git commit --amend&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;刚刚push，要修改最近一个push的commit信息，使用&lt;code&gt;git commit --amend&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;修改历史push的commit信息，使用&lt;code&gt;git rebase -i HEAD~n&lt;/code&gt;【其中的n为记录数】，配合2中的命令&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;注意：&lt;/strong&gt;
+其中1、2两种情况的修改方式是一样的，但是git log的记录是不同的,第三种方式也是把需要修改的记录调整为最新的提交，然后使用2的方式修改。&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+        </item>
+        <item>
+        <title>&#39;git commit之后，撤销commit&#39;</title>
+        <link>https://xiaocm.com/p/git-commit%E4%B9%8B%E5%90%8E%E6%92%A4%E9%94%80commit/</link>
+        <pubDate>Fri, 21 Aug 2020 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/git-commit%E4%B9%8B%E5%90%8E%E6%92%A4%E9%94%80commit/</guid>
+        <description>&lt;h3 id=&#34;场景&#34;&gt;场景&lt;/h3&gt;
+&lt;p&gt;一般情况下，我们写完代码后会执行:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git add .
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git commit -m &amp;#34;xxx&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;但是执行完后，想撤回怎么办？可以执行以下命令:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git reset --soft HEAD^
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这样就可以撤回你的提交，并且不会丢失提交前修改的内容.&lt;/p&gt;
+&lt;h3 id=&#34;理解&#34;&gt;理解&lt;/h3&gt;
+&lt;p&gt;HEAD^ 代表上一个版本，同等于HEAD~1，如果进行了两次提交，可以写成HEAD~2&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;参数&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;--mixed&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;默认参数，不删除工作空间改动的代码，只撤回提交，并且撤回&lt;code&gt;git add .&lt;/code&gt;操作&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;--soft&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;不删除工作空间改动的代码，撤销提交，但是不撤回&lt;code&gt;git add .&lt;/code&gt; 操作&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;--hard&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;删除工作空间改动的代码，撤销commit，撤销&lt;code&gt;git add .&lt;/code&gt;，直接回退到上次&lt;code&gt;commit&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&#34;最后&#34;&gt;最后&lt;/h3&gt;
+&lt;p&gt;如果commit注释写错了，只是想改一下注释，只需要：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git commit --amend
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;此时会进入默认vim编辑器，修改注释完毕后保存就好了。&lt;/p&gt;
+</description>
+        </item>
+        <item>
+        <title>git rebase和git merge的区别</title>
+        <link>https://xiaocm.com/p/git-rebase%E5%92%8Cgit-merge%E7%9A%84%E5%8C%BA%E5%88%AB/</link>
+        <pubDate>Wed, 19 Aug 2020 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/git-rebase%E5%92%8Cgit-merge%E7%9A%84%E5%8C%BA%E5%88%AB/</guid>
+        <description>&lt;h3 id=&#34;description&#34;&gt;Description&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;git rebase&lt;/code&gt; 和 &lt;code&gt;git merge&lt;/code&gt; 一样都是用于从一个分支获取并且合并到当前分支，但是他们采取不同的工作方式，以下面的一个工作场景说明其区别.&lt;/p&gt;
+&lt;p&gt;如图所示：你在一个feature分支进行新特性的开发，与此同时，master 分支的也有新的提交。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/b454bf1d01ec3dee808830b24dd87c2e.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;http://qiniu.xiaocm.com/b454bf1d01ec3dee808830b24dd87c2e.png&#34;
+	
+	
+&gt;
+为了将master 上新的提交合并到你的feature分支上，你有两种选择：&lt;code&gt;merging or rebasing&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&#34;merge&#34;&gt;merge&lt;/h3&gt;
+&lt;p&gt;执行以下命令:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git checkout feature
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git merge master
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;或者执行更简单的：
+&lt;code&gt;git merge master feature&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;那么此时在feature上git 自动会产生一个新的commit(merge commit)
+look like this：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/2cebea59e5f82803cb35f99f85b6653d.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;http://qiniu.xiaocm.com/2cebea59e5f82803cb35f99f85b6653d.png&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;**merge 特点：**自动创建一个新的commit,如果合并的时候遇到冲突，仅需要修改后重新commit
+**优点：**记录了真实的commit情况，包括每个分支的详情
+**缺点：**因为每次merge会自动产生一个merge commit，所以在使用一些git 的GUI tools，特别是commit比较频繁时，看到分支很杂乱。&lt;/p&gt;
+&lt;h3 id=&#34;rebase&#34;&gt;rebase&lt;/h3&gt;
+&lt;p&gt;本质是变基,执行以下命令：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git checkout feature
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git rebase master
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/245938aba30e1d7ff14f759eea81eb37.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;http://qiniu.xiaocm.com/245938aba30e1d7ff14f759eea81eb37.png&#34;
+	
+	
+&gt;
+**rebase 特点：**会合并之前的commit历史
+**优点：**得到更简洁的项目历史，去掉了merge commit
+**缺点：**如果合并出现代码问题不容易定位，因为re-write了history
+合并时如果出现冲突需要按照如下步骤解决&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;修改冲突部分&lt;/li&gt;
+&lt;li&gt;git add&lt;/li&gt;
+&lt;li&gt;git rebase &amp;ndash;continue&lt;/li&gt;
+&lt;li&gt;（如果第三步无效可以执行 git rebase &amp;ndash;skip）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;不要在git add 之后习惯性的执行 git commit命令
+&lt;em&gt;&lt;strong&gt;The Golden Rule of Rebasing rebase&lt;/strong&gt;&lt;/em&gt; 的黄金法则:
+&lt;strong&gt;never use it on public branches(不要在公共分支上使用)&lt;/strong&gt;
+比如说如下场景：如图所示
+&lt;img src=&#34;http://qiniu.xiaocm.com/ac37304e85f5ddf56f1fc302b9e42781.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;http://qiniu.xiaocm.com/ac37304e85f5ddf56f1fc302b9e42781.png&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;如果你rebase master 到你的feature分支：
+rebase 将所有master的commit移动到你的feature 的顶端。问题是：其他人还在original master上开发，由于你使用了rebase移动了master，git 会认为你的主分支的历史与其他人的有分歧，会产生冲突。
+所以在执行git rebase 之前 问问自己，&lt;/p&gt;
+&lt;p&gt;会有其他人看这个分支么？
+IF YES 不要采用这种带有破坏性的修改commit 历史的rebase命令
+IF NO OK，随你便，可以使用rebase&lt;/p&gt;
+&lt;h3 id=&#34;summary-总结&#34;&gt;Summary 总结&lt;/h3&gt;
+&lt;p&gt;如果你想要一个干净的，没有merge commit的线性历史树，那么你应该选择git rebase
+如果你想保留完整的历史记录，并且想要避免重写commit history的风险，你应该选择使用git merge&lt;/p&gt;
+&lt;h3 id=&#34;参考资料&#34;&gt;参考资料&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.atlassian.com/git/tutorials/merging-vs-rebasing/conceptual-overview&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://www.atlassian.com/git/tutorials/merging-vs-rebasing/conceptual-overview&lt;/a&gt;
+&lt;a class=&#34;link&#34; href=&#34;https://git-scm.com/book/zh/v2/Git-&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://git-scm.com/book/zh/v2/Git-&lt;/a&gt;分支-变基
+&lt;a class=&#34;link&#34; href=&#34;https://git-scm.com/book/zh/v2/Git-&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://git-scm.com/book/zh/v2/Git-&lt;/a&gt;分支-分支的新建与合并#_basic_merging&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+        </item>
+        <item>
+        <title>一份建议的Git Commit 模版</title>
+        <link>https://xiaocm.com/p/%E4%B8%80%E4%BB%BD%E5%BB%BA%E8%AE%AE%E7%9A%84git-commit-%E6%A8%A1%E7%89%88/</link>
+        <pubDate>Wed, 14 Aug 2019 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/%E4%B8%80%E4%BB%BD%E5%BB%BA%E8%AE%AE%E7%9A%84git-commit-%E6%A8%A1%E7%89%88/</guid>
+        <description>&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&amp;lt;类型&amp;gt;: (类型的值见下面描述) &amp;lt;主题&amp;gt; (最多50个字)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;feat (新特性)
+fix (bug修复)
+docs (文档改动)
+style (格式化, 缺失分号等; 不包括生产代码变动)
+refactor (重构代码)
+test (添加缺失的测试, 重构测试, 不包括生产代码变动)
+chore (更新grunt任务等; 不包括生产代码变动)&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;主题和内容以一个空行分隔&lt;/li&gt;
+&lt;li&gt;主题限制为最大50个字&lt;/li&gt;
+&lt;li&gt;主题行大写&lt;/li&gt;
+&lt;li&gt;主题行结束不用标点&lt;/li&gt;
+&lt;li&gt;主题行使用祈使名&lt;/li&gt;
+&lt;li&gt;内容每行72个字&lt;/li&gt;
+&lt;li&gt;内容用于解释为什么和是什么,而不是怎么做&lt;/li&gt;
+&lt;li&gt;内容多行时以&amp;rsquo;-&amp;lsquo;分隔&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        <item>
+        <title>Git常用命令</title>
+        <link>https://xiaocm.com/p/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</link>
+        <pubDate>Mon, 18 Feb 2019 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</guid>
+        <description>&lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/20210316200434.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;h3 id=&#34;一新建代码库&#34;&gt;一、新建代码库&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 在当前目录新建一个Git代码库&lt;/font&gt;&lt;br&gt;
+$ git init&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 新建一个目录，将其初始化为Git代码库&lt;/font&gt;&lt;br&gt;
+$ git init [project-name]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 下载一个项目和它的整个代码历史&lt;/font&gt;&lt;br&gt;
+$ git clone [url]&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;二配置&#34;&gt;二、配置&lt;/h3&gt;
+&lt;p&gt;Git的设置文件为.gitconfig，它可以在用户主目录下（全局配置），也可以在项目目录下（项目配置）&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 显示当前的Git配置&lt;/font&gt;&lt;br&gt;
+$ git config &amp;ndash;list&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 编辑Git配置文件&lt;/font&gt;&lt;br&gt;
+$ git config -e [&amp;ndash;global]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 设置提交代码时的用户信息&lt;/font&gt;&lt;br&gt;
+$ git config [&amp;ndash;global] user.name &amp;ldquo;[name]&amp;rdquo;&lt;br&gt;
+$ git config [&amp;ndash;global] user.email &amp;ldquo;[email   address]&amp;rdquo;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;三增加删除文件&#34;&gt;三、增加/删除文件&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 添加指定文件到暂存区&lt;/font&gt;&lt;br&gt;
+$ git add [file1] [file2] &amp;hellip;&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 添加指定目录到暂存区，包括子目录&lt;/font&gt;&lt;br&gt;
+$ git add [dir]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 添加当前目录的所有文件到暂存区&lt;/font&gt;&lt;br&gt;
+$ git add .&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 添加每个变化前，都会要求确认&lt;/font&gt;&lt;br&gt;
+&lt;font color=gray&gt;# 对于同一个文件的多处变化，可以实现分次提交&lt;/font&gt;&lt;br&gt;
+$ git add -p&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 删除工作区文件，并且将这次删除放入暂存区&lt;/font&gt;&lt;br&gt;
+$ git rm [file1] [file2] &amp;hellip;&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 停止追踪指定文件，但该文件会保留在工作区&lt;/font&gt;&lt;br&gt;
+$ git rm &amp;ndash;cached [file]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 改名文件，并且将这个改名放入暂存区&lt;/font&gt;&lt;br&gt;
+$ git mv [file-original] [file-renamed]&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;四代码提交&#34;&gt;四、代码提交&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 提交暂存区到仓库区&lt;/font&gt;&lt;br&gt;
+$ git commit -m [message]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 提交暂存区的指定文件到仓库区&lt;/font&gt;&lt;br&gt;
+$ git commit [file1] [file2] &amp;hellip; -m [message]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 提交工作区自上次commit之后的变化，直接到仓库区&lt;/font&gt;&lt;br&gt;
+$ git commit -a&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 提交时显示所有diff信息&lt;/font&gt;&lt;br&gt;
+$ git commit -v&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 使用一次新的commit，替代上一次提交&lt;/font&gt;&lt;br&gt;
+&lt;font color=gray&gt;# 如果代码没有任何新变化，则用来改写上一次commit的提交信息&lt;/font&gt;&lt;br&gt;
+$ git commit &amp;ndash;amend -m [message]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 重做上一次commit，并包括指定文件的新变化&lt;/font&gt;&lt;br&gt;
+$ git commit &amp;ndash;amend [file1] [file2] &amp;hellip;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;五分支&#34;&gt;五、分支&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 列出所有本地分支&lt;/font&gt;&lt;br&gt;
+$ git branch&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 列出所有远程分支&lt;/font&gt;&lt;br&gt;
+$ git branch -r&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 列出所有本地分支和远程分支&lt;/font&gt;&lt;br&gt;
+$ git branch -a&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 新建一个分支，但依然停留在当前分支&lt;/font&gt;&lt;br&gt;
+$ git branch [branch-name]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 新建一个分支，并切换到该分支&lt;/font&gt;&lt;br&gt;
+$ git checkout -b [branch]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 新建一个分支，指向指定commit&lt;/font&gt;&lt;br&gt;
+$ git branch [branch] [commit]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 新建一个分支，与指定的远程分支建立追踪关系&lt;/font&gt;&lt;br&gt;
+$ git branch &amp;ndash;track [branch] [remote-branch]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 切换到指定分支，并更新工作区&lt;/font&gt;&lt;br&gt;
+$ git checkout [branch-name]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 切换到上一个分支&lt;/font&gt;&lt;br&gt;
+$ git checkout -&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 建立追踪关系，在现有分支与指定的远程分支之间&lt;/font&gt;&lt;br&gt;
+$ git branch &amp;ndash;set-upstream [branch] [remote-branch]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 合并指定分支到当前分支&lt;/font&gt;&lt;br&gt;
+$ git merge [branch]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 选择一个commit，合并进当前分支&lt;/font&gt;&lt;br&gt;
+$ git cherry-pick [commit]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 删除分支&lt;/font&gt;&lt;br&gt;
+$ git branch -d [branch-name]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 删除远程分支&lt;/font&gt;&lt;br&gt;
+$ git push origin &amp;ndash;delete [branch-name]&lt;br&gt;
+$ git branch -dr [remote/branch]&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;六标签&#34;&gt;六、标签&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 列出所有tag&lt;/font&gt;&lt;br&gt;
+$ git tag&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 新建一个tag在当前commit&lt;/font&gt;&lt;br&gt;
+$ git tag [tag]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 新建一个tag在指定commit&lt;/font&gt;&lt;br&gt;
+$ git tag [tag] [commit]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 删除本地tag&lt;/font&gt;&lt;br&gt;
+$ git tag -d [tag]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 删除远程tag&lt;/font&gt;&lt;br&gt;
+$ git push origin :refs/tags/[tagName]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 查看tag信息&lt;/font&gt;&lt;br&gt;
+$ git show [tag]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 提交指定tag&lt;/font&gt;&lt;br&gt;
+$ git push [remote] [tag]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 提交所有tag&lt;/font&gt;&lt;br&gt;
+$ git push [remote] &amp;ndash;tags&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 新建一个分支，指向某个tag&lt;/font&gt;&lt;br&gt;
+$ git checkout -b [branch] [tag]&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;七查看信息&#34;&gt;七、查看信息&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 显示有变更的文件&lt;/font&gt;&lt;br&gt;
+$ git status&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 显示当前分支的版本历史&lt;/font&gt;&lt;br&gt;
+$ git log&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 显示commit历史，以及每次commit发生变更的文件&lt;/font&gt;&lt;br&gt;
+$ git log &amp;ndash;stat&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 搜索提交历史，根据关键词&lt;/font&gt;&lt;br&gt;
+$ git log -S [keyword]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 显示某个commit之后的所有变动，每个commit占据一行&lt;/font&gt;&lt;br&gt;
+$ git log [tag] HEAD &amp;ndash;pretty=format:%s&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 显示某个commit之后的所有变动，其&amp;quot;提交说明&amp;quot;必须符合搜索条件&lt;/font&gt;&lt;br&gt;
+$ git log [tag] HEAD &amp;ndash;grep feature&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 显示某个文件的版本历史，包括文件改名&lt;/font&gt;&lt;br&gt;
+$ git log &amp;ndash;follow [file]&lt;br&gt;
+$ git whatchanged [file]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 显示指定文件相关的每一次diff&lt;/font&gt;&lt;br&gt;
+$ git log -p [file]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 显示过去5次提交&lt;/font&gt;&lt;br&gt;
+$ git log -5 &amp;ndash;pretty &amp;ndash;oneline&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 显示所有提交过的用户，按提交次数排序&lt;/font&gt;&lt;br&gt;
+$ git shortlog -sn&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 显示指定文件是什么人在什么时间修改过&lt;/font&gt;&lt;br&gt;
+$ git blame [file]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 显示暂存区和工作区的代码差异&lt;/font&gt;&lt;br&gt;
+$ git diff&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 显示暂存区和上一个commit的差异&lt;/font&gt;&lt;br&gt;
+$ git diff &amp;ndash;cached [file]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 显示工作区与当前分支最新commit之间的差异&lt;/font&gt;&lt;br&gt;
+$ git diff HEAD&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 显示两次提交之间的差异&lt;/font&gt;&lt;br&gt;
+$ git diff [first-branch]&amp;hellip;[second-branch]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 显示今天你写了多少行代码&lt;/font&gt;&lt;br&gt;
+$ git diff &amp;ndash;shortstat &amp;ldquo;@{0 day ago}&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 显示某次提交的元数据和内容变化&lt;/font&gt;&lt;br&gt;
+$ git show [commit]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 显示某次提交发生变化的文件&lt;/font&gt;&lt;br&gt;
+$ git show &amp;ndash;name-only [commit]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 显示某次提交时，某个文件的内容&lt;/font&gt;&lt;br&gt;
+$ git show [commit]:[filename]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 显示当前分支的最近几次提交&lt;/font&gt;&lt;br&gt;
+$ git reflog&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 从本地master拉取代码更新当前分支：branch 一般为master&lt;/font&gt;&lt;br&gt;
+$ git rebase [branch]&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;八远程同步&#34;&gt;八、远程同步&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;$ git remote update  &amp;ndash;更新远程仓储&lt;br&gt;
+&lt;font color=gray&gt;# 下载远程仓库的所有变动&lt;/font&gt;&lt;br&gt;
+$ git fetch [remote]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 显示所有远程仓库&lt;/font&gt;&lt;br&gt;
+$ git remote -v&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 显示某个远程仓库的信息&lt;/font&gt;&lt;br&gt;
+$ git remote show [remote]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 增加一个新的远程仓库，并命名&lt;/font&gt;&lt;br&gt;
+$ git remote add [shortname] [url]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 取回远程仓库的变化，并与本地分支合并&lt;/font&gt;&lt;br&gt;
+$ git pull [remote] [branch]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 上传本地指定分支到远程仓库&lt;/font&gt;&lt;br&gt;
+$ git push [remote] [branch]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 强行推送当前分支到远程仓库，即使有冲突&lt;/font&gt;&lt;br&gt;
+$ git push [remote] &amp;ndash;force&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 推送所有分支到远程仓库&lt;/font&gt;&lt;br&gt;
+$ git push [remote] &amp;ndash;all&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;九撤销&#34;&gt;九、撤销&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 恢复暂存区的指定文件到工作区&lt;/font&gt;&lt;br&gt;
+$ git checkout [file]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 恢复某个commit的指定文件到暂存区和工作区&lt;/font&gt;&lt;br&gt;
+$ git checkout [commit] [file]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 恢复暂存区的所有文件到工作区&lt;/font&gt;&lt;br&gt;
+$ git checkout .&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 重置暂存区的指定文件，与上一次commit保持一致，但工作区不变&lt;/font&gt;&lt;br&gt;
+$ git reset [file]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 重置暂存区与工作区，与上一次commit保持一致&lt;/font&gt;&lt;br&gt;
+$ git reset &amp;ndash;hard&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 重置当前分支的指针为指定commit，同时重置暂存区，但工作区不变&lt;/font&gt;&lt;br&gt;
+$ git reset [commit]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 重置当前分支的HEAD为指定commit，同时重置暂存区和工作区，与指定commit一致&lt;/font&gt;&lt;br&gt;
+$ git reset &amp;ndash;hard [commit]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 重置当前HEAD为指定commit，但保持暂存区和工作区不变&lt;/font&gt;&lt;br&gt;
+$ git reset &amp;ndash;keep [commit]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 新建一个commit，用来撤销指定commit&lt;br&gt;
+# 后者的所有变化都将被前者抵消，并且应用到当前分支&lt;/font&gt;&lt;br&gt;
+$ git revert [commit]&lt;/p&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 暂时将未提交的变化移除，稍后再移入&lt;/font&gt;&lt;br&gt;
+$ git stash&lt;br&gt;
+$ git stash pop&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;十其他&#34;&gt;十、其他&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;font color=gray&gt;# 生成一个可供发布的压缩包&lt;/font&gt;&lt;br&gt;
+$ git archive&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

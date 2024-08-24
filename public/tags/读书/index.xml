@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>读书 on 无常是常</title>
+        <link>https://xiaocm.com/tags/%E8%AF%BB%E4%B9%A6/</link>
+        <description>Recent content in 读书 on 无常是常</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>XCM 陕ICP备16008414号</copyright>
+        <lastBuildDate>Tue, 13 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://xiaocm.com/tags/%E8%AF%BB%E4%B9%A6/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>10x程序员总结</title>
+        <link>https://xiaocm.com/p/10x%E7%A8%8B%E5%BA%8F%E5%91%98%E6%80%BB%E7%BB%93/</link>
+        <pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/10x%E7%A8%8B%E5%BA%8F%E5%91%98%E6%80%BB%E7%BB%93/</guid>
+        <description>&lt;h3 id=&#34;以终为始&#34;&gt;以终为始&lt;/h3&gt;
+&lt;p&gt;遇到问题不妨倒着去思考&lt;/p&gt;
+&lt;h3 id=&#34;任务分解&#34;&gt;任务分解&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;埃隆马斯克SpaceX 的计划，本质上就是把一件很困难实现的事情去做任务分解，使每件任务可执行化。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;如何降低火箭发射成本
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;1. 造一个能容纳100人的火箭
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;2. 实现火箭回收
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;3. ....
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;大师程序员都是懂的去做任务分解，分解的力度是可执行&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;多写单元测试，代码小步提交&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20210514103356.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+</description>
+        </item>
+        <item>
+        <title>阅读清单</title>
+        <link>https://xiaocm.com/p/%E9%98%85%E8%AF%BB%E6%B8%85%E5%8D%95/</link>
+        <pubDate>Fri, 09 Apr 2021 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/%E9%98%85%E8%AF%BB%E6%B8%85%E5%8D%95/</guid>
+        <description>&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;序号&lt;/th&gt;
+&lt;th&gt;名称&lt;/th&gt;
+&lt;th&gt;状态&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;《专栏: 10x程序员工作法》&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;已完成&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;《Java并发编程的艺术》&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;进行中&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;《高效能人士的七个习惯》&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;已完成&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;《自控力》&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;已完成&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;《关键对话》&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;进行中&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>读书 on 无常是常</title>
+        <link>https://xiaocm.com/categories/%E8%AF%BB%E4%B9%A6/</link>
+        <description>Recent content in 读书 on 无常是常</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>XCM 陕ICP备16008414号</copyright>
+        <lastBuildDate>Tue, 13 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://xiaocm.com/categories/%E8%AF%BB%E4%B9%A6/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>10x程序员总结</title>
+        <link>https://xiaocm.com/p/10x%E7%A8%8B%E5%BA%8F%E5%91%98%E6%80%BB%E7%BB%93/</link>
+        <pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/10x%E7%A8%8B%E5%BA%8F%E5%91%98%E6%80%BB%E7%BB%93/</guid>
+        <description>&lt;h3 id=&#34;以终为始&#34;&gt;以终为始&lt;/h3&gt;
+&lt;p&gt;遇到问题不妨倒着去思考&lt;/p&gt;
+&lt;h3 id=&#34;任务分解&#34;&gt;任务分解&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;埃隆马斯克SpaceX 的计划，本质上就是把一件很困难实现的事情去做任务分解，使每件任务可执行化。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;如何降低火箭发射成本
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;1. 造一个能容纳100人的火箭
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;2. 实现火箭回收
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;3. ....
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;大师程序员都是懂的去做任务分解，分解的力度是可执行&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;多写单元测试，代码小步提交&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20210514103356.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+</description>
+        </item>
+        <item>
+        <title>阅读清单</title>
+        <link>https://xiaocm.com/p/%E9%98%85%E8%AF%BB%E6%B8%85%E5%8D%95/</link>
+        <pubDate>Fri, 09 Apr 2021 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/%E9%98%85%E8%AF%BB%E6%B8%85%E5%8D%95/</guid>
+        <description>&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;序号&lt;/th&gt;
+&lt;th&gt;名称&lt;/th&gt;
+&lt;th&gt;状态&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;《专栏: 10x程序员工作法》&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;已完成&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;《Java并发编程的艺术》&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;进行中&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;《高效能人士的七个习惯》&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;已完成&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;《自控力》&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;已完成&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;《关键对话》&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;进行中&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+</description>
+        </item>
+        <item>
+        <title>《刻意练习》：以学习编程为例</title>
+        <link>https://xiaocm.com/p/%E5%88%BB%E6%84%8F%E7%BB%83%E4%B9%A0%E4%BB%A5%E5%AD%A6%E4%B9%A0%E7%BC%96%E7%A8%8B%E4%B8%BA%E4%BE%8B/</link>
+        <pubDate>Sun, 17 Jan 2021 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/%E5%88%BB%E6%84%8F%E7%BB%83%E4%B9%A0%E4%BB%A5%E5%AD%A6%E4%B9%A0%E7%BC%96%E7%A8%8B%E4%B8%BA%E4%BE%8B/</guid>
+        <description>&lt;blockquote&gt;
+&lt;p&gt;转载自: &lt;a class=&#34;link&#34; href=&#34;%e8%bd%ac%e8%bd%bd%e4%ba%8e:https://juejin.im/post/5c3ca16ff265da617573f9a4&#34; &gt;https://juejin.im/post/5c3ca16ff265da617573f9a4&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;《刻意练习》是一本神奇的魔法书，它用大量的事实案例和数据来证明了刻意练习能给一个人带来的巨大改变。更为难能可贵的是，它不仅仅只是介绍刻意练习的好处，还给读者介绍了刻意练习的方法和注意事项，可以说是干货满满的一本书。&lt;/p&gt;
+&lt;p&gt;本文想以“学习编程”为例，结合《刻意练习》这本书教给我们的方式方法，阐述如何通过刻意练习来提高自己的编程水平。&lt;/p&gt;
+&lt;h3 id=&#34;关于练习&#34;&gt;关于练习&lt;/h3&gt;
+&lt;p&gt;**不断重复只是“天真的练习”，无法带来进步。“正确的练习”需要好导师、有目标、有反馈。**所以如果想要提高编程水平，光靠一味闷着头努力写代码是不够的，有些人写了几年的CRUD，可能整体的技术水平还不及刚毕业的同学。&lt;/p&gt;
+&lt;p&gt;一个好的导师很难得，他不仅要自己在编程水平是有一定的成就，还应该具有一些教育方面的经验，才能更好的指导你。一般来说，大一点的公司都会有老人带新人的机制，可以利用这个来找一个比较好的前辈带一带。另外就是通过看书或看视频其实也是一种很不错的学习方式，写书和出视频的老师自然是具备上述条件的。&lt;/p&gt;
+&lt;p&gt;有目标指的是应该要有明确的目标，而不是一个宽泛的目标。比如“我要提高Java水平”明显就是一个宽泛的目标，无法量化。明确的目标应该是什么样子呢？比如，我要学习JVM的基础知识，我要学完23种设计模式等等。一个好的目标还应该是可分解的，有时间或成果量化的。比如，我需要在一个月内学习完Java多线程技术，第一周学习多线程模型，第二周学习多线程基本的类和接口，第三周阅读JDK里面关于多线程方面的工具类的源码，第四周写多线程案例Demo，最后产出一个Java多线程系列笔记或者博客。&lt;/p&gt;
+&lt;p&gt;有反馈指的是可以量化的反馈。比如写一篇技术博客，有多少阅读量，点赞量，评论量？写一个开源项目有多少star，做一个LeetCode有没有通过，耗时如何？&lt;/p&gt;
+&lt;p&gt;上述算是对“有目的的练习”的一个阐述。刻意练习是在有目的的练习基础上的。总结起来，有目的的练习应该具有以下四个特点：&lt;/p&gt;
+&lt;p&gt;1.有目的的练习具有定义明确的特定目标
+2.有目的的练习是专注的
+3.有目的的练习包含反馈
+4.有目的的练习需要走出舒适区&lt;/p&gt;
+&lt;p&gt;对于任何类型的练习，这是一条基本的真理：&lt;strong&gt;如果你从来不迫使自己走出舒适区，便永远无法进步。&lt;/strong&gt;&lt;/p&gt;
+&lt;h3 id=&#34;关于心理表征&#34;&gt;关于心理表征&lt;/h3&gt;
+&lt;p&gt;《刻意练习》这本书用了大量的篇幅来介绍心理表征。作者认为，刻意练习的核心之一在于通过练习来创建大量的心理表征，然后再使用这些心理表征反过来帮助练习。&lt;/p&gt;
+&lt;p&gt;那心理表征到底是什么？&lt;/p&gt;
+&lt;p&gt;我认为**它是一个人学习某样东西的时候，自己心中形成的一个体系架构。**比如我们学习算法，就会形成一个关于算法的体系架构，也就是心理表征。而当我们再学习到Mysql的底层索引原理的时候，就会想到算法关于平衡树方面的知识；当我们学习JDK源码里关于集合框架的时候，就会想到链表、栈与队列、红黑树等等。&lt;/p&gt;
+&lt;p&gt;我们的知识形成了一个循环，学得越多，懂得越多。当我们积累了大量的知识以后，再学一样有关联的东西，就能快速学会。&lt;/p&gt;
+&lt;h3 id=&#34;刻意练习&#34;&gt;刻意练习&lt;/h3&gt;
+&lt;p&gt;刻意练习提倡“边干边学”，**它使人们熟悉练习的习惯，并思考如何练习。**这与我们学习编程的理念是一样的，几乎没有人会对你说：你只需要看书，看博客，看视频就能学会编程。有经验的前辈一般会告诉你，要有输入，也要有输出。学习了的东西，要通过写代码或者做笔记或者写博客的方式，让知识变成你自己的，更加牢固。&lt;/p&gt;
+&lt;p&gt;你通过写代码，不断地写代码来提高自己的编程水平，然后通过思考，反思来决定该如何写代码才能写得更好。&lt;/p&gt;
+&lt;p&gt;传统的方法也一直是先找出关于正确方法的信息，然后很大程度上让学生去运用那些知识。&lt;strong&gt;刻意练习则完全相反，它只聚焦于绩效和表现，以及怎样提高绩效和表现。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;编程也是一样，老板和上级其实真正在意的并不是你懂多少理论，而是你写得代码质量好不好，你能不能快速地实现他们需要的功能，能不能解决技术难题。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;你的代码写得比别人快，你的代码写得比别人漂亮，你能快速解决别人不能解决的难题，那你就牛逼。&lt;/strong&gt;&lt;/p&gt;
+&lt;h3 id=&#34;关于专注与坚持&#34;&gt;关于专注与坚持&lt;/h3&gt;
+&lt;p&gt;刻意练习里面有一个观点颠覆了我以前的认知。我一度认为，一个人能不能专注，能不能坚持做一件事，除了热爱，那必然是意志力越高的人越能专注和坚持。&lt;/p&gt;
+&lt;p&gt;然而刻意练习告诉我，**意志力根本不存在！**所谓意志力，其实是保持动机与专注的结果。&lt;/p&gt;
+&lt;p&gt;我们先来看看如何让自己保持专注，**不专注的练习是没有效果的。**刻意练习提供了一个观点，&lt;strong&gt;如果练习的时间更短，那就会有更好的注意力。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;对于这个观点我是绝对认同的。比如看书，如果想一次性看完一本书，那对于一般人来说绝对是非常困难的。但是如果把它拆成一章一章，每天看一点，那就会好很多。而在日常的工作中或者学习中，我们可以使用“番茄钟”来管理自己的时间与保持专注。这里不具体介绍番茄钟，有兴趣的同学自己去了解一下，亲测有用！一个番茄钟25分钟，不多不少刚刚好。&lt;/p&gt;
+&lt;p&gt;再来谈谈动机。对于一个程序员来说，动机是再明显不过的了：升职加薪变大佬。但有时候这个动机并不能转化为一种强有力的动力来促使我们去学习，去提高技术水平。而某些太强烈的动机（比如想跳槽）又很难持续保持。&lt;/p&gt;
+&lt;p&gt;《刻意练习》告诉我们，&lt;strong&gt;我们要保持动机，要么强化继续前行的理由，要么弱化停下脚步的理由。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;仍然以学习算法为例。要强化继续前行的理由，我们可以在学习到一定阶段给自己一些小的奖励，比如刷完100个算法题，给自己买个好的键盘或者耳机。还有来自朋友、同事、家人乃至默认人的鼓励也很重要。我在网上写博客分享给大家，如果读者的点赞或者好评，那也是非常能激励我们继续学习的！&lt;/p&gt;
+&lt;p&gt;而弱化停下脚步的理由。比如练习累了就合理休息一下，学习累了就暂时玩一下，如果觉得自己一个人学技术太孤独，就找一群小伙伴一起学习或者加入一个技术社区。目标要精心设置且合理，这样才能得到达到目标的成就感，不会因为达不到目标而气馁放弃。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;愿你以梦为马，剑指天涯。&lt;/strong&gt;&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

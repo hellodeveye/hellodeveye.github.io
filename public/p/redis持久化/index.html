@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='Redis的持久化机制-RDB 1.什么是RDB The RDB persistence performs point-in-time snapshots of your dataset at specified intervals.(RDB持久化是以指定的时间间隔执行数据集的时间点快照。) 简单来说，RDB是每隔一段时间，会把内存中的数据写入磁盘的临时文件作为快照，恢复时把快照文件读取到内存中。如果机器宕机，那么内存中的数据就会丢失，使用RDB机制后，重启后数据会恢复。
+2.备份与恢复 内存备份 &amp;ndash;&amp;gt; 磁盘临时文件 临时文件 &amp;ndash;&amp;gt; 恢复到内存
+3.RDB优劣势 优势
+每隔一段时间全量备份 容灾简单，适合进行远程冷备份 子进程备份的时候，主进程不会有任何IO操作（不会有写入或修改），保证备份数据的完整性 相对AOF来说，当有更大的文件时候可以快速重启恢复 劣势
+发生故障时，可能会丢失最后一次备份数据 子进程所占用的内存会和父进程一模一样，会造成CPU负担 由于定时全量备份是重量级操作，所以对于实时备份，就无法处理了 4.RDB的配置 保存位置可以自定义配置: 1 dir /var/redis/6379/dump.rdb 保存机制 1 2 3 4 5 6 7 8 # save &amp;lt;seconds&amp;gt; &amp;lt;changes&amp;gt; # 900秒（15分钟）后，如果至少有 1 个Key发生改变 # 300秒（5分钟）后，如果至少有 10 个Key发生改变 # 60秒（1分钟）后，如果至少有 10000 个Key发生改变 save 900 1 save 300 10 save 60 10000 Redis的持久化机制-AOF 1.'>
+<title>Redis持久化</title>
+
+<link rel='canonical' href='https://xiaocm.com/p/redis%E6%8C%81%E4%B9%85%E5%8C%96/'>
+
+<link rel="stylesheet" href="/scss/style.min.abbd69b2908fdfcd5179898beaafd374514a86538d81639ddd2c58c06ae54e40.css"><meta property='og:title' content='Redis持久化'>
+<meta property='og:description' content='Redis的持久化机制-RDB 1.什么是RDB The RDB persistence performs point-in-time snapshots of your dataset at specified intervals.(RDB持久化是以指定的时间间隔执行数据集的时间点快照。) 简单来说，RDB是每隔一段时间，会把内存中的数据写入磁盘的临时文件作为快照，恢复时把快照文件读取到内存中。如果机器宕机，那么内存中的数据就会丢失，使用RDB机制后，重启后数据会恢复。
+2.备份与恢复 内存备份 &amp;ndash;&amp;gt; 磁盘临时文件 临时文件 &amp;ndash;&amp;gt; 恢复到内存
+3.RDB优劣势 优势
+每隔一段时间全量备份 容灾简单，适合进行远程冷备份 子进程备份的时候，主进程不会有任何IO操作（不会有写入或修改），保证备份数据的完整性 相对AOF来说，当有更大的文件时候可以快速重启恢复 劣势
+发生故障时，可能会丢失最后一次备份数据 子进程所占用的内存会和父进程一模一样，会造成CPU负担 由于定时全量备份是重量级操作，所以对于实时备份，就无法处理了 4.RDB的配置 保存位置可以自定义配置: 1 dir /var/redis/6379/dump.rdb 保存机制 1 2 3 4 5 6 7 8 # save &amp;lt;seconds&amp;gt; &amp;lt;changes&amp;gt; # 900秒（15分钟）后，如果至少有 1 个Key发生改变 # 300秒（5分钟）后，如果至少有 10 个Key发生改变 # 60秒（1分钟）后，如果至少有 10000 个Key发生改变 save 900 1 save 300 10 save 60 10000 Redis的持久化机制-AOF 1.'>
+<meta property='og:url' content='https://xiaocm.com/p/redis%E6%8C%81%E4%B9%85%E5%8C%96/'>
+<meta property='og:site_name' content='无常是常'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='- Redis' /><meta property='article:published_time' content='2018-07-06T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2018-07-06T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="Redis持久化">
+<meta name="twitter:description" content="Redis的持久化机制-RDB 1.什么是RDB The RDB persistence performs point-in-time snapshots of your dataset at specified intervals.(RDB持久化是以指定的时间间隔执行数据集的时间点快照。) 简单来说，RDB是每隔一段时间，会把内存中的数据写入磁盘的临时文件作为快照，恢复时把快照文件读取到内存中。如果机器宕机，那么内存中的数据就会丢失，使用RDB机制后，重启后数据会恢复。
+2.备份与恢复 内存备份 &amp;ndash;&amp;gt; 磁盘临时文件 临时文件 &amp;ndash;&amp;gt; 恢复到内存
+3.RDB优劣势 优势
+每隔一段时间全量备份 容灾简单，适合进行远程冷备份 子进程备份的时候，主进程不会有任何IO操作（不会有写入或修改），保证备份数据的完整性 相对AOF来说，当有更大的文件时候可以快速重启恢复 劣势
+发生故障时，可能会丢失最后一次备份数据 子进程所占用的内存会和父进程一模一样，会造成CPU负担 由于定时全量备份是重量级操作，所以对于实时备份，就无法处理了 4.RDB的配置 保存位置可以自定义配置: 1 dir /var/redis/6379/dump.rdb 保存机制 1 2 3 4 5 6 7 8 # save &amp;lt;seconds&amp;gt; &amp;lt;changes&amp;gt; # 900秒（15分钟）后，如果至少有 1 个Key发生改变 # 300秒（5分钟）后，如果至少有 10 个Key发生改变 # 60秒（1分钟）后，如果至少有 10000 个Key发生改变 save 900 1 save 300 10 save 60 10000 Redis的持久化机制-AOF 1.">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu87c10ff50ef4ab09ea180a96c581c02f_62603_300x0_resize_box_3.png" width="300"
+                            height="281" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">无常是常</a></h1>
+            <h2 class="site-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a 
+                        href='https://github.com/hellodeveye'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>Links</span>
+            </a>
+        </li>
+        
+    </ol>
+    <div class="menu-bottom-section">
+        <ol class="menu">
+
+            
+                <li id="dark-mode-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <span>暗色模式</span>
+                </li>
+            
+        </ol>
+    </div>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#redis的持久化机制-rdb">Redis的持久化机制-RDB</a>
+      <ol>
+        <li><a href="#1什么是rdb">1.什么是RDB</a></li>
+        <li><a href="#2备份与恢复">2.备份与恢复</a></li>
+        <li><a href="#3rdb优劣势">3.RDB优劣势</a></li>
+        <li><a href="#4rdb的配置">4.RDB的配置</a></li>
+      </ol>
+    </li>
+    <li><a href="#redis的持久化机制-aof">Redis的持久化机制-AOF</a>
+      <ol>
+        <li><a href="#1什么是aof">1.什么是AOF</a></li>
+        <li><a href="#2备份与恢复-1">2.备份与恢复</a></li>
+        <li><a href="#3aof优劣势">3.AOF优劣势</a></li>
+        <li><a href="#4aof的配置">4.AOF的配置</a></li>
+      </ol>
+    </li>
+    <li><a href="#两种持久化方式改如何选择">两种持久化方式改如何选择</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/redis/" >
+                Redis
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/redis%E6%8C%81%E4%B9%85%E5%8C%96/">Redis持久化</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jul 06, 2018</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 1 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="redis的持久化机制-rdb">Redis的持久化机制-RDB</h2>
+<h3 id="1什么是rdb">1.什么是RDB</h3>
+<p>The RDB persistence performs point-in-time snapshots of your dataset at specified intervals.(RDB持久化是以指定的时间间隔执行数据集的时间点快照。)
+简单来说，RDB是每隔一段时间，会把内存中的数据写入磁盘的临时文件作为快照，恢复时把快照文件读取到内存中。如果机器宕机，那么内存中的数据就会丢失，使用RDB机制后，重启后数据会恢复。</p>
+<h3 id="2备份与恢复">2.备份与恢复</h3>
+<p>内存备份 &ndash;&gt; <font color="#e58484">磁盘临时文件</font>
+临时文件 &ndash;&gt; <font color="#e58484">恢复到内存</font></p>
+<h3 id="3rdb优劣势">3.RDB优劣势</h3>
+<ul>
+<li>
+<p><strong>优势</strong></p>
+<ol>
+<li>每隔一段时间全量备份</li>
+<li>容灾简单，适合进行远程冷备份</li>
+<li>子进程备份的时候，主进程不会有任何IO操作（不会有写入或修改），保证备份数据的完整性</li>
+<li>相对AOF来说，当有更大的文件时候可以快速重启恢复</li>
+</ol>
+</li>
+<li>
+<p><strong>劣势</strong></p>
+<ol>
+<li>发生故障时，可能会丢失最后一次备份数据</li>
+<li>子进程所占用的内存会和父进程一模一样，会造成CPU负担</li>
+<li>由于定时全量备份是重量级操作，所以对于实时备份，就无法处理了</li>
+</ol>
+</li>
+</ul>
+<h3 id="4rdb的配置">4.RDB的配置</h3>
+<ol>
+<li>保存位置可以自定义配置:</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">dir</span> <span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="n">redis</span><span class="o">/</span><span class="mi">6379</span><span class="o">/</span><span class="n">dump</span><span class="o">.</span><span class="n">rdb</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="2">
+<li>保存机制</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#   save &lt;seconds&gt; &lt;changes&gt;
+</span></span><span class="line"><span class="cl">#   900秒（15分钟）后，如果至少有 1 个Key发生改变
+</span></span><span class="line"><span class="cl">#   300秒（5分钟）后，如果至少有 10 个Key发生改变
+</span></span><span class="line"><span class="cl">#   60秒（1分钟）后，如果至少有 10000 个Key发生改变
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">save 900 1
+</span></span><span class="line"><span class="cl">save 300 10
+</span></span><span class="line"><span class="cl">save 60 10000
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="redis的持久化机制-aof">Redis的持久化机制-AOF</h2>
+<h3 id="1什么是aof">1.什么是AOF</h3>
+<p>The AOF persistence logs every write operation received by the server, that will be played again at server startup, reconstructing the original dataset. Commands are logged using the same format as the Redis protocol itself, in an append-only fashion. Redis is able to rewrite the log in the background when it gets too big.</p>
+<p>AOF持久化会记录服务器接收到的每个写入操作，这些操作将在服务器启动时再次执行，以重新构建原始的数据。命令记录的格式与Redis协议本身的格式相同，采用追加方式。当日志文件过大时，Redis可以在后台进行<code>rewrite</code>。</p>
+<h3 id="2备份与恢复-1">2.备份与恢复</h3>
+<p>日志备份 &ndash;&gt; <font color="#e58484">命令追加方式</font>
+日志文件 &ndash;&gt; <font color="#e58484">根据命令日志文件重新构建</font></p>
+<h3 id="3aof优劣势">3.AOF优劣势</h3>
+<ul>
+<li><strong>优势</strong>
+<ol>
+<li>使用AOF数据持久化更加完整</li>
+<li>可以使用不同的fsync策略，使用默认策略fsync时，每秒的写入性能仍然很好（fsync是使用后台线程执行的，并且在没有进行fsync的情况下，主线程将尽力执行写入操作）但是会损失一秒的写入时间</li>
+<li>AOF是使用日志追加的方式，如果断电或其他原因导致日志只写了一半，可以使用<code>redis-check-aof</code>工具进行修复</li>
+<li>Redis太大时，Redis可以在后台自动重写AOF。 Redis继续追加到旧文件时，会生成一个新的文件，其中包含创建当前数据集<strong>所需的最少操作集</strong>，一旦准备好第二个文件，Redis会切换这两个文件并开始追加到新的那一个</li>
+<li>即使使用<code>FLUSHALL</code>命令清空了所有数据，也可以通过修改AOF文件进行数据恢复</li>
+</ol>
+</li>
+<li><strong>劣势</strong>
+<ol>
+<li>AOF相比RDB占用空间更大</li>
+<li>使用fsync策略后，相比RDB性能差一些</li>
+<li>当服务器宕机后，使用AOF恢复的数据可能不完整</li>
+</ol>
+</li>
+</ul>
+<h3 id="4aof的配置">4.AOF的配置</h3>
+<ol>
+<li>开启AOF</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">appendonly yes
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="2">
+<li>配置fsync策略</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># If unsure, use &#34;everysec&#34;.
+</span></span><span class="line"><span class="cl"># 如果不确定，推荐使用 &#34;everysec&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># appendfsync always
+</span></span><span class="line"><span class="cl">appendfsync everysec
+</span></span><span class="line"><span class="cl"># appendfsync no
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="3">
+<li>AOF rewrite配置</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 设置一个百分比
+</span></span><span class="line"><span class="cl">auto-aof-rewrite-percentage 100
+</span></span><span class="line"><span class="cl"># 设置AOF 的最小大小
+</span></span><span class="line"><span class="cl">auto-aof-rewrite-min-size 64mb
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="4">
+<li>Redis 启动加载配置</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 优先加载AOF 文件
+</span></span><span class="line"><span class="cl">aof-use-rdb-preamble yes
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="两种持久化方式改如何选择">两种持久化方式改如何选择</h2>
+<ul>
+<li>如果对数据可靠性要求很高，则应同时使用两种持久性方式。</li>
+<li>如果在灾难情况下仍然可以承受几分钟的数据丢失，则可以仅使用RDB。</li>
+<li>不推荐单独使用AOF，因为AOF在数据恢复时，有时候会出现Bugs。</li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/--redis/">- Redis</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Redis分布式锁</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/redis%E5%93%A8%E5%85%B5/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Redis哨兵</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/redis%E5%A4%8D%E5%88%B6/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Redis复制</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/redis%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Redis安装与配置</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2024 XCM 陕ICP备16008414号
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.23.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

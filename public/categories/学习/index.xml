@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>学习 on 无常是常</title>
+        <link>https://xiaocm.com/categories/%E5%AD%A6%E4%B9%A0/</link>
+        <description>Recent content in 学习 on 无常是常</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>XCM 陕ICP备16008414号</copyright>
+        <lastBuildDate>Wed, 24 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://xiaocm.com/categories/%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>后端学习路线</title>
+        <link>https://xiaocm.com/p/%E5%90%8E%E7%AB%AF%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/</link>
+        <pubDate>Wed, 24 Mar 2021 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/%E5%90%8E%E7%AB%AF%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/</guid>
+        <description>&lt;h3 id=&#34;github的一个学习路线仓库&#34;&gt;GitHub的一个学习路线仓库&lt;/h3&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://github.com/kamranahmedse/developer-roadmap&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://github.com/kamranahmedse/developer-roadmap&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20210324193846.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

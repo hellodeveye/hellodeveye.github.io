@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='ACID (Atomicity、Consistency、Isolation、Durability)即原子性、一致性、隔离性、持久性。
+当数据库上有多个事务同时执行的时候，就可能会出现脏读（dirty read）、不可重复读（nonrepeatable read）、幻读（phantom read）的问题。
+隔离级别 SQL标准的隔离级别包括：读未提交（read uncommitted）、读提交（read committed）、可重复度（repeatable read）和串行化（serializable）。
+读未提交：一个事务还没有提交时，它做的变更就能被别的事务看到。
+读提交：一个事务提交之后，它做的变更才会被其他事务看到。
+可重复读：一个事务执行过程中看到的数据，总是跟这个事务启动的时候看到的数据一致。当然在可重复读的隔离级别下，未提交的变更对其他事务也是不可见的。
+串行化：对同一条记录“写”会加“写锁”，“读”会加“读锁”。当出现读写冲突的时候，后访问的事务必须等待前一个事务执行完成，才能继续执行。
+事务隔离的实现 数据库隔离的实现上会创建一个视图，访问的时候以视图的逻辑结果为准。
+“可重复读”隔离级别下，这个视图是在事务启动时创建的，整个事务存在期间都会用这个视图。
+“读提交”隔离级别下，这个视图是在每个SQL语句开始执行的时候创建的。
+**“读未提交”**隔离级别下直接返回记录上的最新值，没有视图的概念。
+“串行化”的隔离级别下直接使用加锁的方式避免并行访问。
+在 MySQL 中，实际上每条记录在更新的时候都会同时记录一条回滚操作。记录上的最新值，通过回滚操作，都可以得到前一个状态的值。
+假设一个值从 1 被按顺序改成了 2、3、4，在回滚日志里面就会有类似下面的记录。 当前值是 4，但是在查询这条记录的时候，不同时刻启动的事务会有不同的 read-view。如图中看到的，在视图 A、B、C 里面，这一个记录的值分别是 1、2、4，同一条记录在系统中可以存在多个版本，就是数据库的多版本并发控制（MVCC）。对于 read-view A，要得到 1，就必须将当前值依次执行图中所有的回滚操作得到。
+同时你会发现，即使现在有另外一个事务正在将 4 改成 5，这个事务跟 read-view A、B、C 对应的事务是不会冲突的。
+回滚日志系统会判断，当系统中没有比这个回滚日志更早的read-view的时候，日志会被删除。
+建议不要使用长事务 长事务意味着系统里面会存在很老的事务视图，由于这些事务随时可能访问数据库里面的任何数据，所以这个事务提交之前，数据库里面它可能用到的回滚记录都必须保留，这就会导致大量占用存储空间。
+长事务还会占用锁资源，也可能拖垮整个库。
+通过以下语句可以查询持续时间超过60s的事务。
+1 select * from information_schema.innodb_trx where TIME_TO_SEC(timediff(now(),trx_started))&amp;gt;60 事务的启动方式 显式启动，begin或start transaction。配套的提交语句是commit，回滚语句是commit。
+set autocommit=0，这个命令会将这个线程自动提交关闭。意味着如果你只执行select语句，这个事务就启动了，而且不会自动提交。这个事务持续存在直到你主动执行commit或rollback语句，或者断开连接。
+建议使用set autocommit=1，通过显式语句的方式启动事务。
+在 autocommit 为 1 的情况下，用 begin 显式启动的事务，如果执行 commit 则提交事务。如果执行 commit work and chain，则是提交事务并自动启动下一个事务，这样也省去了再次执行 begin 语句的开销。同时带来的好处是从程序开发的角度明确地知道每个语句是否处于事务中。'>
+<title>事务隔离：为什么你改了我还看不见？</title>
+
+<link rel='canonical' href='https://xiaocm.com/p/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%A0%E6%94%B9%E4%BA%86%E6%88%91%E8%BF%98%E7%9C%8B%E4%B8%8D%E8%A7%81/'>
+
+<link rel="stylesheet" href="/scss/style.min.abbd69b2908fdfcd5179898beaafd374514a86538d81639ddd2c58c06ae54e40.css"><meta property='og:title' content='事务隔离：为什么你改了我还看不见？'>
+<meta property='og:description' content='ACID (Atomicity、Consistency、Isolation、Durability)即原子性、一致性、隔离性、持久性。
+当数据库上有多个事务同时执行的时候，就可能会出现脏读（dirty read）、不可重复读（nonrepeatable read）、幻读（phantom read）的问题。
+隔离级别 SQL标准的隔离级别包括：读未提交（read uncommitted）、读提交（read committed）、可重复度（repeatable read）和串行化（serializable）。
+读未提交：一个事务还没有提交时，它做的变更就能被别的事务看到。
+读提交：一个事务提交之后，它做的变更才会被其他事务看到。
+可重复读：一个事务执行过程中看到的数据，总是跟这个事务启动的时候看到的数据一致。当然在可重复读的隔离级别下，未提交的变更对其他事务也是不可见的。
+串行化：对同一条记录“写”会加“写锁”，“读”会加“读锁”。当出现读写冲突的时候，后访问的事务必须等待前一个事务执行完成，才能继续执行。
+事务隔离的实现 数据库隔离的实现上会创建一个视图，访问的时候以视图的逻辑结果为准。
+“可重复读”隔离级别下，这个视图是在事务启动时创建的，整个事务存在期间都会用这个视图。
+“读提交”隔离级别下，这个视图是在每个SQL语句开始执行的时候创建的。
+**“读未提交”**隔离级别下直接返回记录上的最新值，没有视图的概念。
+“串行化”的隔离级别下直接使用加锁的方式避免并行访问。
+在 MySQL 中，实际上每条记录在更新的时候都会同时记录一条回滚操作。记录上的最新值，通过回滚操作，都可以得到前一个状态的值。
+假设一个值从 1 被按顺序改成了 2、3、4，在回滚日志里面就会有类似下面的记录。 当前值是 4，但是在查询这条记录的时候，不同时刻启动的事务会有不同的 read-view。如图中看到的，在视图 A、B、C 里面，这一个记录的值分别是 1、2、4，同一条记录在系统中可以存在多个版本，就是数据库的多版本并发控制（MVCC）。对于 read-view A，要得到 1，就必须将当前值依次执行图中所有的回滚操作得到。
+同时你会发现，即使现在有另外一个事务正在将 4 改成 5，这个事务跟 read-view A、B、C 对应的事务是不会冲突的。
+回滚日志系统会判断，当系统中没有比这个回滚日志更早的read-view的时候，日志会被删除。
+建议不要使用长事务 长事务意味着系统里面会存在很老的事务视图，由于这些事务随时可能访问数据库里面的任何数据，所以这个事务提交之前，数据库里面它可能用到的回滚记录都必须保留，这就会导致大量占用存储空间。
+长事务还会占用锁资源，也可能拖垮整个库。
+通过以下语句可以查询持续时间超过60s的事务。
+1 select * from information_schema.innodb_trx where TIME_TO_SEC(timediff(now(),trx_started))&amp;gt;60 事务的启动方式 显式启动，begin或start transaction。配套的提交语句是commit，回滚语句是commit。
+set autocommit=0，这个命令会将这个线程自动提交关闭。意味着如果你只执行select语句，这个事务就启动了，而且不会自动提交。这个事务持续存在直到你主动执行commit或rollback语句，或者断开连接。
+建议使用set autocommit=1，通过显式语句的方式启动事务。
+在 autocommit 为 1 的情况下，用 begin 显式启动的事务，如果执行 commit 则提交事务。如果执行 commit work and chain，则是提交事务并自动启动下一个事务，这样也省去了再次执行 begin 语句的开销。同时带来的好处是从程序开发的角度明确地知道每个语句是否处于事务中。'>
+<meta property='og:url' content='https://xiaocm.com/p/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%A0%E6%94%B9%E4%BA%86%E6%88%91%E8%BF%98%E7%9C%8B%E4%B8%8D%E8%A7%81/'>
+<meta property='og:site_name' content='无常是常'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='MySQL' /><meta property='article:published_time' content='2022-06-07T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2022-06-07T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="事务隔离：为什么你改了我还看不见？">
+<meta name="twitter:description" content="ACID (Atomicity、Consistency、Isolation、Durability)即原子性、一致性、隔离性、持久性。
+当数据库上有多个事务同时执行的时候，就可能会出现脏读（dirty read）、不可重复读（nonrepeatable read）、幻读（phantom read）的问题。
+隔离级别 SQL标准的隔离级别包括：读未提交（read uncommitted）、读提交（read committed）、可重复度（repeatable read）和串行化（serializable）。
+读未提交：一个事务还没有提交时，它做的变更就能被别的事务看到。
+读提交：一个事务提交之后，它做的变更才会被其他事务看到。
+可重复读：一个事务执行过程中看到的数据，总是跟这个事务启动的时候看到的数据一致。当然在可重复读的隔离级别下，未提交的变更对其他事务也是不可见的。
+串行化：对同一条记录“写”会加“写锁”，“读”会加“读锁”。当出现读写冲突的时候，后访问的事务必须等待前一个事务执行完成，才能继续执行。
+事务隔离的实现 数据库隔离的实现上会创建一个视图，访问的时候以视图的逻辑结果为准。
+“可重复读”隔离级别下，这个视图是在事务启动时创建的，整个事务存在期间都会用这个视图。
+“读提交”隔离级别下，这个视图是在每个SQL语句开始执行的时候创建的。
+**“读未提交”**隔离级别下直接返回记录上的最新值，没有视图的概念。
+“串行化”的隔离级别下直接使用加锁的方式避免并行访问。
+在 MySQL 中，实际上每条记录在更新的时候都会同时记录一条回滚操作。记录上的最新值，通过回滚操作，都可以得到前一个状态的值。
+假设一个值从 1 被按顺序改成了 2、3、4，在回滚日志里面就会有类似下面的记录。 当前值是 4，但是在查询这条记录的时候，不同时刻启动的事务会有不同的 read-view。如图中看到的，在视图 A、B、C 里面，这一个记录的值分别是 1、2、4，同一条记录在系统中可以存在多个版本，就是数据库的多版本并发控制（MVCC）。对于 read-view A，要得到 1，就必须将当前值依次执行图中所有的回滚操作得到。
+同时你会发现，即使现在有另外一个事务正在将 4 改成 5，这个事务跟 read-view A、B、C 对应的事务是不会冲突的。
+回滚日志系统会判断，当系统中没有比这个回滚日志更早的read-view的时候，日志会被删除。
+建议不要使用长事务 长事务意味着系统里面会存在很老的事务视图，由于这些事务随时可能访问数据库里面的任何数据，所以这个事务提交之前，数据库里面它可能用到的回滚记录都必须保留，这就会导致大量占用存储空间。
+长事务还会占用锁资源，也可能拖垮整个库。
+通过以下语句可以查询持续时间超过60s的事务。
+1 select * from information_schema.innodb_trx where TIME_TO_SEC(timediff(now(),trx_started))&amp;gt;60 事务的启动方式 显式启动，begin或start transaction。配套的提交语句是commit，回滚语句是commit。
+set autocommit=0，这个命令会将这个线程自动提交关闭。意味着如果你只执行select语句，这个事务就启动了，而且不会自动提交。这个事务持续存在直到你主动执行commit或rollback语句，或者断开连接。
+建议使用set autocommit=1，通过显式语句的方式启动事务。
+在 autocommit 为 1 的情况下，用 begin 显式启动的事务，如果执行 commit 则提交事务。如果执行 commit work and chain，则是提交事务并自动启动下一个事务，这样也省去了再次执行 begin 语句的开销。同时带来的好处是从程序开发的角度明确地知道每个语句是否处于事务中。">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu87c10ff50ef4ab09ea180a96c581c02f_62603_300x0_resize_box_3.png" width="300"
+                            height="281" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">无常是常</a></h1>
+            <h2 class="site-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a 
+                        href='https://github.com/hellodeveye'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>Links</span>
+            </a>
+        </li>
+        
+    </ol>
+    <div class="menu-bottom-section">
+        <ol class="menu">
+
+            
+                <li id="dark-mode-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <span>暗色模式</span>
+                </li>
+            
+        </ol>
+    </div>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#隔离级别">隔离级别</a></li>
+        <li><a href="#事务隔离的实现">事务隔离的实现</a></li>
+        <li><a href="#建议不要使用长事务">建议不要使用长事务</a></li>
+        <li><a href="#事务的启动方式">事务的启动方式</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/mysql%E5%AE%9E%E6%88%9845%E8%AE%B2/" >
+                MySQL实战45讲
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%A0%E6%94%B9%E4%BA%86%E6%88%91%E8%BF%98%E7%9C%8B%E4%B8%8D%E8%A7%81/">事务隔离：为什么你改了我还看不见？</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jun 07, 2022</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 1 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p><strong>ACID (Atomicity、Consistency、Isolation、Durability)即原子性、一致性、隔离性、持久性。</strong></p>
+<p>当数据库上有多个事务同时执行的时候，就可能会出现脏读（dirty read）、不可重复读（nonrepeatable read）、幻读（phantom read）的问题。</p>
+<h3 id="隔离级别">隔离级别</h3>
+<p>SQL标准的隔离级别包括：读未提交（read uncommitted）、读提交（read committed）、可重复度（repeatable read）和串行化（serializable）。</p>
+<ul>
+<li>
+<p>读未提交：一个事务还没有提交时，它做的变更就能被别的事务看到。</p>
+</li>
+<li>
+<p>读提交：一个事务提交之后，它做的变更才会被其他事务看到。</p>
+</li>
+<li>
+<p>可重复读：一个事务执行过程中看到的数据，总是跟这个事务启动的时候看到的数据一致。当然在可重复读的隔离级别下，未提交的变更对其他事务也是不可见的。</p>
+</li>
+<li>
+<p>串行化：对同一条记录“写”会加“写锁”，“读”会加“读锁”。当出现读写冲突的时候，后访问的事务必须等待前一个事务执行完成，才能继续执行。</p>
+</li>
+</ul>
+<h3 id="事务隔离的实现">事务隔离的实现</h3>
+<p><strong>数据库隔离的实现上会创建一个视图，访问的时候以视图的逻辑结果为准。</strong></p>
+<p><strong>“可重复读”<strong>隔离级别下，这个视图是在</strong>事务启动时创建的</strong>，整个事务存在期间都会用这个视图。</p>
+<p><strong>“读提交”<strong>隔离级别下，这个视图是在每个SQL语句</strong>开始执行的时候创建的</strong>。</p>
+<p>**“读未提交”**隔离级别下直接返回记录上的最新值，<strong>没有视图的概念</strong>。</p>
+<p><strong>“串行化”<strong>的隔离级别下直接使用</strong>加锁的方式避免并行访问</strong>。</p>
+<p>在 MySQL 中，实际上每条记录在更新的时候都会同时记录一条回滚操作。记录上的最新值，通过回滚操作，都可以得到前一个状态的值。</p>
+<p>假设一个值从 1 被按顺序改成了 2、3、4，在回滚日志里面就会有类似下面的记录。
+<img src="http://qiniu.xiaocm.com/blog/img/20220607152436.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>当前值是 4，但是在查询这条记录的时候，不同时刻启动的事务会有不同的 read-view。如图中看到的，在视图 A、B、C 里面，这一个记录的值分别是 1、2、4，同一条记录在系统中可以存在多个版本，就是数据库的多版本并发控制（MVCC）。对于 read-view A，要得到 1，就必须将当前值依次执行图中所有的回滚操作得到。</p>
+<p>同时你会发现，即使现在有另外一个事务正在将 4 改成 5，这个事务跟 read-view A、B、C 对应的事务是不会冲突的。</p>
+<p><strong>回滚日志系统会判断，当系统中没有比这个回滚日志更早的read-view的时候，日志会被删除。</strong></p>
+<h3 id="建议不要使用长事务">建议不要使用长事务</h3>
+<p>长事务意味着系统里面会存在很老的事务视图，由于这些事务随时可能访问数据库里面的任何数据，所以这个事务提交之前，数据库里面它可能用到的回滚记录都必须保留，这就会导致大量占用存储空间。</p>
+<p>长事务还会占用锁资源，也可能拖垮整个库。</p>
+<p>通过以下语句可以查询持续时间超过60s的事务。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">select * from information_schema.innodb_trx where TIME_TO_SEC(timediff(now(),trx_started))&gt;60
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="事务的启动方式">事务的启动方式</h3>
+<ol>
+<li>
+<p>显式启动，<code>begin或start transaction</code>。配套的提交语句是<code>commit</code>，回滚语句是<code>commit</code>。</p>
+</li>
+<li>
+<p><code>set autocommit=0</code>，这个命令会将这个线程自动提交关闭。意味着如果你只执行select语句，这个事务就启动了，而且不会自动提交。这个事务持续存在直到你主动执行commit或rollback语句，或者断开连接。</p>
+</li>
+</ol>
+<p><strong>建议使用<code>set autocommit=1</code>，通过显式语句的方式启动事务。</strong></p>
+<p>在 autocommit 为 1 的情况下，用 begin 显式启动的事务，如果执行 commit 则提交事务。如果执行 commit work and chain，则是提交事务并自动启动下一个事务，这样也省去了再次执行 begin 语句的开销。同时带来的好处是从程序开发的角度明确地知道每个语句是否处于事务中。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/mysql/">MySQL</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/%E4%BA%8B%E5%8A%A1%E5%88%B0%E5%BA%95%E6%98%AF%E9%9A%94%E7%A6%BB%E7%9A%84%E8%BF%98%E6%98%AF%E4%B8%8D%E9%9A%94%E7%A6%BB%E7%9A%84/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">事务到底是隔离的还是不隔离的？</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/%E8%A1%8C%E9%94%81%E5%8A%9F%E8%BF%87%E6%80%8E%E4%B9%88%E5%87%8F%E5%B0%91%E8%A1%8C%E9%94%81%E5%AF%B9%E6%80%A7%E8%83%BD%E7%9A%84%E5%BD%B1%E5%93%8D/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">行锁功过：怎么减少行锁对性能的影响？</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%B4%A2%E5%BC%95%E4%B8%8B/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">深入浅出索引（下）</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%B4%A2%E5%BC%95%E4%B8%8A/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">深入浅出索引（上）</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E4%B8%80%E6%9D%A1sql%E6%9B%B4%E6%96%B0%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">日志系统：一条SQL更新语句是如何执行的?</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2024 XCM 陕ICP备16008414号
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.23.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='数据复制方案，人们通常希望达到以下几个目的：
+使数据在地理位置上更接近用户，从而降低访问延迟。 当部分组件出现故障，系统依然可以继续工作，从而提升可用性。 扩展至多台机器以同时提供数据访问服务，从而提高吞吐量。 三种比较流行的复制数据变化的方法：
+主从复制 多主节点复制 无主节点复制 复制技术存在很多折中的方案，例如：同步复制和异步复制，一般情况数据库会采用配置的形式来处理这些策略。
+主节点与从节点 主从复制的工作原理如下：
+指定一个副本为主节点，当客户写数据库时，只能通过主节点进行写入。 其他副本作为从副本，主副本将数据写入本地存储后，将数据更改作为复制日志或更改流发送到从副本。每个副本获取到更改数据后将其应用到本地，并且严格保持与主副本相同的写入顺序。 客户端读取数据时从主副本或者从副本进行读取，从客户端的角度看，从副本都是只读的。 同步复制与异步复制 同步复制是需要等从节点确认完成了写入之后，才会向用户报告完成。并将最新的写入对其他客户端可见。异步复制是主节点发送完消息之后立即返回，不需要等待从节点完成确认。
+同步复制的优点 一旦向用户确认，从节点可以明确保证完成了与主节点的更新同步，数据已处于最新版本。万一主节点发生故障，总是可以在从节点继续访问最新数据。
+同步复制的缺点 如果同步的从节点无法完成确认（例如由于从节点发送崩溃、网络故障或其他原因），写入就不能视为成功。主节点会阻塞其后面所有的写操作，直到同步副本确认完成。
+把所有从节点都设置为同步复制有些不切实际，实践中，可以将某一个节点设置为同步复制，其他节点设置为异步复制。万一同步复制的节点变得不可用或者性能下降，则将另外一个节点从异步模式提升为同步模式，这样可以保证至少有两个节点拥有最新的数据副本。这种配置有时称为半同步。
+异步复制的优点 不管从节点的数据多么滞后，主节点总是可以继续响应客户端的写请求，系统的吞吐性能更好。
+异步复制的缺点 如果主节点发生故障并且不可恢复，则所有尚未复制到从节点的数据将会丢失，这就意味着向客户端确认了写请求，但是却无法保证数据的持久化。
+配置新的从节点 如何考虑添加新的从节点，怎么保证主从数据一致性呢？
+在某个时间节点对主节点的数据副本生成一个一致性快照。 将快照拷贝到新的从节点。 从节点连接到主节点并请求快照点之后所发生的数据更改日志。因为在第一步创建快照时，快照与系统复制日志的某个确定的位置相关联。 获得日志之后，从节点应用这些快照点之后的所有数据变更，这个过程称之为追赶。接下来，他可以继续处理主节点上的新的数据变化。并重复1~4步骤。 从节点失效：追赶式恢复 从节点如果发生了崩溃或者网络闪断，则根据最后一笔事务的处理日志，从主节点拉取之后的所有数据的变更，收到所有数据的变更后，将其应用到本地用于追赶主节点，之后就和正常情况一样持续接收来自主节点数据流的变化。
+主节点失效：节点切换 确定主节点失效。大部分系统都采用了基于超时的机制判断节点是否失效，节点间频繁地互相发送心跳存活信息，如果某一个节点在一段时间内（例如30s）没有响应，则认为该节点发生了实效。 选举新的主节点。可以通过选举的方式来选举主节点，候选节点最好与主节点的数据差异最小，这样可以最小化数据丢失的风险。 重新配置系统使新的主节点生效。如果原主节点重新上线后，可能仍然认为自己是主节点，这是系统要确保原主节点降级为从节点，并认可新的主节点。 以上切换过程可能会发生很多变数 如果使用了异步复制，且失效之前，新的主节点并未收到原主节点的所有数据；在选举之后，原主节点很快又重新上线加入到集群，这是可能原主节点并未意识到角色的变化，还会尝试同步其他从节点，但其中的一个现在已经接管成为现任主节点。常见的解决方案是：原主节点上未完成复制的写请求就此丢弃，但这可能会违背数据更新持久化的承诺。
+如果数据库依赖于外部系统（例如Redis）一起协同使用，丢弃数据的方案就特别危险。例如，在GithHub的一次事故中，某个数据并完全的MySQL从节点提升为主节点，数据库使用了基于自增计数器将主键分配给新创建的行，但是因为新的主节点计数器落后于原主节点（即二者并非完全同步），它重新使用了已被原主节点分配出去的某些主键，而恰好这些主键已被外部Redis所引用，结果出现MySQL和Redis之间的不一致，最后导致了某些私有数据被错误的泄露给了其它用户。
+某些情况下，可能会发生两个节点同时认为自己是主节点，这种情况下被称为脑裂，它非常危险：两个主节点都可能接收写请求，并且没有很好解决冲突的办法，最后数据可能会丢失或者破坏，一种安全应急方案会强制关闭其中的一个节点。
+如何设置合适的超时来检查主节点失效？主节点失效后，超时时间设置的越长，也就意味着数据恢复的时间越长。如果设置的太短，可能会导致很多不必要的节点切换。例如：突然的负载峰值会导致节点的响应时间变长甚至超时，或者由于网络故障导致延迟增加。如果系统本身已经处于高负载或网络严重拥塞的情况下，不必要的切换只会导致系统的情况变得更糟。
+复制日志的实现 基于语句的复制 一些不适用的场景：
+任何调用非确定性的语句，如NOW()获取当前时间，或RAND()获取一个随机数等，可能会在不同副本产生不同的值。
+如果语句中使用自增列，或者依赖数据库的现有数据（例如：UPDATE &amp;hellip; WHERE &amp;hellip; &amp;lt;某些条件&amp;gt;），则所有副本必须按照相同的顺序执行，否则可能会带来不同的结果。
+有副作用的语句（例如：触发器、存储过程、用户自定义的函数等），可能会在每个副本产生不同的副作用。
+可能解决的方案是将不确定的函数替换成确定的结果，不过这种方式仍有许多地方需要考虑。
+基于预写日志（WAL）传输 对于日志结构的存储引擎（例如：SSTables和LSM-trees），日志是主要的存储方式。日志段在后台压缩并支持垃圾回收。
+对于采用覆盖写磁盘的Btree结构，每次修改会预先写入日志，如果系统崩溃，通过索引更新的方式迅速恢复到此前一直状态。
+缺点：
+WAL包含了哪些磁盘块的哪些字节发生了改变，诸如此类细节，这使得复制方案和存储引擎紧密耦合。如果数据库的存储格式从一个版本改为另一个版本，那么系统通常无法支持主从节点上运行不同版本的软件。
+基于行的逻辑日志复制 关系数据库的逻辑日志通常是指一些列记录数据行级别的写请求：
+对行的插入，日志包含所有相关列的新值。
+对于行的删除，日志有足够的的信息来唯一标识已删除的行。
+对于行的更新，日志包含足够的信息来唯一标识更新的行，以及所有列的新值。
+MySQL的二进制日志binlog（当配置基于行的复制时）使用该方式。
+基于触发器的复制 基于触发器复制支持更高的灵活性。例如将一种数据库的数据复制到另外一种数据库。触发器支持注册自己的应用层代码，使数据库发生数据更改时自动执行自定义代码。 基于触发器的复制通常比其他方式复制开销更高，也比数据库内置复制更容易出错或者暴露一些限制。
+复制滞后的问题 由于并非所有写入都反映到副本上，如果同时对主节点和从节点发起相同的查询，可能会得到不同的接口，这种不一致的状态只是暂时的，可能经过一段时间后，从节点最终会赶上主节点并与主节点保持一致。这种效应也被称为最终一致性。
+读自己的写 读自己的写也被称为读写一致性。实现读写一致性有多重可行方案：'>
+<title>数据复制</title>
+
+<link rel='canonical' href='https://xiaocm.com/p/%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6/'>
+
+<link rel="stylesheet" href="/scss/style.min.abbd69b2908fdfcd5179898beaafd374514a86538d81639ddd2c58c06ae54e40.css"><meta property='og:title' content='数据复制'>
+<meta property='og:description' content='数据复制方案，人们通常希望达到以下几个目的：
+使数据在地理位置上更接近用户，从而降低访问延迟。 当部分组件出现故障，系统依然可以继续工作，从而提升可用性。 扩展至多台机器以同时提供数据访问服务，从而提高吞吐量。 三种比较流行的复制数据变化的方法：
+主从复制 多主节点复制 无主节点复制 复制技术存在很多折中的方案，例如：同步复制和异步复制，一般情况数据库会采用配置的形式来处理这些策略。
+主节点与从节点 主从复制的工作原理如下：
+指定一个副本为主节点，当客户写数据库时，只能通过主节点进行写入。 其他副本作为从副本，主副本将数据写入本地存储后，将数据更改作为复制日志或更改流发送到从副本。每个副本获取到更改数据后将其应用到本地，并且严格保持与主副本相同的写入顺序。 客户端读取数据时从主副本或者从副本进行读取，从客户端的角度看，从副本都是只读的。 同步复制与异步复制 同步复制是需要等从节点确认完成了写入之后，才会向用户报告完成。并将最新的写入对其他客户端可见。异步复制是主节点发送完消息之后立即返回，不需要等待从节点完成确认。
+同步复制的优点 一旦向用户确认，从节点可以明确保证完成了与主节点的更新同步，数据已处于最新版本。万一主节点发生故障，总是可以在从节点继续访问最新数据。
+同步复制的缺点 如果同步的从节点无法完成确认（例如由于从节点发送崩溃、网络故障或其他原因），写入就不能视为成功。主节点会阻塞其后面所有的写操作，直到同步副本确认完成。
+把所有从节点都设置为同步复制有些不切实际，实践中，可以将某一个节点设置为同步复制，其他节点设置为异步复制。万一同步复制的节点变得不可用或者性能下降，则将另外一个节点从异步模式提升为同步模式，这样可以保证至少有两个节点拥有最新的数据副本。这种配置有时称为半同步。
+异步复制的优点 不管从节点的数据多么滞后，主节点总是可以继续响应客户端的写请求，系统的吞吐性能更好。
+异步复制的缺点 如果主节点发生故障并且不可恢复，则所有尚未复制到从节点的数据将会丢失，这就意味着向客户端确认了写请求，但是却无法保证数据的持久化。
+配置新的从节点 如何考虑添加新的从节点，怎么保证主从数据一致性呢？
+在某个时间节点对主节点的数据副本生成一个一致性快照。 将快照拷贝到新的从节点。 从节点连接到主节点并请求快照点之后所发生的数据更改日志。因为在第一步创建快照时，快照与系统复制日志的某个确定的位置相关联。 获得日志之后，从节点应用这些快照点之后的所有数据变更，这个过程称之为追赶。接下来，他可以继续处理主节点上的新的数据变化。并重复1~4步骤。 从节点失效：追赶式恢复 从节点如果发生了崩溃或者网络闪断，则根据最后一笔事务的处理日志，从主节点拉取之后的所有数据的变更，收到所有数据的变更后，将其应用到本地用于追赶主节点，之后就和正常情况一样持续接收来自主节点数据流的变化。
+主节点失效：节点切换 确定主节点失效。大部分系统都采用了基于超时的机制判断节点是否失效，节点间频繁地互相发送心跳存活信息，如果某一个节点在一段时间内（例如30s）没有响应，则认为该节点发生了实效。 选举新的主节点。可以通过选举的方式来选举主节点，候选节点最好与主节点的数据差异最小，这样可以最小化数据丢失的风险。 重新配置系统使新的主节点生效。如果原主节点重新上线后，可能仍然认为自己是主节点，这是系统要确保原主节点降级为从节点，并认可新的主节点。 以上切换过程可能会发生很多变数 如果使用了异步复制，且失效之前，新的主节点并未收到原主节点的所有数据；在选举之后，原主节点很快又重新上线加入到集群，这是可能原主节点并未意识到角色的变化，还会尝试同步其他从节点，但其中的一个现在已经接管成为现任主节点。常见的解决方案是：原主节点上未完成复制的写请求就此丢弃，但这可能会违背数据更新持久化的承诺。
+如果数据库依赖于外部系统（例如Redis）一起协同使用，丢弃数据的方案就特别危险。例如，在GithHub的一次事故中，某个数据并完全的MySQL从节点提升为主节点，数据库使用了基于自增计数器将主键分配给新创建的行，但是因为新的主节点计数器落后于原主节点（即二者并非完全同步），它重新使用了已被原主节点分配出去的某些主键，而恰好这些主键已被外部Redis所引用，结果出现MySQL和Redis之间的不一致，最后导致了某些私有数据被错误的泄露给了其它用户。
+某些情况下，可能会发生两个节点同时认为自己是主节点，这种情况下被称为脑裂，它非常危险：两个主节点都可能接收写请求，并且没有很好解决冲突的办法，最后数据可能会丢失或者破坏，一种安全应急方案会强制关闭其中的一个节点。
+如何设置合适的超时来检查主节点失效？主节点失效后，超时时间设置的越长，也就意味着数据恢复的时间越长。如果设置的太短，可能会导致很多不必要的节点切换。例如：突然的负载峰值会导致节点的响应时间变长甚至超时，或者由于网络故障导致延迟增加。如果系统本身已经处于高负载或网络严重拥塞的情况下，不必要的切换只会导致系统的情况变得更糟。
+复制日志的实现 基于语句的复制 一些不适用的场景：
+任何调用非确定性的语句，如NOW()获取当前时间，或RAND()获取一个随机数等，可能会在不同副本产生不同的值。
+如果语句中使用自增列，或者依赖数据库的现有数据（例如：UPDATE &amp;hellip; WHERE &amp;hellip; &amp;lt;某些条件&amp;gt;），则所有副本必须按照相同的顺序执行，否则可能会带来不同的结果。
+有副作用的语句（例如：触发器、存储过程、用户自定义的函数等），可能会在每个副本产生不同的副作用。
+可能解决的方案是将不确定的函数替换成确定的结果，不过这种方式仍有许多地方需要考虑。
+基于预写日志（WAL）传输 对于日志结构的存储引擎（例如：SSTables和LSM-trees），日志是主要的存储方式。日志段在后台压缩并支持垃圾回收。
+对于采用覆盖写磁盘的Btree结构，每次修改会预先写入日志，如果系统崩溃，通过索引更新的方式迅速恢复到此前一直状态。
+缺点：
+WAL包含了哪些磁盘块的哪些字节发生了改变，诸如此类细节，这使得复制方案和存储引擎紧密耦合。如果数据库的存储格式从一个版本改为另一个版本，那么系统通常无法支持主从节点上运行不同版本的软件。
+基于行的逻辑日志复制 关系数据库的逻辑日志通常是指一些列记录数据行级别的写请求：
+对行的插入，日志包含所有相关列的新值。
+对于行的删除，日志有足够的的信息来唯一标识已删除的行。
+对于行的更新，日志包含足够的信息来唯一标识更新的行，以及所有列的新值。
+MySQL的二进制日志binlog（当配置基于行的复制时）使用该方式。
+基于触发器的复制 基于触发器复制支持更高的灵活性。例如将一种数据库的数据复制到另外一种数据库。触发器支持注册自己的应用层代码，使数据库发生数据更改时自动执行自定义代码。 基于触发器的复制通常比其他方式复制开销更高，也比数据库内置复制更容易出错或者暴露一些限制。
+复制滞后的问题 由于并非所有写入都反映到副本上，如果同时对主节点和从节点发起相同的查询，可能会得到不同的接口，这种不一致的状态只是暂时的，可能经过一段时间后，从节点最终会赶上主节点并与主节点保持一致。这种效应也被称为最终一致性。
+读自己的写 读自己的写也被称为读写一致性。实现读写一致性有多重可行方案：'>
+<meta property='og:url' content='https://xiaocm.com/p/%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6/'>
+<meta property='og:site_name' content='无常是常'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='分布式' /><meta property='article:published_time' content='2022-05-31T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2022-05-31T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="数据复制">
+<meta name="twitter:description" content="数据复制方案，人们通常希望达到以下几个目的：
+使数据在地理位置上更接近用户，从而降低访问延迟。 当部分组件出现故障，系统依然可以继续工作，从而提升可用性。 扩展至多台机器以同时提供数据访问服务，从而提高吞吐量。 三种比较流行的复制数据变化的方法：
+主从复制 多主节点复制 无主节点复制 复制技术存在很多折中的方案，例如：同步复制和异步复制，一般情况数据库会采用配置的形式来处理这些策略。
+主节点与从节点 主从复制的工作原理如下：
+指定一个副本为主节点，当客户写数据库时，只能通过主节点进行写入。 其他副本作为从副本，主副本将数据写入本地存储后，将数据更改作为复制日志或更改流发送到从副本。每个副本获取到更改数据后将其应用到本地，并且严格保持与主副本相同的写入顺序。 客户端读取数据时从主副本或者从副本进行读取，从客户端的角度看，从副本都是只读的。 同步复制与异步复制 同步复制是需要等从节点确认完成了写入之后，才会向用户报告完成。并将最新的写入对其他客户端可见。异步复制是主节点发送完消息之后立即返回，不需要等待从节点完成确认。
+同步复制的优点 一旦向用户确认，从节点可以明确保证完成了与主节点的更新同步，数据已处于最新版本。万一主节点发生故障，总是可以在从节点继续访问最新数据。
+同步复制的缺点 如果同步的从节点无法完成确认（例如由于从节点发送崩溃、网络故障或其他原因），写入就不能视为成功。主节点会阻塞其后面所有的写操作，直到同步副本确认完成。
+把所有从节点都设置为同步复制有些不切实际，实践中，可以将某一个节点设置为同步复制，其他节点设置为异步复制。万一同步复制的节点变得不可用或者性能下降，则将另外一个节点从异步模式提升为同步模式，这样可以保证至少有两个节点拥有最新的数据副本。这种配置有时称为半同步。
+异步复制的优点 不管从节点的数据多么滞后，主节点总是可以继续响应客户端的写请求，系统的吞吐性能更好。
+异步复制的缺点 如果主节点发生故障并且不可恢复，则所有尚未复制到从节点的数据将会丢失，这就意味着向客户端确认了写请求，但是却无法保证数据的持久化。
+配置新的从节点 如何考虑添加新的从节点，怎么保证主从数据一致性呢？
+在某个时间节点对主节点的数据副本生成一个一致性快照。 将快照拷贝到新的从节点。 从节点连接到主节点并请求快照点之后所发生的数据更改日志。因为在第一步创建快照时，快照与系统复制日志的某个确定的位置相关联。 获得日志之后，从节点应用这些快照点之后的所有数据变更，这个过程称之为追赶。接下来，他可以继续处理主节点上的新的数据变化。并重复1~4步骤。 从节点失效：追赶式恢复 从节点如果发生了崩溃或者网络闪断，则根据最后一笔事务的处理日志，从主节点拉取之后的所有数据的变更，收到所有数据的变更后，将其应用到本地用于追赶主节点，之后就和正常情况一样持续接收来自主节点数据流的变化。
+主节点失效：节点切换 确定主节点失效。大部分系统都采用了基于超时的机制判断节点是否失效，节点间频繁地互相发送心跳存活信息，如果某一个节点在一段时间内（例如30s）没有响应，则认为该节点发生了实效。 选举新的主节点。可以通过选举的方式来选举主节点，候选节点最好与主节点的数据差异最小，这样可以最小化数据丢失的风险。 重新配置系统使新的主节点生效。如果原主节点重新上线后，可能仍然认为自己是主节点，这是系统要确保原主节点降级为从节点，并认可新的主节点。 以上切换过程可能会发生很多变数 如果使用了异步复制，且失效之前，新的主节点并未收到原主节点的所有数据；在选举之后，原主节点很快又重新上线加入到集群，这是可能原主节点并未意识到角色的变化，还会尝试同步其他从节点，但其中的一个现在已经接管成为现任主节点。常见的解决方案是：原主节点上未完成复制的写请求就此丢弃，但这可能会违背数据更新持久化的承诺。
+如果数据库依赖于外部系统（例如Redis）一起协同使用，丢弃数据的方案就特别危险。例如，在GithHub的一次事故中，某个数据并完全的MySQL从节点提升为主节点，数据库使用了基于自增计数器将主键分配给新创建的行，但是因为新的主节点计数器落后于原主节点（即二者并非完全同步），它重新使用了已被原主节点分配出去的某些主键，而恰好这些主键已被外部Redis所引用，结果出现MySQL和Redis之间的不一致，最后导致了某些私有数据被错误的泄露给了其它用户。
+某些情况下，可能会发生两个节点同时认为自己是主节点，这种情况下被称为脑裂，它非常危险：两个主节点都可能接收写请求，并且没有很好解决冲突的办法，最后数据可能会丢失或者破坏，一种安全应急方案会强制关闭其中的一个节点。
+如何设置合适的超时来检查主节点失效？主节点失效后，超时时间设置的越长，也就意味着数据恢复的时间越长。如果设置的太短，可能会导致很多不必要的节点切换。例如：突然的负载峰值会导致节点的响应时间变长甚至超时，或者由于网络故障导致延迟增加。如果系统本身已经处于高负载或网络严重拥塞的情况下，不必要的切换只会导致系统的情况变得更糟。
+复制日志的实现 基于语句的复制 一些不适用的场景：
+任何调用非确定性的语句，如NOW()获取当前时间，或RAND()获取一个随机数等，可能会在不同副本产生不同的值。
+如果语句中使用自增列，或者依赖数据库的现有数据（例如：UPDATE &amp;hellip; WHERE &amp;hellip; &amp;lt;某些条件&amp;gt;），则所有副本必须按照相同的顺序执行，否则可能会带来不同的结果。
+有副作用的语句（例如：触发器、存储过程、用户自定义的函数等），可能会在每个副本产生不同的副作用。
+可能解决的方案是将不确定的函数替换成确定的结果，不过这种方式仍有许多地方需要考虑。
+基于预写日志（WAL）传输 对于日志结构的存储引擎（例如：SSTables和LSM-trees），日志是主要的存储方式。日志段在后台压缩并支持垃圾回收。
+对于采用覆盖写磁盘的Btree结构，每次修改会预先写入日志，如果系统崩溃，通过索引更新的方式迅速恢复到此前一直状态。
+缺点：
+WAL包含了哪些磁盘块的哪些字节发生了改变，诸如此类细节，这使得复制方案和存储引擎紧密耦合。如果数据库的存储格式从一个版本改为另一个版本，那么系统通常无法支持主从节点上运行不同版本的软件。
+基于行的逻辑日志复制 关系数据库的逻辑日志通常是指一些列记录数据行级别的写请求：
+对行的插入，日志包含所有相关列的新值。
+对于行的删除，日志有足够的的信息来唯一标识已删除的行。
+对于行的更新，日志包含足够的信息来唯一标识更新的行，以及所有列的新值。
+MySQL的二进制日志binlog（当配置基于行的复制时）使用该方式。
+基于触发器的复制 基于触发器复制支持更高的灵活性。例如将一种数据库的数据复制到另外一种数据库。触发器支持注册自己的应用层代码，使数据库发生数据更改时自动执行自定义代码。 基于触发器的复制通常比其他方式复制开销更高，也比数据库内置复制更容易出错或者暴露一些限制。
+复制滞后的问题 由于并非所有写入都反映到副本上，如果同时对主节点和从节点发起相同的查询，可能会得到不同的接口，这种不一致的状态只是暂时的，可能经过一段时间后，从节点最终会赶上主节点并与主节点保持一致。这种效应也被称为最终一致性。
+读自己的写 读自己的写也被称为读写一致性。实现读写一致性有多重可行方案：">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu87c10ff50ef4ab09ea180a96c581c02f_62603_300x0_resize_box_3.png" width="300"
+                            height="281" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">无常是常</a></h1>
+            <h2 class="site-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a 
+                        href='https://github.com/hellodeveye'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>Links</span>
+            </a>
+        </li>
+        
+    </ol>
+    <div class="menu-bottom-section">
+        <ol class="menu">
+
+            
+                <li id="dark-mode-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <span>暗色模式</span>
+                </li>
+            
+        </ol>
+    </div>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#主节点与从节点">主节点与从节点</a></li>
+        <li><a href="#同步复制与异步复制">同步复制与异步复制</a>
+          <ol>
+            <li><a href="#同步复制的优点">同步复制的优点</a></li>
+            <li><a href="#同步复制的缺点">同步复制的缺点</a></li>
+            <li><a href="#异步复制的优点">异步复制的优点</a></li>
+            <li><a href="#异步复制的缺点">异步复制的缺点</a></li>
+          </ol>
+        </li>
+        <li><a href="#配置新的从节点">配置新的从节点</a></li>
+        <li><a href="#从节点失效追赶式恢复">从节点失效：追赶式恢复</a></li>
+        <li><a href="#主节点失效节点切换">主节点失效：节点切换</a>
+          <ol>
+            <li><a href="#以上切换过程可能会发生很多变数">以上切换过程可能会发生很多变数</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#复制日志的实现">复制日志的实现</a>
+      <ol>
+        <li>
+          <ol>
+            <li><a href="#基于语句的复制">基于语句的复制</a></li>
+            <li><a href="#基于预写日志wal传输">基于预写日志（WAL）传输</a></li>
+            <li><a href="#基于行的逻辑日志复制">基于行的逻辑日志复制</a></li>
+            <li><a href="#基于触发器的复制">基于触发器的复制</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#复制滞后的问题">复制滞后的问题</a>
+      <ol>
+        <li><a href="#读自己的写">读自己的写</a></li>
+        <li><a href="#单调读">单调读</a></li>
+        <li><a href="#前缀一致性">前缀一致性</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/ddia/" >
+                Ddia
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6/">数据复制</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">May 31, 2022</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 1 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>数据复制方案，人们通常希望达到以下几个目的：</p>
+<ul>
+<li>使数据在地理位置上更接近用户，从而降低访问延迟。</li>
+<li>当部分组件出现故障，系统依然可以继续工作，从而提升可用性。</li>
+<li>扩展至多台机器以同时提供数据访问服务，从而提高吞吐量。</li>
+</ul>
+<p>三种比较流行的复制数据变化的方法：</p>
+<ul>
+<li>主从复制</li>
+<li>多主节点复制</li>
+<li>无主节点复制</li>
+</ul>
+<p>复制技术存在很多折中的方案，例如：同步复制和异步复制，一般情况数据库会采用配置的形式来处理这些策略。</p>
+<h3 id="主节点与从节点">主节点与从节点</h3>
+<p>主从复制的工作原理如下：</p>
+<ol>
+<li>指定一个副本为主节点，当客户写数据库时，只能通过主节点进行写入。</li>
+<li>其他副本作为从副本，主副本将数据写入本地存储后，将数据更改作为复制日志或更改流发送到从副本。每个副本获取到更改数据后将其应用到本地，并且严格保持与主副本相同的写入顺序。</li>
+<li>客户端读取数据时从主副本或者从副本进行读取，从客户端的角度看，从副本都是只读的。</li>
+</ol>
+<h3 id="同步复制与异步复制">同步复制与异步复制</h3>
+<p>同步复制是需要等从节点确认完成了写入之后，才会向用户报告完成。并将最新的写入对其他客户端可见。异步复制是主节点发送完消息之后立即返回，不需要等待从节点完成确认。</p>
+<h4 id="同步复制的优点">同步复制的优点</h4>
+<p>一旦向用户确认，从节点可以明确保证完成了与主节点的更新同步，数据已处于最新版本。万一主节点发生故障，总是可以在从节点继续访问最新数据。</p>
+<h4 id="同步复制的缺点">同步复制的缺点</h4>
+<p>如果同步的从节点无法完成确认（例如由于从节点发送崩溃、网络故障或其他原因），写入就不能视为成功。主节点会阻塞其后面所有的写操作，直到同步副本确认完成。</p>
+<blockquote>
+<p>把所有从节点都设置为同步复制有些不切实际，实践中，可以将某一个节点设置为同步复制，其他节点设置为异步复制。万一同步复制的节点变得不可用或者性能下降，则将另外一个节点从异步模式提升为同步模式，这样可以保证至少有两个节点拥有最新的数据副本。这种配置有时称为<strong>半同步</strong>。</p>
+</blockquote>
+<h4 id="异步复制的优点">异步复制的优点</h4>
+<p>不管从节点的数据多么滞后，主节点总是可以继续响应客户端的写请求，系统的吞吐性能更好。</p>
+<h4 id="异步复制的缺点">异步复制的缺点</h4>
+<p>如果主节点发生故障并且不可恢复，则所有尚未复制到从节点的数据将会丢失，这就意味着向客户端确认了写请求，但是却无法保证数据的持久化。</p>
+<h3 id="配置新的从节点">配置新的从节点</h3>
+<p>如何考虑添加新的从节点，怎么保证主从数据一致性呢？</p>
+<ol>
+<li>在某个时间节点对主节点的数据副本生成一个一致性快照。</li>
+<li>将快照拷贝到新的从节点。</li>
+<li>从节点连接到主节点并请求快照点之后所发生的数据更改日志。因为在第一步创建快照时，快照与系统复制日志的某个确定的位置相关联。</li>
+<li>获得日志之后，从节点应用这些快照点之后的所有数据变更，这个过程称之为<strong>追赶</strong>。接下来，他可以继续处理主节点上的新的数据变化。并重复1~4步骤。</li>
+</ol>
+<h3 id="从节点失效追赶式恢复">从节点失效：追赶式恢复</h3>
+<p>从节点如果发生了崩溃或者网络闪断，则根据最后一笔事务的处理日志，从主节点拉取之后的所有数据的变更，收到所有数据的变更后，将其应用到本地用于追赶主节点，之后就和正常情况一样持续接收来自主节点数据流的变化。</p>
+<h3 id="主节点失效节点切换">主节点失效：节点切换</h3>
+<ol>
+<li>确定主节点失效。大部分系统都采用了基于超时的机制判断节点是否失效，节点间频繁地互相发送心跳存活信息，如果某一个节点在一段时间内（例如30s）没有响应，则认为该节点发生了实效。</li>
+<li>选举新的主节点。可以通过选举的方式来选举主节点，候选节点最好与主节点的数据差异最小，这样可以最小化数据丢失的风险。</li>
+<li>重新配置系统使新的主节点生效。如果原主节点重新上线后，可能仍然认为自己是主节点，这是系统要确保原主节点降级为从节点，并认可新的主节点。</li>
+</ol>
+<h4 id="以上切换过程可能会发生很多变数">以上切换过程可能会发生很多变数</h4>
+<ul>
+<li>
+<p>如果使用了异步复制，且失效之前，新的主节点并未收到原主节点的所有数据；在选举之后，原主节点很快又重新上线加入到集群，这是可能原主节点并未意识到角色的变化，还会尝试同步其他从节点，但其中的一个现在已经接管成为现任主节点。<strong>常见的解决方案是：原主节点上未完成复制的写请求就此丢弃，但这可能会违背数据更新持久化的承诺。</strong></p>
+</li>
+<li>
+<p>如果数据库依赖于外部系统（例如Redis）一起协同使用，丢弃数据的方案就特别危险。例如，在GithHub的一次事故中，某个数据并完全的MySQL从节点提升为主节点，数据库使用了基于自增计数器将主键分配给新创建的行，但是因为新的主节点计数器落后于原主节点（即二者并非完全同步），它重新使用了已被原主节点分配出去的某些主键，而恰好这些主键已被外部Redis所引用，结果出现MySQL和Redis之间的不一致，最后导致了某些私有数据被错误的泄露给了其它用户。</p>
+</li>
+<li>
+<p>某些情况下，可能会发生两个节点同时认为自己是主节点，这种情况下被称为<strong>脑裂</strong>，它非常危险：<strong>两个主节点都可能接收写请求，并且没有很好解决冲突的办法，最后数据可能会丢失或者破坏，一种安全应急方案会强制关闭其中的一个节点。</strong></p>
+</li>
+<li>
+<p>如何设置合适的超时来检查主节点失效？主节点失效后，超时时间设置的越长，也就意味着数据恢复的时间越长。如果设置的太短，可能会导致很多不必要的节点切换。例如：突然的负载峰值会导致节点的响应时间变长甚至超时，或者由于网络故障导致延迟增加。如果系统本身已经处于高负载或网络严重拥塞的情况下，不必要的切换只会导致系统的情况变得更糟。</p>
+</li>
+</ul>
+<h2 id="复制日志的实现">复制日志的实现</h2>
+<h4 id="基于语句的复制">基于语句的复制</h4>
+<p>一些不适用的场景：</p>
+<ul>
+<li>
+<p>任何调用非确定性的语句，如<code>NOW()</code>获取当前时间，或<code>RAND()</code>获取一个随机数等，可能会在不同副本产生不同的值。</p>
+</li>
+<li>
+<p>如果语句中使用自增列，或者依赖数据库的现有数据（例如：UPDATE &hellip; WHERE &hellip; &lt;某些条件&gt;），则所有副本必须按照相同的顺序执行，否则可能会带来不同的结果。</p>
+</li>
+<li>
+<p>有副作用的语句（例如：触发器、存储过程、用户自定义的函数等），可能会在每个副本产生不同的副作用。</p>
+</li>
+</ul>
+<blockquote>
+<p>可能解决的方案是将不确定的函数替换成确定的结果，不过这种方式仍有许多地方需要考虑。</p>
+</blockquote>
+<h4 id="基于预写日志wal传输">基于预写日志（WAL）传输</h4>
+<ul>
+<li>
+<p>对于日志结构的存储引擎（例如：SSTables和LSM-trees），日志是主要的存储方式。日志段在后台压缩并支持垃圾回收。</p>
+</li>
+<li>
+<p>对于采用覆盖写磁盘的Btree结构，每次修改会预先写入日志，如果系统崩溃，通过索引更新的方式迅速恢复到此前一直状态。</p>
+</li>
+</ul>
+<p>缺点：</p>
+<p>WAL包含了哪些磁盘块的哪些字节发生了改变，诸如此类细节，这使得复制方案和存储引擎紧密耦合。如果数据库的存储格式从一个版本改为另一个版本，那么系统通常无法支持主从节点上运行不同版本的软件。</p>
+<h4 id="基于行的逻辑日志复制">基于行的逻辑日志复制</h4>
+<p>关系数据库的逻辑日志通常是指一些列记录数据行级别的写请求：</p>
+<ul>
+<li>
+<p>对行的插入，日志包含所有相关列的新值。</p>
+</li>
+<li>
+<p>对于行的删除，日志有足够的的信息来唯一标识已删除的行。</p>
+</li>
+<li>
+<p>对于行的更新，日志包含足够的信息来唯一标识更新的行，以及所有列的新值。</p>
+</li>
+</ul>
+<blockquote>
+<p>MySQL的二进制日志binlog（当配置基于行的复制时）使用该方式。</p>
+</blockquote>
+<h4 id="基于触发器的复制">基于触发器的复制</h4>
+<p>基于触发器复制支持更高的灵活性。例如将一种数据库的数据复制到另外一种数据库。触发器支持注册自己的应用层代码，使数据库发生数据更改时自动执行自定义代码。 基于触发器的复制通常比其他方式复制开销更高，也比数据库内置复制更容易出错或者暴露一些限制。</p>
+<h2 id="复制滞后的问题">复制滞后的问题</h2>
+<p>由于并非所有写入都反映到副本上，如果同时对主节点和从节点发起相同的查询，可能会得到不同的接口，这种不一致的状态只是暂时的，可能经过一段时间后，从节点最终会赶上主节点并与主节点保持一致。<strong>这种效应也被称为最终一致性。</strong></p>
+<h3 id="读自己的写">读自己的写</h3>
+<p>读自己的写也被称为<strong>读写一致性</strong>。实现读写一致性有多重可行方案：</p>
+<ul>
+<li>
+<p>总是从主节点读取当前用户自己的数据，而从从节点读取其他用户的数据。</p>
+</li>
+<li>
+<p>跟踪数据最近更新时间，如果数据更新后一分钟内总是从主节点读取数据，并监控从节点复制之后的程度，避免从那些滞后时间超过一分钟的从节点读取。</p>
+</li>
+<li>
+<p>客户端记住最近更新时的时间戳，并附带到请求中，根据此信息，系统可以保证对该用户提供读服务时都应该至少包含了该时间戳的更新。如果不够新，则交给其他副本进行处理，要么等待直到副本接收到了最近的更新。</p>
+</li>
+<li>
+<p>如果副本分布在多数据中心，必须先把请求路由到主节点所在的数据中心。</p>
+</li>
+</ul>
+<h3 id="单调读">单调读</h3>
+<p>主要是解决用户看到了最新内容之后又读到了过期的内容，好像时间被回拨，此时需要单调读一致性。（出现这种情况主要是因为主从节点数据不一致或同步滞后导致的）</p>
+<p>解决方案：确保每个用户总是从固定的同一副本执行读取。（例如：基于用户Id进行哈希的方式选择副本，而不是随机选择）</p>
+<h3 id="前缀一致性">前缀一致性</h3>
+<p>在许多分布式数据库中，不同分区独立运行，因此不存在写入顺序。这就导致当用户从数据库中读取数据时，可能会看到数据库的某部分新值和另一部分旧值。</p>
+<p><strong>一个解决方案是确保任何具有因果顺序关系的写入都交给一个分区来完成，但这种方案真是实现效率会大打折扣。</strong></p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2024 XCM 陕ICP备16008414号
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.23.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

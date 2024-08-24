@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='Prometheus快速入门 一、背景 我们日常开发和运维中，需要监控一些数据，根据这些数据进行分析或者应对策略，例如以下几个维度：
+场景 描述 硬件系统 温度，硬件故障 系统监控 CPU，内存，磁盘，网卡流量，TCP状态，进程数 应用监控 Nginx，Tomcat，PHP，MySQL，Redis 等 日志监控 系统日志，服务日志，访问日志，错误日志 安全监控 WAF，敏感文件监控 API监控 可用性，接口请求，响应时间 业务监控 例如电商网站，每分钟产生多少订单，注册多少用户，多少活跃用户，推广活动效果 流量分析 根据流量获取用户相关信息，例如用户地理位置，某页面访问状况，页面停留时间等 二、Prometheus是什么? Prometheus 是由 SoundCloud 开发的开源监控报警系统和时序列数据库(TSDB)。
+Prometheus由Go语言编写而成，采用Pull方式获取监控信息，并提供了多维度的数据模型和灵活的查询接口。 Prometheus不仅可以通过静态文件配置监控对象，还支持自动发现机制，能通过Kubernetes、Consl、DNS等多种方式动态获取监控对象。 在数据采集方面，借助Go语言的高并发特性，单机Prometheus可以采取数百个节点的监控数据；在数据存储方面，随着本地时序数据库的不断优化，单机Prometheus每秒可以采集一千万个指标，如果需要存储大量的历史监控数据，则还支持远程存储。
+三、为什么需要Prometheus? 对于运维人员来说，他们需要监控机器的 CPU、内存、硬盘的使用情况，以此来保证运行在机器上的应用的稳定性。 对于研发人员来说，他们关注某个异常指标的变化情况，从而来保证业务的稳定运行。 对于产品或运营来说，他们更关心产品层面的事情，例如：某个活动参加人数的增长情况，活动积分的发放情况。 例如：运维希望在 CPU 达到 80% 的时候给值班的运维人员发送邮件，产品希望活动积分发放数量超过 10 万的时候发送告警邮件。这些都可以通过 Prometheus 实现。
+对于流量不是很大的系统来说，出现几分钟的故障可能造成不了多少损失。但是对于像淘宝、美团、字节跳动这样的巨无霸来说，宕机 1 分钟损失的金额可能就是几百万！
+所以弄清楚此时此刻系统的运行是否正常？各项业务指标是否超过阈值？这些问题是每个经验丰富的研发人员所需要关注的事情！
+那么如何监控你的系统？如何得知系统目前是正常还是异常？甚至如何预知未来一段时间系统可能出问题？Prometheus 正是这么一套数据监控解决方案。它能让你随时掌控系统的运行状态，快速定位出现问题的位置，快速排除故障。
+只要按照 Prometheus 的方式来做，按部就班地学习和部署，我们就可以监控机器的 CPU、内存等资源的使用情况、Java 应用的运行情况以及业务各项指标的实时数据。
+而通过 Prometheus 则可以直接部署使用，并且其与 Grafana 配套使用可以呈现出非常多样化的图表配置。对于中小规模的团队来说，可以极大地减少成本，加快研发速度。
+而对于个人来讲，掌握 Prometheus 可以增加你当 leader 的竞争力。 毕竟如果一个研发对自己的系统运行状况都不了解，那么他怎么做 leader，怎么带领一个团队往前冲呢？
+四、Prometheus Quickly Start 1、实现目标 实现一个Web服务接口请求速率状况的监控功能，当接口请求增长速率超出设定的阈值时，发送钉钉消息通知给研发运维人员。'>
+<title>Prometheus快速入门</title>
+
+<link rel='canonical' href='https://xiaocm.com/p/prometheus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/'>
+
+<link rel="stylesheet" href="/scss/style.min.abbd69b2908fdfcd5179898beaafd374514a86538d81639ddd2c58c06ae54e40.css"><meta property='og:title' content='Prometheus快速入门'>
+<meta property='og:description' content='Prometheus快速入门 一、背景 我们日常开发和运维中，需要监控一些数据，根据这些数据进行分析或者应对策略，例如以下几个维度：
+场景 描述 硬件系统 温度，硬件故障 系统监控 CPU，内存，磁盘，网卡流量，TCP状态，进程数 应用监控 Nginx，Tomcat，PHP，MySQL，Redis 等 日志监控 系统日志，服务日志，访问日志，错误日志 安全监控 WAF，敏感文件监控 API监控 可用性，接口请求，响应时间 业务监控 例如电商网站，每分钟产生多少订单，注册多少用户，多少活跃用户，推广活动效果 流量分析 根据流量获取用户相关信息，例如用户地理位置，某页面访问状况，页面停留时间等 二、Prometheus是什么? Prometheus 是由 SoundCloud 开发的开源监控报警系统和时序列数据库(TSDB)。
+Prometheus由Go语言编写而成，采用Pull方式获取监控信息，并提供了多维度的数据模型和灵活的查询接口。 Prometheus不仅可以通过静态文件配置监控对象，还支持自动发现机制，能通过Kubernetes、Consl、DNS等多种方式动态获取监控对象。 在数据采集方面，借助Go语言的高并发特性，单机Prometheus可以采取数百个节点的监控数据；在数据存储方面，随着本地时序数据库的不断优化，单机Prometheus每秒可以采集一千万个指标，如果需要存储大量的历史监控数据，则还支持远程存储。
+三、为什么需要Prometheus? 对于运维人员来说，他们需要监控机器的 CPU、内存、硬盘的使用情况，以此来保证运行在机器上的应用的稳定性。 对于研发人员来说，他们关注某个异常指标的变化情况，从而来保证业务的稳定运行。 对于产品或运营来说，他们更关心产品层面的事情，例如：某个活动参加人数的增长情况，活动积分的发放情况。 例如：运维希望在 CPU 达到 80% 的时候给值班的运维人员发送邮件，产品希望活动积分发放数量超过 10 万的时候发送告警邮件。这些都可以通过 Prometheus 实现。
+对于流量不是很大的系统来说，出现几分钟的故障可能造成不了多少损失。但是对于像淘宝、美团、字节跳动这样的巨无霸来说，宕机 1 分钟损失的金额可能就是几百万！
+所以弄清楚此时此刻系统的运行是否正常？各项业务指标是否超过阈值？这些问题是每个经验丰富的研发人员所需要关注的事情！
+那么如何监控你的系统？如何得知系统目前是正常还是异常？甚至如何预知未来一段时间系统可能出问题？Prometheus 正是这么一套数据监控解决方案。它能让你随时掌控系统的运行状态，快速定位出现问题的位置，快速排除故障。
+只要按照 Prometheus 的方式来做，按部就班地学习和部署，我们就可以监控机器的 CPU、内存等资源的使用情况、Java 应用的运行情况以及业务各项指标的实时数据。
+而通过 Prometheus 则可以直接部署使用，并且其与 Grafana 配套使用可以呈现出非常多样化的图表配置。对于中小规模的团队来说，可以极大地减少成本，加快研发速度。
+而对于个人来讲，掌握 Prometheus 可以增加你当 leader 的竞争力。 毕竟如果一个研发对自己的系统运行状况都不了解，那么他怎么做 leader，怎么带领一个团队往前冲呢？
+四、Prometheus Quickly Start 1、实现目标 实现一个Web服务接口请求速率状况的监控功能，当接口请求增长速率超出设定的阈值时，发送钉钉消息通知给研发运维人员。'>
+<meta property='og:url' content='https://xiaocm.com/p/prometheus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/'>
+<meta property='og:site_name' content='无常是常'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='prometheus' /><meta property='article:published_time' content='2022-02-28T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2022-02-28T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="Prometheus快速入门">
+<meta name="twitter:description" content="Prometheus快速入门 一、背景 我们日常开发和运维中，需要监控一些数据，根据这些数据进行分析或者应对策略，例如以下几个维度：
+场景 描述 硬件系统 温度，硬件故障 系统监控 CPU，内存，磁盘，网卡流量，TCP状态，进程数 应用监控 Nginx，Tomcat，PHP，MySQL，Redis 等 日志监控 系统日志，服务日志，访问日志，错误日志 安全监控 WAF，敏感文件监控 API监控 可用性，接口请求，响应时间 业务监控 例如电商网站，每分钟产生多少订单，注册多少用户，多少活跃用户，推广活动效果 流量分析 根据流量获取用户相关信息，例如用户地理位置，某页面访问状况，页面停留时间等 二、Prometheus是什么? Prometheus 是由 SoundCloud 开发的开源监控报警系统和时序列数据库(TSDB)。
+Prometheus由Go语言编写而成，采用Pull方式获取监控信息，并提供了多维度的数据模型和灵活的查询接口。 Prometheus不仅可以通过静态文件配置监控对象，还支持自动发现机制，能通过Kubernetes、Consl、DNS等多种方式动态获取监控对象。 在数据采集方面，借助Go语言的高并发特性，单机Prometheus可以采取数百个节点的监控数据；在数据存储方面，随着本地时序数据库的不断优化，单机Prometheus每秒可以采集一千万个指标，如果需要存储大量的历史监控数据，则还支持远程存储。
+三、为什么需要Prometheus? 对于运维人员来说，他们需要监控机器的 CPU、内存、硬盘的使用情况，以此来保证运行在机器上的应用的稳定性。 对于研发人员来说，他们关注某个异常指标的变化情况，从而来保证业务的稳定运行。 对于产品或运营来说，他们更关心产品层面的事情，例如：某个活动参加人数的增长情况，活动积分的发放情况。 例如：运维希望在 CPU 达到 80% 的时候给值班的运维人员发送邮件，产品希望活动积分发放数量超过 10 万的时候发送告警邮件。这些都可以通过 Prometheus 实现。
+对于流量不是很大的系统来说，出现几分钟的故障可能造成不了多少损失。但是对于像淘宝、美团、字节跳动这样的巨无霸来说，宕机 1 分钟损失的金额可能就是几百万！
+所以弄清楚此时此刻系统的运行是否正常？各项业务指标是否超过阈值？这些问题是每个经验丰富的研发人员所需要关注的事情！
+那么如何监控你的系统？如何得知系统目前是正常还是异常？甚至如何预知未来一段时间系统可能出问题？Prometheus 正是这么一套数据监控解决方案。它能让你随时掌控系统的运行状态，快速定位出现问题的位置，快速排除故障。
+只要按照 Prometheus 的方式来做，按部就班地学习和部署，我们就可以监控机器的 CPU、内存等资源的使用情况、Java 应用的运行情况以及业务各项指标的实时数据。
+而通过 Prometheus 则可以直接部署使用，并且其与 Grafana 配套使用可以呈现出非常多样化的图表配置。对于中小规模的团队来说，可以极大地减少成本，加快研发速度。
+而对于个人来讲，掌握 Prometheus 可以增加你当 leader 的竞争力。 毕竟如果一个研发对自己的系统运行状况都不了解，那么他怎么做 leader，怎么带领一个团队往前冲呢？
+四、Prometheus Quickly Start 1、实现目标 实现一个Web服务接口请求速率状况的监控功能，当接口请求增长速率超出设定的阈值时，发送钉钉消息通知给研发运维人员。">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu87c10ff50ef4ab09ea180a96c581c02f_62603_300x0_resize_box_3.png" width="300"
+                            height="281" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">无常是常</a></h1>
+            <h2 class="site-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a 
+                        href='https://github.com/hellodeveye'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>Links</span>
+            </a>
+        </li>
+        
+    </ol>
+    <div class="menu-bottom-section">
+        <ol class="menu">
+
+            
+                <li id="dark-mode-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <span>暗色模式</span>
+                </li>
+            
+        </ol>
+    </div>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#一背景">一、背景</a></li>
+    <li><a href="#二prometheus是什么">二、Prometheus是什么?</a></li>
+    <li><a href="#三为什么需要prometheus">三、为什么需要Prometheus?</a></li>
+    <li><a href="#四prometheus-quickly-start">四、Prometheus Quickly Start</a>
+      <ol>
+        <li><a href="#1实现目标">1、实现目标</a></li>
+        <li><a href="#2服务搭建">2、服务搭建</a></li>
+        <li><a href="#3客户端代码">3、客户端代码</a></li>
+        <li><a href="#4prometheus-dashboard">4、Prometheus Dashboard</a></li>
+        <li><a href="#5总结">5、总结</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/prometheus/" >
+                Prometheus
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/prometheus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/">Prometheus快速入门</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Feb 28, 2022</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 3 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="prometheus快速入门">Prometheus快速入门</h1>
+<h2 id="一背景">一、背景</h2>
+<p>我们日常开发和运维中，需要监控一些数据，根据这些数据进行分析或者应对策略，例如以下几个维度：</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th style="text-align:left">场景                          </th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">硬件系统</td>
+<td>温度，硬件故障</td>
+</tr>
+<tr>
+<td style="text-align:left">系统监控</td>
+<td>CPU，内存，磁盘，网卡流量，TCP状态，进程数</td>
+</tr>
+<tr>
+<td style="text-align:left">应用监控</td>
+<td>Nginx，Tomcat，PHP，MySQL，Redis 等</td>
+</tr>
+<tr>
+<td style="text-align:left">日志监控</td>
+<td>系统日志，服务日志，访问日志，错误日志</td>
+</tr>
+<tr>
+<td style="text-align:left">安全监控</td>
+<td>WAF，敏感文件监控</td>
+</tr>
+<tr>
+<td style="text-align:left">API监控</td>
+<td>可用性，接口请求，响应时间</td>
+</tr>
+<tr>
+<td style="text-align:left">业务监控</td>
+<td>例如电商网站，每分钟产生多少订单，注册多少用户，多少活跃用户，推广活动效果</td>
+</tr>
+<tr>
+<td style="text-align:left">流量分析</td>
+<td>根据流量获取用户相关信息，例如用户地理位置，某页面访问状况，页面停留时间等</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="二prometheus是什么">二、Prometheus是什么?</h2>
+<p><img src="http://qiniu.xiaocm.com/blog/img/20220228204837.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p><a class="link" href="https://github.com/prometheus"  target="_blank" rel="noopener"
+    >Prometheus</a> 是由 SoundCloud 开发的开源监控报警系统和时序列数据库(TSDB)。</p>
+<p>Prometheus由Go语言编写而成，采用Pull方式获取监控信息，并提供了多维度的数据模型和灵活的查询接口。
+Prometheus不仅可以通过静态文件配置监控对象，还支持自动发现机制，能通过Kubernetes、Consl、DNS等多种方式动态获取监控对象。
+在数据采集方面，借助Go语言的高并发特性，单机Prometheus可以采取数百个节点的监控数据；在数据存储方面，随着本地时序数据库的不断优化，单机Prometheus每秒可以采集一千万个指标，如果需要存储大量的历史监控数据，则还支持远程存储。</p>
+<h2 id="三为什么需要prometheus">三、为什么需要Prometheus?</h2>
+<ul>
+<li>对于运维人员来说，他们需要监控机器的 CPU、内存、硬盘的使用情况，以此来保证运行在机器上的应用的稳定性。</li>
+<li>对于研发人员来说，他们关注某个异常指标的变化情况，从而来保证业务的稳定运行。</li>
+<li>对于产品或运营来说，他们更关心产品层面的事情，例如：某个活动参加人数的增长情况，活动积分的发放情况。</li>
+</ul>
+<p><strong>例如</strong>：运维希望在 CPU 达到 80% 的时候给值班的运维人员发送邮件，产品希望活动积分发放数量超过 10 万的时候发送告警邮件。这些都可以通过 Prometheus 实现。</p>
+<p>对于流量不是很大的系统来说，出现几分钟的故障可能造成不了多少损失。但是对于像淘宝、美团、字节跳动这样的巨无霸来说，<strong>宕机 1 分钟损失的金额可能就是几百万！</strong></p>
+<p>所以弄清楚此时此刻系统的运行是否正常？各项业务指标是否超过阈值？这些问题是每个经验丰富的研发人员所需要关注的事情！</p>
+<p>那么如何监控你的系统？如何得知系统目前是正常还是异常？甚至如何预知未来一段时间系统可能出问题？<strong>Prometheus 正是这么一套数据监控解决方案。它能让你随时掌控系统的运行状态，快速定位出现问题的位置，快速排除故障。</strong></p>
+<p>只要按照 Prometheus 的方式来做，按部就班地学习和部署，我们就可以监控机器的 CPU、内存等资源的使用情况、Java 应用的运行情况以及业务各项指标的实时数据。</p>
+<p>而通过 Prometheus 则可以直接部署使用，并且其与 Grafana 配套使用可以呈现出非常多样化的图表配置。<strong>对于中小规模的团队来说，可以极大地减少成本，加快研发速度。</strong></p>
+<p>而对于个人来讲，<strong>掌握 Prometheus 可以增加你当 leader 的竞争力。</strong> 毕竟如果一个研发对自己的系统运行状况都不了解，那么他怎么做 leader，怎么带领一个团队往前冲呢？</p>
+<h2 id="四prometheus-quickly-start">四、Prometheus Quickly Start</h2>
+<h3 id="1实现目标">1、实现目标</h3>
+<p>实现一个Web服务接口请求速率状况的监控功能，当接口请求增长速率超出设定的阈值时，发送钉钉消息通知给研发运维人员。</p>
+<h3 id="2服务搭建">2、服务搭建</h3>
+<p>这里使用<strong>Docker</strong> 搭建 <strong>prometheus、alertmanager和dingtalk.</strong></p>
+<p>① 创建对应文件目录：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir -p ~/prometheus/ <span class="o">&amp;&amp;</span> <span class="nb">cd</span> ~/prometheus/ <span class="o">&amp;&amp;</span> touch prometheus.yml
+</span></span><span class="line"><span class="cl">mkdir -p ~/prometheus/groups/nodegroups/ <span class="o">&amp;&amp;</span> <span class="nb">cd</span> ~/prometheus/groups/nodegroups/ <span class="o">&amp;&amp;</span> touch node.json
+</span></span><span class="line"><span class="cl">mkdir -p ~/prometheus/rules/ <span class="o">&amp;&amp;</span> <span class="nb">cd</span> ~/prometheus/rules/ <span class="o">&amp;&amp;</span> touch http-rate.rules
+</span></span><span class="line"><span class="cl">mkdir -p ~/prometheus/alertmanager <span class="o">&amp;&amp;</span> /prometheus/alertmanager <span class="o">&amp;&amp;</span> touch alertmanager.yml
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>② 配置对应文件</p>
+<p><strong>prometheus.yml</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">global:
+</span></span><span class="line"><span class="cl">  scrape_interval:     15s <span class="c1"># By default, scrape targets every 15 seconds.</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># Attach these labels to any time series or alerts when communicating with</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># external systems (federation, remote storage, Alertmanager).</span>
+</span></span><span class="line"><span class="cl">  external_labels:
+</span></span><span class="line"><span class="cl">    monitor: <span class="s1">&#39;codelab-monitor&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># A scrape configuration containing exactly one endpoint to scrape:</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Here it&#39;s Prometheus itself.</span>
+</span></span><span class="line"><span class="cl">scrape_configs:
+</span></span><span class="line"><span class="cl">  <span class="c1"># The job name is added as a label `job=&lt;job_name&gt;` to any timeseries scraped from this config.</span>
+</span></span><span class="line"><span class="cl">  - job_name: <span class="s1">&#39;prometheus&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># Override the global default and scrape targets from this job every 5 seconds.</span>
+</span></span><span class="line"><span class="cl">    scrape_interval: 5s
+</span></span><span class="line"><span class="cl">    static_configs:
+</span></span><span class="line"><span class="cl">      - targets: <span class="o">[</span><span class="s1">&#39;localhost:9090&#39;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  - job_name: <span class="s1">&#39;prometheus-sample&#39;</span>
+</span></span><span class="line"><span class="cl">		<span class="c1"># 可以在不用重启的情况下热加载配置文件</span>
+</span></span><span class="line"><span class="cl">    file_sd_configs:
+</span></span><span class="line"><span class="cl">       - files: <span class="o">[</span><span class="s1">&#39;/usr/local/prometheus/groups/nodegroups/*.json&#39;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Alertmanager configuration</span>
+</span></span><span class="line"><span class="cl">alerting:
+</span></span><span class="line"><span class="cl">  alertmanagers:
+</span></span><span class="line"><span class="cl">  - static_configs:
+</span></span><span class="line"><span class="cl">    - targets:
+</span></span><span class="line"><span class="cl">      - 192.168.220.121:9093
+</span></span><span class="line"><span class="cl">rule_files:
+</span></span><span class="line"><span class="cl">  - <span class="s2">&#34;/usr/local/prometheus/rules/*.rules&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>node.json</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>
+</span></span><span class="line"><span class="cl">    <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;targets&#34;</span>: <span class="o">[</span><span class="s2">&#34;192.168.220.121:8080&#34;</span>,<span class="s2">&#34;192.168.220.121:8081&#34;</span><span class="o">]</span>,
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;labels&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;instance&#34;</span>: <span class="s2">&#34;vm-192.168.220.121&#34;</span>,
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;service&#34;</span>: <span class="s2">&#34;node-service&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">]</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>http-rate.rules</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">groups:
+</span></span><span class="line"><span class="cl">  - name: http-rate
+</span></span><span class="line"><span class="cl">    rules:
+</span></span><span class="line"><span class="cl">      - alert: http-rate
+</span></span><span class="line"><span class="cl">        expr: rate<span class="o">(</span>prometheus_sample_hello_world_count<span class="o">[</span>1m<span class="o">])</span> &gt; <span class="m">100</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span>: 15s
+</span></span><span class="line"><span class="cl">        labels:
+</span></span><span class="line"><span class="cl">          severity: <span class="m">1</span>
+</span></span><span class="line"><span class="cl">        annotations:
+</span></span><span class="line"><span class="cl">          summary: <span class="s2">&#34;{{ </span><span class="nv">$labels</span><span class="s2">.instance }} HTTP 1min请求增长率超过100%&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>alertmanager.yml</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 全局配置项</span>
+</span></span><span class="line"><span class="cl">global:
+</span></span><span class="line"><span class="cl">  resolve_timeout: 5m <span class="c1"># 处理超时时间，默认为5min</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 定义路由树信息</span>
+</span></span><span class="line"><span class="cl">route:
+</span></span><span class="line"><span class="cl">  group_by: <span class="o">[</span>alertname<span class="o">]</span>  <span class="c1"># 报警分组依据</span>
+</span></span><span class="line"><span class="cl">  receiver: ops_notify   <span class="c1"># 设置默认接收人</span>
+</span></span><span class="line"><span class="cl">  group_wait: 30s        <span class="c1"># 最初即第一次等待多久时间发送一组警报的通知</span>
+</span></span><span class="line"><span class="cl">  group_interval: 60s    <span class="c1"># 在发送新警报前的等待时间</span>
+</span></span><span class="line"><span class="cl">  repeat_interval: 1h    <span class="c1"># 重复发送告警时间。默认1h</span>
+</span></span><span class="line"><span class="cl">  routes:
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  - receiver: ops_notify  <span class="c1"># 基础告警通知</span>
+</span></span><span class="line"><span class="cl">    group_wait: 10s
+</span></span><span class="line"><span class="cl">    match_re:
+</span></span><span class="line"><span class="cl">      alertname: 实例存活告警<span class="p">|</span>磁盘使用率告警   <span class="c1"># 匹配告警规则中的名称发送</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 定义基础告警接收者</span>
+</span></span><span class="line"><span class="cl">receivers:
+</span></span><span class="line"><span class="cl">- name: ops_notify
+</span></span><span class="line"><span class="cl">  webhook_configs:
+</span></span><span class="line"><span class="cl">  - url: http://192.168.220.121:8060/dingtalk/webhook/send
+</span></span><span class="line"><span class="cl">    send_resolved: <span class="nb">true</span>  <span class="c1"># 警报被解决之后是否通知</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 一个inhibition规则是在与另一组匹配器匹配的警报存在的条件下，使匹配一组匹配器的</span>
+</span></span><span class="line"><span class="cl">警报失效的规则。两个警报必须具有一组相同的标签。
+</span></span><span class="line"><span class="cl">inhibit_rules:
+</span></span><span class="line"><span class="cl">  - source_match:
+</span></span><span class="line"><span class="cl">      severity: <span class="s1">&#39;critical&#39;</span>
+</span></span><span class="line"><span class="cl">    target_match:
+</span></span><span class="line"><span class="cl">      severity: <span class="s1">&#39;warning&#39;</span>
+</span></span><span class="line"><span class="cl">    equal: <span class="o">[</span><span class="s1">&#39;alertname&#39;</span>, <span class="s1">&#39;dev&#39;</span>, <span class="s1">&#39;instance&#39;</span><span class="o">]</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>config.yml</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">targets:
+</span></span><span class="line"><span class="cl">  webhook:
+</span></span><span class="line"><span class="cl">    url: https://oapi.dingtalk.com/robot/send?access_token<span class="o">=</span>xxx
+</span></span><span class="line"><span class="cl">    <span class="c1"># secret for signature</span>
+</span></span><span class="line"><span class="cl">    secret: SECxxx
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>docker 创建服务</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker run --name prometheus -d -p 9090:9090 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        -v ~/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        -v ~/prometheus/groups/:/usr/local/prometheus/groups/ <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        -v ~/prometheus/rules/:/usr/local/prometheus/rules/ <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        prom/prometheus:latest
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">docker run --name alertmanager -d -p 9093:9093 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        -v ~/prometheus/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        prom/alertmanager:latest
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">docker run --name dingtalk -d -p 8060:8060 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        -v ~/prometheus/dingtalk/config.yml:/etc/prometheus-webhook-dingtalk/config.yml <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        timonwong/prometheus-webhook-dingtalk
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="3客户端代码">3、客户端代码</h3>
+<p>这里使用Go语言编写的一个简易的Web服务，代码如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">package main
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">import <span class="o">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s2">&#34;flag&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s2">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s2">&#34;github.com/prometheus/client_golang/prometheus&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s2">&#34;github.com/prometheus/client_golang/prometheus/promhttp&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s2">&#34;log&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s2">&#34;net/http&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">var <span class="nv">port</span> <span class="o">=</span> flag.Int<span class="o">(</span><span class="s2">&#34;p&#34;</span>, 8080, <span class="s2">&#34;-port 8080&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">func main<span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">	flag.Parse<span class="o">()</span>
+</span></span><span class="line"><span class="cl">	prometheus.Register<span class="o">(</span>httpCount<span class="o">)</span>
+</span></span><span class="line"><span class="cl">	http.Handle<span class="o">(</span><span class="s2">&#34;/metrics&#34;</span>, promhttp.Handler<span class="o">())</span>
+</span></span><span class="line"><span class="cl">	http.HandleFunc<span class="o">(</span><span class="s2">&#34;/hello&#34;</span>, HelloWorld<span class="o">)</span>
+</span></span><span class="line"><span class="cl">	log.Fatalln<span class="o">(</span>http.ListenAndServe<span class="o">(</span>fmt.Sprintf<span class="o">(</span><span class="s2">&#34;:%d&#34;</span>, *port<span class="o">)</span>, nil<span class="o">))</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">var <span class="nv">httpCount</span> <span class="o">=</span> prometheus.NewCounter<span class="o">(</span>
+</span></span><span class="line"><span class="cl">	prometheus.CounterOpts<span class="o">{</span>
+</span></span><span class="line"><span class="cl">		Name: <span class="s2">&#34;prometheus_sample_hello_world_count&#34;</span>,
+</span></span><span class="line"><span class="cl">		Help: <span class="s2">&#34;hello world count!&#34;</span>,
+</span></span><span class="line"><span class="cl">	<span class="o">}</span>,
+</span></span><span class="line"><span class="cl"><span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">func HelloWorld<span class="o">(</span>w http.ResponseWriter, r *http.Request<span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">	httpCount.Inc<span class="o">()</span>
+</span></span><span class="line"><span class="cl">	w.Write<span class="o">([]</span>byte<span class="o">(</span><span class="s2">&#34;Hello World!&#34;</span><span class="o">))</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里我们启动两个节点：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">go run main -p <span class="m">8080</span>
+</span></span><span class="line"><span class="cl">go run main -p <span class="m">8081</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="4prometheus-dashboard">4、Prometheus Dashboard</h3>
+<p>打开仪表盘：<a class="link" href="http://localhost:9090/targets"  target="_blank" rel="noopener"
+    >http://localhost:9090/targets</a>，我们可以看到我们的两个节点已经是up状态了。</p>
+<p><img src="http://qiniu.xiaocm.com/blog/img/20220228204908.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>下面我们使用<strong>ab</strong> 工具模拟接口访问，使请求速度超过我们设定的阈值，此时alertmanages会给我们钉钉进行通知。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ab -n <span class="m">1000</span>  -c <span class="m">5</span>  http://localhost:8080/hello
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>我可以查看Prometheus控制台，查看消息警告发送情况，此时，我们的钉钉已经收到通知警告：</p>
+<p><img src="http://qiniu.xiaocm.com/blog/img/20220228204941.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p><img src="http://qiniu.xiaocm.com/blog/img/20220228205009.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<h3 id="5总结">5、总结</h3>
+<p>我们通过一个简单的实验，实现了一个接口请求速率监控的例子，实际业务中我们还可以做更多服务监控的功能。也可以结合Grafana进行Dashbords数据报表展示等功能。同时可以监控服务器、JVM、k8s等等，当服务按照我们设置的规则达到阈值时通知到我们，我们可以在第一时间做应对处理，避免造成不必要的损失。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/prometheus/">Prometheus</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2024 XCM 陕ICP备16008414号
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.23.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

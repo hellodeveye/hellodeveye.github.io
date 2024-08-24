@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>String on 无常是常</title>
+        <link>https://xiaocm.com/tags/string/</link>
+        <description>Recent content in String on 无常是常</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>XCM 陕ICP备16008414号</copyright>
+        <lastBuildDate>Wed, 24 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://xiaocm.com/tags/string/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Java的字符串常量池位于哪里，堆或堆栈？</title>
+        <link>https://xiaocm.com/p/java%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%B8%B8%E9%87%8F%E6%B1%A0%E4%BD%8D%E4%BA%8E%E5%93%AA%E9%87%8C%E5%A0%86%E6%88%96%E5%A0%86%E6%A0%88/</link>
+        <pubDate>Wed, 24 Mar 2021 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/java%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%B8%B8%E9%87%8F%E6%B1%A0%E4%BD%8D%E4%BA%8E%E5%93%AA%E9%87%8C%E5%A0%86%E6%88%96%E5%A0%86%E6%A0%88/</guid>
+        <description>&lt;blockquote&gt;
+&lt;p&gt;转载自: &lt;a class=&#34;link&#34; href=&#34;https://www.baeldung.com/java-string-constant-pool-heap-stack&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://www.baeldung.com/java-string-constant-pool-heap-stack&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;1简介&#34;&gt;1.简介&lt;/h3&gt;
+&lt;p&gt;每当我们声明一个变量或创建一个对象时，它就会存储在内存中。在较高的级别上，Java将内存分为两个块：&lt;code&gt;stack&lt;/code&gt;和&lt;code&gt;heap&lt;/code&gt;。&lt;strong&gt;两种存储器均存储特定类型的数据&lt;/strong&gt;，并且具有不同的存储和访问模式。&lt;/p&gt;
+&lt;h3 id=&#34;2字符串常量池&#34;&gt;2.字符串常量池&lt;/h3&gt;
+&lt;p&gt;该字符串常量池是一个特殊的存储区。**当我们声明&lt;code&gt;String&lt;/code&gt;时，JVM在池中创建对象并将其引用存储在堆栈中。**在内存中创建每个&lt;em&gt;String&lt;/em&gt;对象之前，JVM执行一些步骤来减少内存开销。&lt;/p&gt;
+&lt;p&gt;字符串常量池在其实现中使用HashMap。&lt;em&gt;HashMap的&lt;/em&gt;每个存储桶&lt;em&gt;均&lt;/em&gt;包含具有相同哈希码的&lt;em&gt;String&lt;/em&gt;列表。在Java的早期版本中，池的存储区域是固定大小的，并且通常会导致*“无法为对象堆保留足够的空间”* 错误。&lt;/p&gt;
+&lt;p&gt;**当系统加载类时，所有类的*String*文字都将进入应用程序级池。**这是因为不同类的相等&lt;em&gt;String&lt;/em&gt;文字必须是相同的&lt;em&gt;Object&lt;/em&gt;。在这些情况下，池中的数据应可用于每个类而没有任何依赖关系。&lt;/p&gt;
+&lt;p&gt;通常，堆栈存储短期的数据。它包括局部基本变量，堆对象的引用以及执行中的方法。堆允许动态分配内存，在运行时存储Java对象和JRE类。&lt;/p&gt;
+&lt;p&gt;堆允许全局访问，并且在应用程序的生存期内，堆中的数据存储可用于所有线程，而堆栈上的数据存储具有私有作用域，只有所有者线程可以访问它们。&lt;/p&gt;
+&lt;p&gt;堆栈将数据存储在连续的存储块中，并允许随机访问。如果类需要池中的随机&lt;em&gt;String&lt;/em&gt;，则由于堆栈的LIFO（后进先出）规则，该类可能不可用。相反，堆会动态分配内存，并允许我们以任何方式访问数据。&lt;/p&gt;
+&lt;p&gt;假设我们有一个由不同类型的变量组成的代码段。堆栈将存储&lt;em&gt;int&lt;/em&gt;文字的值以及&lt;em&gt;String&lt;/em&gt;和Demo对象的引用*。&lt;em&gt;任何对象的值都将存储在堆中，所有&lt;/em&gt;String*文字都放入堆中的池中：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20210324222316.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;线程完成执行后，将立即释放在堆栈上创建的变量。相反，垃圾收集器回收堆中的资源。同样，垃圾收集器从池中收集未引用的项目。&lt;/p&gt;
+&lt;p&gt;**池的默认大小在不同平台上可能会有所不同。**无论如何，它仍然比可用堆栈大小大得多。在JDK 7之前，该池是permgen空间的一部分，从JDK 7到现在，它是主堆内存的一部分。&lt;/p&gt;
+&lt;h2 id=&#34;3结论&#34;&gt;3.结论&lt;/h2&gt;
+&lt;p&gt;在这篇简短的文章中，我们了解了&lt;em&gt;String&lt;/em&gt;常量池的存储区域。堆栈和堆具有不同的特性来存储和访问数据。从内存分配到其访问和可用性，堆是最适合存储String常量池的区域。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;实际上，池从未成为堆栈内存的一部分。&lt;/strong&gt;&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

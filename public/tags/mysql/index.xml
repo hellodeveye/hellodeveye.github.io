@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>MySQL on 无常是常</title>
+        <link>https://xiaocm.com/tags/mysql/</link>
+        <description>Recent content in MySQL on 无常是常</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>XCM 陕ICP备16008414号</copyright>
+        <lastBuildDate>Sun, 12 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://xiaocm.com/tags/mysql/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>事务到底是隔离的还是不隔离的？</title>
+        <link>https://xiaocm.com/p/%E4%BA%8B%E5%8A%A1%E5%88%B0%E5%BA%95%E6%98%AF%E9%9A%94%E7%A6%BB%E7%9A%84%E8%BF%98%E6%98%AF%E4%B8%8D%E9%9A%94%E7%A6%BB%E7%9A%84/</link>
+        <pubDate>Sun, 12 Jun 2022 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/%E4%BA%8B%E5%8A%A1%E5%88%B0%E5%BA%95%E6%98%AF%E9%9A%94%E7%A6%BB%E7%9A%84%E8%BF%98%E6%98%AF%E4%B8%8D%E9%9A%94%E7%A6%BB%E7%9A%84/</guid>
+        <description>&lt;p&gt;&lt;code&gt;begin/start transaction&lt;/code&gt;命令并不是一个事务的起点，在执行到它们之后的第一个操作InnoDB表的语句，事务才真正启动。使用&lt;code&gt;start transation with consistent snapshot &lt;/code&gt;这个命令可以马上启动一个事务。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;在MySQL中有两个视图的概念：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;一个是view。它是一个用于查询语句定义的虚拟表，它的语法是：&lt;code&gt;create view ...&lt;/code&gt;。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;另一个是InnoDB 在实现MVCC时用到的一致性&lt;strong&gt;读视图&lt;/strong&gt;，即 consistent read view，用于支持RC（Read Commit 读提交）和RR（Repeatable 可重复读）隔离级别实现的。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;快照在-mvcc-里是怎么工作的&#34;&gt;“快照”在 MVCC 里是怎么工作的？&lt;/h2&gt;
+&lt;p&gt;在可重复读隔离级别下，事务在启动的时候就“拍个快照”，这个快照时基于整库的。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;如果库有100G，那么启动一个事务就需要拷贝100G数据，这样实现是不现实的。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;快照是怎么实现的&#34;&gt;快照是怎么实现的？&lt;/h3&gt;
+&lt;p&gt;InnoDB 里面每个事务都有一个唯一的事务ID，叫做transaction id，它是在事务开始的时候向InnoDB 的事务系统申请的，&lt;strong&gt;是按照顺序严格递增的。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。&lt;/p&gt;
+&lt;p&gt;也就是说，数据表中的一行记录，其实可能有多个版本 (row)，每个版本有自己的 row trx_id。&lt;/p&gt;
+&lt;p&gt;如图下所示，就是一个记录被多个事务连续更新后的状态。
+&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20220615111955.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;图中的三个虚线箭头，就是undo log；而 V1、V2、V3 并不是物理上真实存在的，而是每次需要的时候根据当前版本和 undo log 计算出来的。比如，需要 V2 的时候，就是通过 V4 依次执行 U3、U2 算出来。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;事务启动的时候，以启动的时刻为准，如果一个数据版本低于在事务启动之前生成的，那就可见，如果在启动之后才生成的，那就不可见。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;在实现上，InnoDB为每个事务构造了一个数据，用来保存这个事务的启动瞬间，当前正在“活跃”的所有事务ID，“活跃”指的是，启动了但还没提交。&lt;/p&gt;
+&lt;p&gt;数组里面事务 ID 的最小值记为低水位，当前系统里面已经创建过的事务 ID 的最大值加 1 记为高水位。&lt;/p&gt;
+&lt;p&gt;这个视图数组和高水位，就组成了当前事务的一致性视图（read-view）。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20220615113104.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;这样，对于当前事务的启动瞬间来说，一个数据版本的 row trx_id，有以下几种可能：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;如果落在绿色部分，表示这个版本是已提交的事务或者是当前事务自己生成的，这个数据是可见的；&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如果落在红色部分，表示这个版本是由将来启动的事务生成的，是肯定不可见的；&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如果落在黄色部分，那就包括两种情况
+a. 若 row trx_id 在数组中，表示这个版本是由还没提交的事务生成的，不可见；
+b. 若 row trx_id 不在数组中，表示这个版本是已经提交了的事务生成的，可见。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;** InnoDB 利用了“所有数据都有多个版本”的这个特性，实现了“秒级创建快照”的能力。**&lt;/p&gt;
+&lt;h2 id=&#34;更新逻辑&#34;&gt;更新逻辑&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;更新数据都是先读后写的，而这个读，只能读当前的值，称为“当前读”（current read）。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;当前读，&lt;strong&gt;读取的是最新版本&lt;/strong&gt;，并且需要先获取对应记录的锁，如以下这些 SQL 类型：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;select ... lock in share mode
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;select ... for update
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;update 、delete 、insert
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;例如，要 update 一条记录，在事务执行过程中，如果不加锁，那么另一个事务可以 delete 这条数据并且能成功 commit ，就会产生冲突了。所以 update 的时候肯定要是当前读，得到最新的信息并且锁定相应的记录。&lt;/p&gt;
+&lt;h2 id=&#34;事务的可重复读的能力是怎么实现的&#34;&gt;事务的可重复读的能力是怎么实现的？&lt;/h2&gt;
+&lt;p&gt;可重复读的核心就是一致性读（consistent read）；而事务更新数据的时候，只能用当前读。如果当前的记录的行锁被其他事务占用的话，就需要进入锁等待。&lt;/p&gt;
+&lt;p&gt;而读提交的逻辑和可重复读的逻辑类似，它们最主要的区别是：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;在可重复读隔离级别下，只需要在事务开始的时候创建一致性视图，之后事务里的其他查询都共用这个一致性视图；&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在读提交隔离级别下，每一个语句执行前都会重新算出一个新的视图。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        <item>
+        <title>行锁功过：怎么减少行锁对性能的影响？</title>
+        <link>https://xiaocm.com/p/%E8%A1%8C%E9%94%81%E5%8A%9F%E8%BF%87%E6%80%8E%E4%B9%88%E5%87%8F%E5%B0%91%E8%A1%8C%E9%94%81%E5%AF%B9%E6%80%A7%E8%83%BD%E7%9A%84%E5%BD%B1%E5%93%8D/</link>
+        <pubDate>Sun, 12 Jun 2022 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/%E8%A1%8C%E9%94%81%E5%8A%9F%E8%BF%87%E6%80%8E%E4%B9%88%E5%87%8F%E5%B0%91%E8%A1%8C%E9%94%81%E5%AF%B9%E6%80%A7%E8%83%BD%E7%9A%84%E5%BD%B1%E5%93%8D/</guid>
+        <description>&lt;h2 id=&#34;从两阶段锁说起&#34;&gt;从两阶段锁说起&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20220614094047.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;实际上事务B的update语句会被阻塞，直至事务A执行commit之后，事务B才能继续执行。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;在InnoDB事务中，行锁是在需要的时候才加上的，但并不是不需要了就立刻释放，而是等到事务结束才释放，这就是两阶段锁协议。&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;如果你的事务中需要锁多个行，要把最可能造成冲突、最可能影响并发的锁尽量往后放。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;死锁和死锁检测&#34;&gt;死锁和死锁检测&lt;/h2&gt;
+&lt;p&gt;当并发系统出现资源循环依赖，就会导致这几个线程处于无限等待状态，称为&lt;strong&gt;死锁&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20220614095944.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;两种解决死锁的策略：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;一种策略是直接进入等待，直至超时。这个超时时间可以通过参数&lt;code&gt;innodb_lock_wait_timeout&lt;/code&gt;来设置。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;另外一种策略是发起死锁检测，发现死锁后，主动回滚死锁链条中的某一个事务，让其他事务得以继续执行。将参数&lt;code&gt;innodb_deadlock_detect&lt;/code&gt;设置为on，表示开启这个逻辑。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;使用&lt;code&gt;show variables like &#39;innodb_deadlock_detect&#39;;&lt;/code&gt;可以查看系统参数。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;问题&#34;&gt;问题&lt;/h2&gt;
+&lt;p&gt;如果你要删除一个表里面的前 10000 行数据，有以下三种方法可以做到：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;第一种，直接执行 delete from T limit 10000;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;第二种，在一个连接中循环执行 20 次 delete from T limit 500;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;第三种，在 20 个连接中同时执行 delete from T limit 500。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;一般会选择第二种。&lt;/p&gt;
+&lt;p&gt;第一种方式单个语句占用时间长，锁的时间也比较长；而且大事务还会导致主从延迟。&lt;/p&gt;
+&lt;p&gt;第三种方式会人为造成锁冲突。&lt;/p&gt;
+</description>
+        </item>
+        <item>
+        <title>深入浅出索引（下）</title>
+        <link>https://xiaocm.com/p/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%B4%A2%E5%BC%95%E4%B8%8B/</link>
+        <pubDate>Wed, 08 Jun 2022 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%B4%A2%E5%BC%95%E4%B8%8B/</guid>
+        <description>&lt;h2 id=&#34;覆盖索引&#34;&gt;覆盖索引&lt;/h2&gt;
+&lt;p&gt;如果执行语句如:&lt;code&gt;select ID from T where k between 3 and 5&lt;/code&gt;，这是只需要查ID的值，而ID的值已经在k索引树上了，因此可以直接提供查询结果，不需要回表，这种情况我们称为&lt;strong&gt;覆盖索引&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;由于覆盖索引可以减少树的搜索次数，显著提升查询性能，所以使用覆盖索引是一个常用的性能优化手段。&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&#34;最左前缀原则&#34;&gt;最左前缀原则&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20220608105848.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;
+可以看到，索引是按照索引定义里面出现的字段排序的。&lt;/p&gt;
+&lt;p&gt;只要满足最左前缀，就可以利用索引来加速检索。这个最左前缀可以是联合索引的最左 N 个字段，也可以是字符串索引的最左 M 个字符。&lt;/p&gt;
+&lt;h3 id=&#34;在建立联合索引的时候如何安排索引内的字段顺序&#34;&gt;在建立联合索引的时候，如何安排索引内的字段顺序?&lt;/h3&gt;
+&lt;p&gt;第一原则是，如果通过调整顺序，可以少维护一个索引，那么这个顺序往往就是需要优先考虑采用的。&lt;/p&gt;
+&lt;h2 id=&#34;索引下推&#34;&gt;索引下推&lt;/h2&gt;
+&lt;p&gt;MySQL 5.6 引入的索引下推优化（index condition pushdown)， 可以在索引遍历过程中，对索引中包含的字段先做判断，直接过滤掉不满足条件的记录，减少回表次数。&lt;/p&gt;
+&lt;p&gt;例如以下查询语句：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mysql&amp;gt; select * from tuser where name like &amp;#39;张 %&amp;#39; and age=10 and ismale=1;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;center&gt;无索引下推&lt;/center&gt;
+&lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20220608110650.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;center&gt;有索引下推&lt;/center&gt;
+&lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20220608110743.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;可以明显的看出，有索引下推的情况下减少了回表的次数。&lt;/p&gt;
+</description>
+        </item>
+        <item>
+        <title>深入浅出索引（上）</title>
+        <link>https://xiaocm.com/p/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%B4%A2%E5%BC%95%E4%B8%8A/</link>
+        <pubDate>Tue, 07 Jun 2022 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%B4%A2%E5%BC%95%E4%B8%8A/</guid>
+        <description>&lt;p&gt;&lt;strong&gt;索引的出现其实就是为了提高数据查询的效率，就像书的目录一样。&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&#34;索引常见模型&#34;&gt;索引常见模型&lt;/h2&gt;
+&lt;h3 id=&#34;哈希表&#34;&gt;哈希表&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20220607160718.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;哈希表是一种以键值对存储的数据结构，只要输入key，就可以根据key找到对应的vaule。不可避免的是会存在hash冲突，处理这种情况方法是拉出一个链表。（类比Java中HashMap结构）。&lt;/p&gt;
+&lt;p&gt;优点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;查找速度快，新增速度也快。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;缺点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;因为不是有序的，如果需要范围查询，速度是很慢的。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;哈希表这种结构适用于只有等值查询的场景，比如 Memcached 及其他一些 NoSQL 引擎。&lt;/p&gt;
+&lt;h3 id=&#34;有序数组&#34;&gt;有序数组&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20220607160727.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;有序数组查询时，可以使用二分法进行搜索，时间复杂度是O(log(N))，并且有序数据还支持范围查询。但是需要插入的时候，就需要进行数据挪动（因为要保证顺序），成本是非常高的。&lt;/p&gt;
+&lt;p&gt;因此，&lt;strong&gt;有序数组索引只适用于静态存储引擎&lt;/strong&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;搜索树&#34;&gt;搜索树&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20220607160741.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;二叉树的特点是：每个节点的左儿子小于父节点，父节点又小于右儿子。这样如果你要查 ID_card_n2 的话，按照图中的搜索顺序就是按照 UserA -&amp;gt; UserC -&amp;gt; UserF -&amp;gt; User2 这个路径得到。这个时间复杂度是 O(log(N))。&lt;/p&gt;
+&lt;p&gt;当然为了维持 O(log(N)) 的查询复杂度，你就需要保持这棵树是平衡二叉树。为了做这个保证，更新的时间复杂度也是 O(log(N))。&lt;/p&gt;
+&lt;p&gt;二叉树的主要缺点是：当数据量很大的时候，树高会非常高，假如树高为20。一次查询可能需要访问 20 个数据块。在机械硬盘时代，从磁盘随机读一个数据块需要 10 ms 左右的寻址时间。也就是说，对于一个 100 万行的表，如果使用二叉树来存储，单独访问一个行可能需要 20 个 10 ms 的时间，这个查询可真够慢的。&lt;/p&gt;
+&lt;h2 id=&#34;innodb-的索引模型&#34;&gt;InnoDB 的索引模型&lt;/h2&gt;
+&lt;p&gt;在InnoDB中，表都是根据主键顺序以索引的形式存放的，这种存储方式的表称为索引组织表。&lt;strong&gt;InnoDB使用的是B+树索引模型&lt;/strong&gt;，所以数据都是存储在B+树中的。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;每一个索引在InnoDB中对应一颗B+树。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20220607162535.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;从上图来看，索引类型分为：主键索引和非主键索引。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;主键索引在InnoDB中也成为聚簇索引（clustered index），非主键索引在InnoDB中成为二级索引（secondary index）。&lt;/strong&gt;&lt;/p&gt;
+&lt;h3 id=&#34;基于主键索引和非主键索引搜索的区别&#34;&gt;基于主键索引和非主键索引搜索的区别：&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;基于主键索引查询只需要搜索对应的这颗B+树。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;基于非主键索引首先先查到对应值的ID（假设ID为主键），再到ID索引树中搜索一次，这个过程称为回表。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;索引的维护&#34;&gt;索引的维护&lt;/h2&gt;
+&lt;h3 id=&#34;页分裂&#34;&gt;页分裂&lt;/h3&gt;
+&lt;p&gt;B+ 树为了维护索引的有序性，在插入新值的时候需要做必要的维护，如果插入的数据需要在页的中间，那么就需要进行数据的挪动，空出位置，如果插入的页刚好满了，就会触发&lt;strong&gt;页分裂&lt;/strong&gt;，页分裂除了会影响性能，而且会使整体空间利用率降低50%（因为之前一个页，分裂成了两个）。&lt;/p&gt;
+&lt;p&gt;当然有分裂就有合并。当相邻两个页由于删除了数据，利用率很低之后，会将数据页做合并。合并的过程，可以认为是分裂过程的逆过程。&lt;/p&gt;
+&lt;p&gt;基于业务字段做主键，往往不能保证插入的有序性，更容易造成页分裂，基于自增ID做主键，每插入一条记录都是追加操作，一般不会触发叶子结点分裂。由于每个非主键索引叶子结点都是主键的值，如果用整型做主键，只需要4个字节，如果是长整型，则是8个字节。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;显然，主键长度越小，普通索引的叶子节点就越小，普通索引占用的空间也就越小。&lt;/strong&gt;&lt;/p&gt;
+</description>
+        </item>
+        <item>
+        <title>事务隔离：为什么你改了我还看不见？</title>
+        <link>https://xiaocm.com/p/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%A0%E6%94%B9%E4%BA%86%E6%88%91%E8%BF%98%E7%9C%8B%E4%B8%8D%E8%A7%81/</link>
+        <pubDate>Tue, 07 Jun 2022 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%A0%E6%94%B9%E4%BA%86%E6%88%91%E8%BF%98%E7%9C%8B%E4%B8%8D%E8%A7%81/</guid>
+        <description>&lt;p&gt;&lt;strong&gt;ACID (Atomicity、Consistency、Isolation、Durability)即原子性、一致性、隔离性、持久性。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;当数据库上有多个事务同时执行的时候，就可能会出现脏读（dirty read）、不可重复读（nonrepeatable read）、幻读（phantom read）的问题。&lt;/p&gt;
+&lt;h3 id=&#34;隔离级别&#34;&gt;隔离级别&lt;/h3&gt;
+&lt;p&gt;SQL标准的隔离级别包括：读未提交（read uncommitted）、读提交（read committed）、可重复度（repeatable read）和串行化（serializable）。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;读未提交：一个事务还没有提交时，它做的变更就能被别的事务看到。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;读提交：一个事务提交之后，它做的变更才会被其他事务看到。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;可重复读：一个事务执行过程中看到的数据，总是跟这个事务启动的时候看到的数据一致。当然在可重复读的隔离级别下，未提交的变更对其他事务也是不可见的。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;串行化：对同一条记录“写”会加“写锁”，“读”会加“读锁”。当出现读写冲突的时候，后访问的事务必须等待前一个事务执行完成，才能继续执行。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;事务隔离的实现&#34;&gt;事务隔离的实现&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;数据库隔离的实现上会创建一个视图，访问的时候以视图的逻辑结果为准。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;“可重复读”&lt;strong&gt;隔离级别下，这个视图是在&lt;/strong&gt;事务启动时创建的&lt;/strong&gt;，整个事务存在期间都会用这个视图。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;“读提交”&lt;strong&gt;隔离级别下，这个视图是在每个SQL语句&lt;/strong&gt;开始执行的时候创建的&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;**“读未提交”**隔离级别下直接返回记录上的最新值，&lt;strong&gt;没有视图的概念&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;“串行化”&lt;strong&gt;的隔离级别下直接使用&lt;/strong&gt;加锁的方式避免并行访问&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;在 MySQL 中，实际上每条记录在更新的时候都会同时记录一条回滚操作。记录上的最新值，通过回滚操作，都可以得到前一个状态的值。&lt;/p&gt;
+&lt;p&gt;假设一个值从 1 被按顺序改成了 2、3、4，在回滚日志里面就会有类似下面的记录。
+&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20220607152436.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;当前值是 4，但是在查询这条记录的时候，不同时刻启动的事务会有不同的 read-view。如图中看到的，在视图 A、B、C 里面，这一个记录的值分别是 1、2、4，同一条记录在系统中可以存在多个版本，就是数据库的多版本并发控制（MVCC）。对于 read-view A，要得到 1，就必须将当前值依次执行图中所有的回滚操作得到。&lt;/p&gt;
+&lt;p&gt;同时你会发现，即使现在有另外一个事务正在将 4 改成 5，这个事务跟 read-view A、B、C 对应的事务是不会冲突的。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;回滚日志系统会判断，当系统中没有比这个回滚日志更早的read-view的时候，日志会被删除。&lt;/strong&gt;&lt;/p&gt;
+&lt;h3 id=&#34;建议不要使用长事务&#34;&gt;建议不要使用长事务&lt;/h3&gt;
+&lt;p&gt;长事务意味着系统里面会存在很老的事务视图，由于这些事务随时可能访问数据库里面的任何数据，所以这个事务提交之前，数据库里面它可能用到的回滚记录都必须保留，这就会导致大量占用存储空间。&lt;/p&gt;
+&lt;p&gt;长事务还会占用锁资源，也可能拖垮整个库。&lt;/p&gt;
+&lt;p&gt;通过以下语句可以查询持续时间超过60s的事务。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;select * from information_schema.innodb_trx where TIME_TO_SEC(timediff(now(),trx_started))&amp;gt;60
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;事务的启动方式&#34;&gt;事务的启动方式&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;显式启动，&lt;code&gt;begin或start transaction&lt;/code&gt;。配套的提交语句是&lt;code&gt;commit&lt;/code&gt;，回滚语句是&lt;code&gt;commit&lt;/code&gt;。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;set autocommit=0&lt;/code&gt;，这个命令会将这个线程自动提交关闭。意味着如果你只执行select语句，这个事务就启动了，而且不会自动提交。这个事务持续存在直到你主动执行commit或rollback语句，或者断开连接。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;建议使用&lt;code&gt;set autocommit=1&lt;/code&gt;，通过显式语句的方式启动事务。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;在 autocommit 为 1 的情况下，用 begin 显式启动的事务，如果执行 commit 则提交事务。如果执行 commit work and chain，则是提交事务并自动启动下一个事务，这样也省去了再次执行 begin 语句的开销。同时带来的好处是从程序开发的角度明确地知道每个语句是否处于事务中。&lt;/p&gt;
+</description>
+        </item>
+        <item>
+        <title>日志系统：一条SQL更新语句是如何执行的?</title>
+        <link>https://xiaocm.com/p/%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E4%B8%80%E6%9D%A1sql%E6%9B%B4%E6%96%B0%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84/</link>
+        <pubDate>Mon, 06 Jun 2022 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E4%B8%80%E6%9D%A1sql%E6%9B%B4%E6%96%B0%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84/</guid>
+        <description>&lt;h3 id=&#34;redo-log重做日志&#34;&gt;redo log（重做日志）&lt;/h3&gt;
+&lt;p&gt;InnoDB 的 redo log 是固定大小的，比如可以配置为一组 4 个文件，每个文件的大小是 1GB，那么总共就可以记录 4GB 的操作。从头开始写，写到末尾就又回到开头循环写，如下面这个图所示。
+&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20220606110553.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;write pos 是当前记录的位置，一边写一边后移，写到第 3 号文件末尾后就回到 0 号文件开头。checkpoint 是当前要擦除的位置，也是往后推移并且循环的，擦除记录前要把记录更新到数据文件。&lt;/p&gt;
+&lt;p&gt;有了 redo log，InnoDB 就可以保证即使数据库发生异常重启，之前提交的记录都不会丢失，这个能力称为crash-safe。&lt;/p&gt;
+&lt;h3 id=&#34;binlog归档日志&#34;&gt;binlog（归档日志）&lt;/h3&gt;
+&lt;p&gt;binlog没有crash-safe能力，只能用于归档。&lt;/p&gt;
+&lt;p&gt;这两种日志的不同点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;redo log是InnoDB引擎特有的，binlog是MySQL的server层实现的，所有引擎都可以使用。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;redo log是物理日志，记录的是“在某个数据页上做了什么修改”；binlog 是逻辑日志，记录的是这个语句的原始逻辑。&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;redo log 是循环写的，空间固定会用完；binlog 是可以追加写入的。“追加写”是指 binlog 文件写到一定大小后会切换到下一个，并不会覆盖以前的日志。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;两阶段提交&#34;&gt;两阶段提交&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mysql&amp;gt; update T set c=c+1 where ID=2;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;执行器和 InnoDB 引擎在执行这个简单的 update 语句时的内部流程:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;执行器先找引擎取 ID=2 这一行。ID 是主键，引擎直接用树搜索找到这一行。如果 ID=2 这一行所在的数据页本来就在内存中，就直接返回给执行器；否则，需要先从磁盘读入内存，然后再返回。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;执行器拿到引擎给的行数据，把这个值加上 1，比如原来是 N，现在就是 N+1，得到新的一行数据，再调用引擎接口写入这行新数据。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;引擎将这行新数据更新到内存中，同时将这个更新操作记录到 redo log 里面，此时 redo log 处于 prepare 状态。然后告知执行器执行完成了，随时可以提交事务。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;执行器生成这个操作的 binlog，并把 binlog 写入磁盘。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;执行器调用引擎的提交事务接口，引擎把刚刚写入的 redo log 改成提交（commit）状态，更新完成。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;流程图如下所示：
+&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20220606112558.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;h3 id=&#34;如何让数据库恢复到半个月任意一秒&#34;&gt;如何让数据库恢复到半个月任意一秒？&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;首先，找到最近的一次全量备份，如果你运气好，可能就是昨天晚上的一个备份，从这个备份恢复到临时库；&lt;/li&gt;
+&lt;li&gt;然后，从备份的时间点开始，将备份的 binlog 依次取出来，重放到中午误删表之前的那个时刻。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;总结&#34;&gt;总结&lt;/h3&gt;
+&lt;p&gt;建议&lt;code&gt;innodb_flush_log_at_trx_commit&lt;/code&gt; 这个参数设置成 1 的时候，表示每次事务的 redo log 都直接持久化到磁盘，这样可以保证 MySQL 异常重启之后数据不丢失。&lt;/p&gt;
+&lt;p&gt;建议&lt;code&gt;sync_binlog &lt;/code&gt;这个参数设置成 1 ，表示每次事务的 binlog 都持久化到磁盘，这样可以保证 MySQL 异常重启之后 binlog 不丢失。&lt;/p&gt;
+&lt;iframe id=&#34;embed_dom&#34; name=&#34;embed_dom&#34; frameborder=&#34;0&#34; style=&#34;display:block;width:715px; height:245px;&#34; src=&#34;https://www.processon.com/embed/629f14fd07912907215003f8&#34;&gt;&lt;/iframe&gt;
+</description>
+        </item>
+        <item>
+        <title>基础架构：一条SQL语句是如何执行的?</title>
+        <link>https://xiaocm.com/p/%E5%9F%BA%E7%A1%80%E6%9E%B6%E6%9E%84%E4%B8%80%E6%9D%A1sql%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84/</link>
+        <pubDate>Sun, 05 Jun 2022 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/%E5%9F%BA%E7%A1%80%E6%9E%B6%E6%9E%84%E4%B8%80%E6%9D%A1sql%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84/</guid>
+        <description>&lt;h2 id=&#34;一条sql语句是如何执行的&#34;&gt;一条SQL语句是如何执行的?&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mysql&amp;gt; select * from T where ID=10；
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20220605212825.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;MySQL 分为Server层和存储引擎两部分。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Server 层包括连接器、查询缓存、分析器、优化器、执行器等。涵盖MySQL的大多数核心服务功能，以及所有内置函数（如日期、时间、数字和加密函数等），所有跨存储引擎的功能都在这一层实现，比如存储过程、触发器、视图等。&lt;/p&gt;
+&lt;p&gt;存储引擎是插件式的，支持InnoDB、MyISAM、Memory等。从MySQL5.5.5版本以后默认存储引擎为InnoDB。&lt;/p&gt;
+&lt;h3 id=&#34;连接器&#34;&gt;连接器&lt;/h3&gt;
+&lt;p&gt;连接器主要负责客户端和MySQL服务端进行连接的。可以通过&lt;code&gt;show processlist&lt;/code&gt;查看连接信息，客户端和服务端默认连接超时为8小时，可以通过过&lt;code&gt;wait_timeout&lt;/code&gt;参数配置。&lt;/p&gt;
+&lt;p&gt;长连接使用一段时间后会导致MySQL内存长得很快，主要是因为MySQL在执行过程中临时使用的内存是管理在连接对象里面。这些资源会在连接重新断开的时候才释放。
+解决方案如下:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;定期断开长连接，使用一段时间，或者程序里面判断执行过一个占用内存大的查询后，断开连接，之后要查询再重连。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;MySQL5.7以后，可以在每次执行一个比较大的操作后，通过执行&lt;code&gt;mysql_reset_connection&lt;/code&gt;来重新初始化连接资源。这个过程不需要重连和重新做权限验证，但是会将连接恢复到刚刚创建完时的状态。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;查询缓存&#34;&gt;查询缓存&lt;/h3&gt;
+&lt;p&gt;之前执行的查询结果可能会以key-value对的形式缓存在内存中，如果查询能够直接在缓存中找到key，那么会直接把value返回给客户端。&lt;/p&gt;
+&lt;p&gt;*** 大多数情况下不建议使用查询缓存。***&lt;/p&gt;
+&lt;p&gt;如果表中的数据修改的比较频繁，查询缓存的命中率就会非常的低。MySQL提供了以下方式使用查询缓存：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mysql&amp;gt; select SQL_CACHE * from T where ID=10；
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;em&gt;&lt;strong&gt;注意： MySQL8.0版本直接将查询缓存的整块功能删掉了。&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;h3 id=&#34;分析器&#34;&gt;分析器&lt;/h3&gt;
+&lt;p&gt;分析器主要是分析语法是否正确，如果不正确就会收到“You have an error in your SQL syntax”的错误提醒,一般语法错误会提示第一个出现错误的位置，所以你要关注的是紧接“use near”的内容。如果查询语句中包含表中不存在的字段，也是在这一步分析。&lt;/p&gt;
+&lt;h3 id=&#34;优化器&#34;&gt;优化器&lt;/h3&gt;
+&lt;p&gt;优化器的作用主要是决定使用那个索引，或者在一个语句有多表关联（join）的时候，决定各个表的连接顺序。&lt;/p&gt;
+&lt;h3 id=&#34;执行器&#34;&gt;执行器&lt;/h3&gt;
+&lt;p&gt;开始执行的时候，要先判断你对这个表有没有执行的查询权限，如果没有，就会返回没有权限的错误。使用慢SQL查询日志中看到&lt;code&gt;rows_examined&lt;/code&gt;字段，表示执行过程中扫描了多少行，但有些情况下执行器调用一次，在引擎内部则扫描多行，因此&lt;strong&gt;引擎扫描行数跟rows_examined并不是完全相同&lt;/strong&gt;。&lt;/p&gt;
+&lt;iframe id=&#34;embed_dom&#34; name=&#34;embed_dom&#34; frameborder=&#34;0&#34; style=&#34;display:block;width:715.781px; height:245px;&#34; src=&#34;https://www.processon.com/embed/629cb777e401fd1c3857b913&#34;&gt;&lt;/iframe&gt;
+</description>
+        </item>
+        <item>
+        <title>MySQL常见问题处理</title>
+        <link>https://xiaocm.com/p/mysql%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86/</link>
+        <pubDate>Sun, 26 Sep 2021 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/mysql%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86/</guid>
+        <description>&lt;ul&gt;
+&lt;li&gt;关于MySQL出现&lt;code&gt;lock wait timeout exceeded; try restarting transaction&lt;/code&gt; 的解决方案。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;select * from information_schema.innodb_trx;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;kill $trx_mysql_thread_id;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description>
+        </item>
+        <item>
+        <title>MySQL常用命令</title>
+        <link>https://xiaocm.com/p/mysql%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</link>
+        <pubDate>Tue, 16 Mar 2021 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/mysql%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</guid>
+        <description>&lt;h3 id=&#34;创建表空间&#34;&gt;创建表空间&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;./mysql -uroot -p -hlocalhost -P3306
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mysql&amp;gt; CREATE DATABASE cicro DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mysql&amp;gt; CREATE USER &amp;#39;cicrouser&amp;#39;@&amp;#39;%&amp;#39; IDENTIFIED BY &amp;#39;cicropassword&amp;#39;;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mysql&amp;gt; GRANT ALL PRIVILEGES ON cicro.* TO &amp;#39;cicrouser&amp;#39;@&amp;#39;%&amp;#39;;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mysql&amp;gt; flush privileges;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description>
+        </item>
+        
+    </channel>
+</rss>

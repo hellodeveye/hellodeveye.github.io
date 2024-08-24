@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>测试 on 无常是常</title>
+        <link>https://xiaocm.com/tags/%E6%B5%8B%E8%AF%95/</link>
+        <description>Recent content in 测试 on 无常是常</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>XCM 陕ICP备16008414号</copyright>
+        <lastBuildDate>Mon, 30 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://xiaocm.com/tags/%E6%B5%8B%E8%AF%95/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>程序员的测试课</title>
+        <link>https://xiaocm.com/p/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E6%B5%8B%E8%AF%95%E8%AF%BE/</link>
+        <pubDate>Mon, 30 May 2022 00:00:00 +0000</pubDate>
+        
+        <guid>https://xiaocm.com/p/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E6%B5%8B%E8%AF%95%E8%AF%BE/</guid>
+        <description>&lt;h3 id=&#34;时代在要求我们写测试&#34;&gt;时代在要求我们写测试&lt;/h3&gt;
+&lt;p&gt;因为软件变得越来越复杂，测试可以让我们在复杂的软件开发中稳步前行。另一方面软件测试可以让我们在长期的过程中不断回归，让每一步走的更稳。&lt;/p&gt;
+&lt;p&gt;程序员圈子流传着一个关于测试的段子：** 每个程序员在修改代码时都希望有测试，而在写代码时，都不想写测试。**&lt;/p&gt;
+&lt;h3 id=&#34;大部分程序员都不会写测试&#34;&gt;大部分程序员都不会写测试&lt;/h3&gt;
+&lt;p&gt;很多程序员反对写测试，本质上的原因是因为他们不会写测试。&lt;/p&gt;
+&lt;h3 id=&#34;你的代码质量真的高吗&#34;&gt;你的代码质量真的高吗？&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;经过测试的代码，质量会更高；&lt;/li&gt;
+&lt;li&gt;要想写好测试，代码本身质量也要高。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;*** 如果你连测试都做不好，你对自己代码的信心从何而来呢？***&lt;/p&gt;
+&lt;h3 id=&#34;学习写测试&#34;&gt;学习写测试&lt;/h3&gt;
+&lt;p&gt;*** 最好的办法就是跟着会写测试的人一起写一段时间 ***&lt;/p&gt;
+&lt;p&gt;思考：可以查阅优秀的开源代码是如何写测试的。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;todo项目的一些基本准备工作&#34;&gt;ToDo项目的一些基本准备工作&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;一个项目的自动化；&lt;/li&gt;
+&lt;li&gt;对需求进行简单设计。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;为什么需要自动化呢？简单来说是为了防止一些低级错误。&lt;/p&gt;
+&lt;p&gt;*** 把核心的业务部分和命令行呈现的部分分开。***&lt;/p&gt;
+&lt;h3 id=&#34;任务分解&#34;&gt;任务分解&lt;/h3&gt;
+&lt;p&gt;从离我们需求最近的入口开始。&lt;/p&gt;
+&lt;p&gt;*** 要想测试一个函数，一个函数最好是可测的。什么是可测的？就是通过函数的接口设计，我们给出特定的输入，它能给我们相应的输出。所以，一个函数最好是有返回值的。***&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://time.geekbang.org/column/article/84374&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Fail Fast 原则&lt;/a&gt;
+** 一条设计规范：对于输入参数的检测，由入口部分代码进行处理。 **
+** 一条设计规范：Repository 的问题以运行时异常的形式抛出，业务层不需要做任何处理。**&lt;/p&gt;
+&lt;p&gt;项目刚开始时，我们要准备哪些内容：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;项目的自动化；&lt;/li&gt;
+&lt;li&gt;针对需求进行初步的设计。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;着手编写代码时，我们要怎么做呢？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;对要实现的需求进行任务分解；&lt;/li&gt;
+&lt;li&gt;在一个具体的需求任务中，我们可以从需求入口开始入手；&lt;/li&gt;
+&lt;li&gt;设计一个可测试的函数；&lt;/li&gt;
+&lt;li&gt;针对具体的函数，考虑测试场景；&lt;/li&gt;
+&lt;li&gt;针对具体的测试场景，将场景具象化成测试用例。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在梳理的过程中，我们还会针对一些统一的情况作出一些约定，成为项目整体的设计规范，比如，在这里我们约定：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;对于输入参数的检测，由入口部分代码进行处理；&lt;/li&gt;
+&lt;li&gt;Repository 的问题以运行时异常的形式抛出，业务层不需要做任何处理。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在编码的过程中，我们也看到了：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;根据不断增加的需求，逐渐改动我们的设计，这就是演化式设计的基本做法；&lt;/li&gt;
+&lt;li&gt;我们对待测试也像对待代码一样，会消除代码中存在的一些坏味道。&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

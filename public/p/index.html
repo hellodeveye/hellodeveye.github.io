@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='title: 《刻意练习》：以学习编程为例 date: 2021-01-17 19:07:59 tags: 转载 categories: 读书
+转载自: https://juejin.im/post/5c3ca16ff265da617573f9a4
+《刻意练习》是一本神奇的魔法书，它用大量的事实案例和数据来证明了刻意练习能给一个人带来的巨大改变。更为难能可贵的是，它不仅仅只是介绍刻意练习的好处，还给读者介绍了刻意练习的方法和注意事项，可以说是干货满满的一本书。
+本文想以“学习编程”为例，结合《刻意练习》这本书教给我们的方式方法，阐述如何通过刻意练习来提高自己的编程水平。
+关于练习 **不断重复只是“天真的练习”，无法带来进步。“正确的练习”需要好导师、有目标、有反馈。**所以如果想要提高编程水平，光靠一味闷着头努力写代码是不够的，有些人写了几年的CRUD，可能整体的技术水平还不及刚毕业的同学。
+一个好的导师很难得，他不仅要自己在编程水平是有一定的成就，还应该具有一些教育方面的经验，才能更好的指导你。一般来说，大一点的公司都会有老人带新人的机制，可以利用这个来找一个比较好的前辈带一带。另外就是通过看书或看视频其实也是一种很不错的学习方式，写书和出视频的老师自然是具备上述条件的。
+有目标指的是应该要有明确的目标，而不是一个宽泛的目标。比如“我要提高Java水平”明显就是一个宽泛的目标，无法量化。明确的目标应该是什么样子呢？比如，我要学习JVM的基础知识，我要学完23种设计模式等等。一个好的目标还应该是可分解的，有时间或成果量化的。比如，我需要在一个月内学习完Java多线程技术，第一周学习多线程模型，第二周学习多线程基本的类和接口，第三周阅读JDK里面关于多线程方面的工具类的源码，第四周写多线程案例Demo，最后产出一个Java多线程系列笔记或者博客。
+有反馈指的是可以量化的反馈。比如写一篇技术博客，有多少阅读量，点赞量，评论量？写一个开源项目有多少star，做一个LeetCode有没有通过，耗时如何？
+上述算是对“有目的的练习”的一个阐述。刻意练习是在有目的的练习基础上的。总结起来，有目的的练习应该具有以下四个特点：
+1.有目的的练习具有定义明确的特定目标 2.有目的的练习是专注的 3.有目的的练习包含反馈 4.有目的的练习需要走出舒适区
+对于任何类型的练习，这是一条基本的真理：如果你从来不迫使自己走出舒适区，便永远无法进步。
+关于心理表征 《刻意练习》这本书用了大量的篇幅来介绍心理表征。作者认为，刻意练习的核心之一在于通过练习来创建大量的心理表征，然后再使用这些心理表征反过来帮助练习。
+那心理表征到底是什么？
+我认为**它是一个人学习某样东西的时候，自己心中形成的一个体系架构。**比如我们学习算法，就会形成一个关于算法的体系架构，也就是心理表征。而当我们再学习到Mysql的底层索引原理的时候，就会想到算法关于平衡树方面的知识；当我们学习JDK源码里关于集合框架的时候，就会想到链表、栈与队列、红黑树等等。
+我们的知识形成了一个循环，学得越多，懂得越多。当我们积累了大量的知识以后，再学一样有关联的东西，就能快速学会。
+刻意练习 刻意练习提倡“边干边学”，**它使人们熟悉练习的习惯，并思考如何练习。**这与我们学习编程的理念是一样的，几乎没有人会对你说：你只需要看书，看博客，看视频就能学会编程。有经验的前辈一般会告诉你，要有输入，也要有输出。学习了的东西，要通过写代码或者做笔记或者写博客的方式，让知识变成你自己的，更加牢固。
+你通过写代码，不断地写代码来提高自己的编程水平，然后通过思考，反思来决定该如何写代码才能写得更好。
+传统的方法也一直是先找出关于正确方法的信息，然后很大程度上让学生去运用那些知识。刻意练习则完全相反，它只聚焦于绩效和表现，以及怎样提高绩效和表现。
+编程也是一样，老板和上级其实真正在意的并不是你懂多少理论，而是你写得代码质量好不好，你能不能快速地实现他们需要的功能，能不能解决技术难题。
+你的代码写得比别人快，你的代码写得比别人漂亮，你能快速解决别人不能解决的难题，那你就牛逼。
+关于专注与坚持 刻意练习里面有一个观点颠覆了我以前的认知。我一度认为，一个人能不能专注，能不能坚持做一件事，除了热爱，那必然是意志力越高的人越能专注和坚持。
+然而刻意练习告诉我，**意志力根本不存在！**所谓意志力，其实是保持动机与专注的结果。
+我们先来看看如何让自己保持专注，**不专注的练习是没有效果的。**刻意练习提供了一个观点，如果练习的时间更短，那就会有更好的注意力。
+对于这个观点我是绝对认同的。比如看书，如果想一次性看完一本书，那对于一般人来说绝对是非常困难的。但是如果把它拆成一章一章，每天看一点，那就会好很多。而在日常的工作中或者学习中，我们可以使用“番茄钟”来管理自己的时间与保持专注。这里不具体介绍番茄钟，有兴趣的同学自己去了解一下，亲测有用！一个番茄钟25分钟，不多不少刚刚好。
+再来谈谈动机。对于一个程序员来说，动机是再明显不过的了：升职加薪变大佬。但有时候这个动机并不能转化为一种强有力的动力来促使我们去学习，去提高技术水平。而某些太强烈的动机（比如想跳槽）又很难持续保持。
+《刻意练习》告诉我们，我们要保持动机，要么强化继续前行的理由，要么弱化停下脚步的理由。
+仍然以学习算法为例。要强化继续前行的理由，我们可以在学习到一定阶段给自己一些小的奖励，比如刷完100个算法题，给自己买个好的键盘或者耳机。还有来自朋友、同事、家人乃至默认人的鼓励也很重要。我在网上写博客分享给大家，如果读者的点赞或者好评，那也是非常能激励我们继续学习的！
+而弱化停下脚步的理由。比如练习累了就合理休息一下，学习累了就暂时玩一下，如果觉得自己一个人学技术太孤独，就找一群小伙伴一起学习或者加入一个技术社区。目标要精心设置且合理，这样才能得到达到目标的成就感，不会因为达不到目标而气馁放弃。
+愿你以梦为马，剑指天涯。'>
+<title></title>
+
+<link rel='canonical' href='http://localhost:1313/p/'>
+
+<link rel="stylesheet" href="/scss/style.min.abbd69b2908fdfcd5179898beaafd374514a86538d81639ddd2c58c06ae54e40.css"><meta property='og:title' content=''>
+<meta property='og:description' content='title: 《刻意练习》：以学习编程为例 date: 2021-01-17 19:07:59 tags: 转载 categories: 读书
+转载自: https://juejin.im/post/5c3ca16ff265da617573f9a4
+《刻意练习》是一本神奇的魔法书，它用大量的事实案例和数据来证明了刻意练习能给一个人带来的巨大改变。更为难能可贵的是，它不仅仅只是介绍刻意练习的好处，还给读者介绍了刻意练习的方法和注意事项，可以说是干货满满的一本书。
+本文想以“学习编程”为例，结合《刻意练习》这本书教给我们的方式方法，阐述如何通过刻意练习来提高自己的编程水平。
+关于练习 **不断重复只是“天真的练习”，无法带来进步。“正确的练习”需要好导师、有目标、有反馈。**所以如果想要提高编程水平，光靠一味闷着头努力写代码是不够的，有些人写了几年的CRUD，可能整体的技术水平还不及刚毕业的同学。
+一个好的导师很难得，他不仅要自己在编程水平是有一定的成就，还应该具有一些教育方面的经验，才能更好的指导你。一般来说，大一点的公司都会有老人带新人的机制，可以利用这个来找一个比较好的前辈带一带。另外就是通过看书或看视频其实也是一种很不错的学习方式，写书和出视频的老师自然是具备上述条件的。
+有目标指的是应该要有明确的目标，而不是一个宽泛的目标。比如“我要提高Java水平”明显就是一个宽泛的目标，无法量化。明确的目标应该是什么样子呢？比如，我要学习JVM的基础知识，我要学完23种设计模式等等。一个好的目标还应该是可分解的，有时间或成果量化的。比如，我需要在一个月内学习完Java多线程技术，第一周学习多线程模型，第二周学习多线程基本的类和接口，第三周阅读JDK里面关于多线程方面的工具类的源码，第四周写多线程案例Demo，最后产出一个Java多线程系列笔记或者博客。
+有反馈指的是可以量化的反馈。比如写一篇技术博客，有多少阅读量，点赞量，评论量？写一个开源项目有多少star，做一个LeetCode有没有通过，耗时如何？
+上述算是对“有目的的练习”的一个阐述。刻意练习是在有目的的练习基础上的。总结起来，有目的的练习应该具有以下四个特点：
+1.有目的的练习具有定义明确的特定目标 2.有目的的练习是专注的 3.有目的的练习包含反馈 4.有目的的练习需要走出舒适区
+对于任何类型的练习，这是一条基本的真理：如果你从来不迫使自己走出舒适区，便永远无法进步。
+关于心理表征 《刻意练习》这本书用了大量的篇幅来介绍心理表征。作者认为，刻意练习的核心之一在于通过练习来创建大量的心理表征，然后再使用这些心理表征反过来帮助练习。
+那心理表征到底是什么？
+我认为**它是一个人学习某样东西的时候，自己心中形成的一个体系架构。**比如我们学习算法，就会形成一个关于算法的体系架构，也就是心理表征。而当我们再学习到Mysql的底层索引原理的时候，就会想到算法关于平衡树方面的知识；当我们学习JDK源码里关于集合框架的时候，就会想到链表、栈与队列、红黑树等等。
+我们的知识形成了一个循环，学得越多，懂得越多。当我们积累了大量的知识以后，再学一样有关联的东西，就能快速学会。
+刻意练习 刻意练习提倡“边干边学”，**它使人们熟悉练习的习惯，并思考如何练习。**这与我们学习编程的理念是一样的，几乎没有人会对你说：你只需要看书，看博客，看视频就能学会编程。有经验的前辈一般会告诉你，要有输入，也要有输出。学习了的东西，要通过写代码或者做笔记或者写博客的方式，让知识变成你自己的，更加牢固。
+你通过写代码，不断地写代码来提高自己的编程水平，然后通过思考，反思来决定该如何写代码才能写得更好。
+传统的方法也一直是先找出关于正确方法的信息，然后很大程度上让学生去运用那些知识。刻意练习则完全相反，它只聚焦于绩效和表现，以及怎样提高绩效和表现。
+编程也是一样，老板和上级其实真正在意的并不是你懂多少理论，而是你写得代码质量好不好，你能不能快速地实现他们需要的功能，能不能解决技术难题。
+你的代码写得比别人快，你的代码写得比别人漂亮，你能快速解决别人不能解决的难题，那你就牛逼。
+关于专注与坚持 刻意练习里面有一个观点颠覆了我以前的认知。我一度认为，一个人能不能专注，能不能坚持做一件事，除了热爱，那必然是意志力越高的人越能专注和坚持。
+然而刻意练习告诉我，**意志力根本不存在！**所谓意志力，其实是保持动机与专注的结果。
+我们先来看看如何让自己保持专注，**不专注的练习是没有效果的。**刻意练习提供了一个观点，如果练习的时间更短，那就会有更好的注意力。
+对于这个观点我是绝对认同的。比如看书，如果想一次性看完一本书，那对于一般人来说绝对是非常困难的。但是如果把它拆成一章一章，每天看一点，那就会好很多。而在日常的工作中或者学习中，我们可以使用“番茄钟”来管理自己的时间与保持专注。这里不具体介绍番茄钟，有兴趣的同学自己去了解一下，亲测有用！一个番茄钟25分钟，不多不少刚刚好。
+再来谈谈动机。对于一个程序员来说，动机是再明显不过的了：升职加薪变大佬。但有时候这个动机并不能转化为一种强有力的动力来促使我们去学习，去提高技术水平。而某些太强烈的动机（比如想跳槽）又很难持续保持。
+《刻意练习》告诉我们，我们要保持动机，要么强化继续前行的理由，要么弱化停下脚步的理由。
+仍然以学习算法为例。要强化继续前行的理由，我们可以在学习到一定阶段给自己一些小的奖励，比如刷完100个算法题，给自己买个好的键盘或者耳机。还有来自朋友、同事、家人乃至默认人的鼓励也很重要。我在网上写博客分享给大家，如果读者的点赞或者好评，那也是非常能激励我们继续学习的！
+而弱化停下脚步的理由。比如练习累了就合理休息一下，学习累了就暂时玩一下，如果觉得自己一个人学技术太孤独，就找一群小伙伴一起学习或者加入一个技术社区。目标要精心设置且合理，这样才能得到达到目标的成就感，不会因为达不到目标而气馁放弃。
+愿你以梦为马，剑指天涯。'>
+<meta property='og:url' content='http://localhost:1313/p/'>
+<meta property='og:site_name' content='无常是常'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' />
+<meta name="twitter:title" content="">
+<meta name="twitter:description" content="title: 《刻意练习》：以学习编程为例 date: 2021-01-17 19:07:59 tags: 转载 categories: 读书
+转载自: https://juejin.im/post/5c3ca16ff265da617573f9a4
+《刻意练习》是一本神奇的魔法书，它用大量的事实案例和数据来证明了刻意练习能给一个人带来的巨大改变。更为难能可贵的是，它不仅仅只是介绍刻意练习的好处，还给读者介绍了刻意练习的方法和注意事项，可以说是干货满满的一本书。
+本文想以“学习编程”为例，结合《刻意练习》这本书教给我们的方式方法，阐述如何通过刻意练习来提高自己的编程水平。
+关于练习 **不断重复只是“天真的练习”，无法带来进步。“正确的练习”需要好导师、有目标、有反馈。**所以如果想要提高编程水平，光靠一味闷着头努力写代码是不够的，有些人写了几年的CRUD，可能整体的技术水平还不及刚毕业的同学。
+一个好的导师很难得，他不仅要自己在编程水平是有一定的成就，还应该具有一些教育方面的经验，才能更好的指导你。一般来说，大一点的公司都会有老人带新人的机制，可以利用这个来找一个比较好的前辈带一带。另外就是通过看书或看视频其实也是一种很不错的学习方式，写书和出视频的老师自然是具备上述条件的。
+有目标指的是应该要有明确的目标，而不是一个宽泛的目标。比如“我要提高Java水平”明显就是一个宽泛的目标，无法量化。明确的目标应该是什么样子呢？比如，我要学习JVM的基础知识，我要学完23种设计模式等等。一个好的目标还应该是可分解的，有时间或成果量化的。比如，我需要在一个月内学习完Java多线程技术，第一周学习多线程模型，第二周学习多线程基本的类和接口，第三周阅读JDK里面关于多线程方面的工具类的源码，第四周写多线程案例Demo，最后产出一个Java多线程系列笔记或者博客。
+有反馈指的是可以量化的反馈。比如写一篇技术博客，有多少阅读量，点赞量，评论量？写一个开源项目有多少star，做一个LeetCode有没有通过，耗时如何？
+上述算是对“有目的的练习”的一个阐述。刻意练习是在有目的的练习基础上的。总结起来，有目的的练习应该具有以下四个特点：
+1.有目的的练习具有定义明确的特定目标 2.有目的的练习是专注的 3.有目的的练习包含反馈 4.有目的的练习需要走出舒适区
+对于任何类型的练习，这是一条基本的真理：如果你从来不迫使自己走出舒适区，便永远无法进步。
+关于心理表征 《刻意练习》这本书用了大量的篇幅来介绍心理表征。作者认为，刻意练习的核心之一在于通过练习来创建大量的心理表征，然后再使用这些心理表征反过来帮助练习。
+那心理表征到底是什么？
+我认为**它是一个人学习某样东西的时候，自己心中形成的一个体系架构。**比如我们学习算法，就会形成一个关于算法的体系架构，也就是心理表征。而当我们再学习到Mysql的底层索引原理的时候，就会想到算法关于平衡树方面的知识；当我们学习JDK源码里关于集合框架的时候，就会想到链表、栈与队列、红黑树等等。
+我们的知识形成了一个循环，学得越多，懂得越多。当我们积累了大量的知识以后，再学一样有关联的东西，就能快速学会。
+刻意练习 刻意练习提倡“边干边学”，**它使人们熟悉练习的习惯，并思考如何练习。**这与我们学习编程的理念是一样的，几乎没有人会对你说：你只需要看书，看博客，看视频就能学会编程。有经验的前辈一般会告诉你，要有输入，也要有输出。学习了的东西，要通过写代码或者做笔记或者写博客的方式，让知识变成你自己的，更加牢固。
+你通过写代码，不断地写代码来提高自己的编程水平，然后通过思考，反思来决定该如何写代码才能写得更好。
+传统的方法也一直是先找出关于正确方法的信息，然后很大程度上让学生去运用那些知识。刻意练习则完全相反，它只聚焦于绩效和表现，以及怎样提高绩效和表现。
+编程也是一样，老板和上级其实真正在意的并不是你懂多少理论，而是你写得代码质量好不好，你能不能快速地实现他们需要的功能，能不能解决技术难题。
+你的代码写得比别人快，你的代码写得比别人漂亮，你能快速解决别人不能解决的难题，那你就牛逼。
+关于专注与坚持 刻意练习里面有一个观点颠覆了我以前的认知。我一度认为，一个人能不能专注，能不能坚持做一件事，除了热爱，那必然是意志力越高的人越能专注和坚持。
+然而刻意练习告诉我，**意志力根本不存在！**所谓意志力，其实是保持动机与专注的结果。
+我们先来看看如何让自己保持专注，**不专注的练习是没有效果的。**刻意练习提供了一个观点，如果练习的时间更短，那就会有更好的注意力。
+对于这个观点我是绝对认同的。比如看书，如果想一次性看完一本书，那对于一般人来说绝对是非常困难的。但是如果把它拆成一章一章，每天看一点，那就会好很多。而在日常的工作中或者学习中，我们可以使用“番茄钟”来管理自己的时间与保持专注。这里不具体介绍番茄钟，有兴趣的同学自己去了解一下，亲测有用！一个番茄钟25分钟，不多不少刚刚好。
+再来谈谈动机。对于一个程序员来说，动机是再明显不过的了：升职加薪变大佬。但有时候这个动机并不能转化为一种强有力的动力来促使我们去学习，去提高技术水平。而某些太强烈的动机（比如想跳槽）又很难持续保持。
+《刻意练习》告诉我们，我们要保持动机，要么强化继续前行的理由，要么弱化停下脚步的理由。
+仍然以学习算法为例。要强化继续前行的理由，我们可以在学习到一定阶段给自己一些小的奖励，比如刷完100个算法题，给自己买个好的键盘或者耳机。还有来自朋友、同事、家人乃至默认人的鼓励也很重要。我在网上写博客分享给大家，如果读者的点赞或者好评，那也是非常能激励我们继续学习的！
+而弱化停下脚步的理由。比如练习累了就合理休息一下，学习累了就暂时玩一下，如果觉得自己一个人学技术太孤独，就找一群小伙伴一起学习或者加入一个技术社区。目标要精心设置且合理，这样才能得到达到目标的成就感，不会因为达不到目标而气馁放弃。
+愿你以梦为马，剑指天涯。">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_huda2458f72ce188392d75c5d51cd8e24e_373_300x0_resize_box_3.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">无常是常</a></h1>
+            <h2 class="site-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a 
+                        href='https://github.com/hellodeveye'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>Links</span>
+            </a>
+        </li>
+        
+    </ol>
+    <div class="menu-bottom-section">
+        <ol class="menu">
+
+            
+                <li id="dark-mode-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <span>暗色模式</span>
+                </li>
+            
+        </ol>
+    </div>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#关于练习">关于练习</a></li>
+        <li><a href="#关于心理表征">关于心理表征</a></li>
+        <li><a href="#刻意练习">刻意练习</a></li>
+        <li><a href="#关于专注与坚持">关于专注与坚持</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/"></a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 1 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <hr>
+<p>title: 《刻意练习》：以学习编程为例
+date: 2021-01-17 19:07:59
+tags: 转载
+categories: 读书</p>
+<hr>
+<blockquote>
+<p>转载自: <a class="link" href="%e8%bd%ac%e8%bd%bd%e4%ba%8e:https://juejin.im/post/5c3ca16ff265da617573f9a4" >https://juejin.im/post/5c3ca16ff265da617573f9a4</a></p>
+</blockquote>
+<p>《刻意练习》是一本神奇的魔法书，它用大量的事实案例和数据来证明了刻意练习能给一个人带来的巨大改变。更为难能可贵的是，它不仅仅只是介绍刻意练习的好处，还给读者介绍了刻意练习的方法和注意事项，可以说是干货满满的一本书。</p>
+<p>本文想以“学习编程”为例，结合《刻意练习》这本书教给我们的方式方法，阐述如何通过刻意练习来提高自己的编程水平。</p>
+<h3 id="关于练习">关于练习</h3>
+<p>**不断重复只是“天真的练习”，无法带来进步。“正确的练习”需要好导师、有目标、有反馈。**所以如果想要提高编程水平，光靠一味闷着头努力写代码是不够的，有些人写了几年的CRUD，可能整体的技术水平还不及刚毕业的同学。</p>
+<p>一个好的导师很难得，他不仅要自己在编程水平是有一定的成就，还应该具有一些教育方面的经验，才能更好的指导你。一般来说，大一点的公司都会有老人带新人的机制，可以利用这个来找一个比较好的前辈带一带。另外就是通过看书或看视频其实也是一种很不错的学习方式，写书和出视频的老师自然是具备上述条件的。</p>
+<p>有目标指的是应该要有明确的目标，而不是一个宽泛的目标。比如“我要提高Java水平”明显就是一个宽泛的目标，无法量化。明确的目标应该是什么样子呢？比如，我要学习JVM的基础知识，我要学完23种设计模式等等。一个好的目标还应该是可分解的，有时间或成果量化的。比如，我需要在一个月内学习完Java多线程技术，第一周学习多线程模型，第二周学习多线程基本的类和接口，第三周阅读JDK里面关于多线程方面的工具类的源码，第四周写多线程案例Demo，最后产出一个Java多线程系列笔记或者博客。</p>
+<p>有反馈指的是可以量化的反馈。比如写一篇技术博客，有多少阅读量，点赞量，评论量？写一个开源项目有多少star，做一个LeetCode有没有通过，耗时如何？</p>
+<p>上述算是对“有目的的练习”的一个阐述。刻意练习是在有目的的练习基础上的。总结起来，有目的的练习应该具有以下四个特点：</p>
+<p>1.有目的的练习具有定义明确的特定目标
+2.有目的的练习是专注的
+3.有目的的练习包含反馈
+4.有目的的练习需要走出舒适区</p>
+<p>对于任何类型的练习，这是一条基本的真理：<strong>如果你从来不迫使自己走出舒适区，便永远无法进步。</strong></p>
+<h3 id="关于心理表征">关于心理表征</h3>
+<p>《刻意练习》这本书用了大量的篇幅来介绍心理表征。作者认为，刻意练习的核心之一在于通过练习来创建大量的心理表征，然后再使用这些心理表征反过来帮助练习。</p>
+<p>那心理表征到底是什么？</p>
+<p>我认为**它是一个人学习某样东西的时候，自己心中形成的一个体系架构。**比如我们学习算法，就会形成一个关于算法的体系架构，也就是心理表征。而当我们再学习到Mysql的底层索引原理的时候，就会想到算法关于平衡树方面的知识；当我们学习JDK源码里关于集合框架的时候，就会想到链表、栈与队列、红黑树等等。</p>
+<p>我们的知识形成了一个循环，学得越多，懂得越多。当我们积累了大量的知识以后，再学一样有关联的东西，就能快速学会。</p>
+<h3 id="刻意练习">刻意练习</h3>
+<p>刻意练习提倡“边干边学”，**它使人们熟悉练习的习惯，并思考如何练习。**这与我们学习编程的理念是一样的，几乎没有人会对你说：你只需要看书，看博客，看视频就能学会编程。有经验的前辈一般会告诉你，要有输入，也要有输出。学习了的东西，要通过写代码或者做笔记或者写博客的方式，让知识变成你自己的，更加牢固。</p>
+<p>你通过写代码，不断地写代码来提高自己的编程水平，然后通过思考，反思来决定该如何写代码才能写得更好。</p>
+<p>传统的方法也一直是先找出关于正确方法的信息，然后很大程度上让学生去运用那些知识。<strong>刻意练习则完全相反，它只聚焦于绩效和表现，以及怎样提高绩效和表现。</strong></p>
+<p>编程也是一样，老板和上级其实真正在意的并不是你懂多少理论，而是你写得代码质量好不好，你能不能快速地实现他们需要的功能，能不能解决技术难题。</p>
+<p><strong>你的代码写得比别人快，你的代码写得比别人漂亮，你能快速解决别人不能解决的难题，那你就牛逼。</strong></p>
+<h3 id="关于专注与坚持">关于专注与坚持</h3>
+<p>刻意练习里面有一个观点颠覆了我以前的认知。我一度认为，一个人能不能专注，能不能坚持做一件事，除了热爱，那必然是意志力越高的人越能专注和坚持。</p>
+<p>然而刻意练习告诉我，**意志力根本不存在！**所谓意志力，其实是保持动机与专注的结果。</p>
+<p>我们先来看看如何让自己保持专注，**不专注的练习是没有效果的。**刻意练习提供了一个观点，<strong>如果练习的时间更短，那就会有更好的注意力。</strong></p>
+<p>对于这个观点我是绝对认同的。比如看书，如果想一次性看完一本书，那对于一般人来说绝对是非常困难的。但是如果把它拆成一章一章，每天看一点，那就会好很多。而在日常的工作中或者学习中，我们可以使用“番茄钟”来管理自己的时间与保持专注。这里不具体介绍番茄钟，有兴趣的同学自己去了解一下，亲测有用！一个番茄钟25分钟，不多不少刚刚好。</p>
+<p>再来谈谈动机。对于一个程序员来说，动机是再明显不过的了：升职加薪变大佬。但有时候这个动机并不能转化为一种强有力的动力来促使我们去学习，去提高技术水平。而某些太强烈的动机（比如想跳槽）又很难持续保持。</p>
+<p>《刻意练习》告诉我们，<strong>我们要保持动机，要么强化继续前行的理由，要么弱化停下脚步的理由。</strong></p>
+<p>仍然以学习算法为例。要强化继续前行的理由，我们可以在学习到一定阶段给自己一些小的奖励，比如刷完100个算法题，给自己买个好的键盘或者耳机。还有来自朋友、同事、家人乃至默认人的鼓励也很重要。我在网上写博客分享给大家，如果读者的点赞或者好评，那也是非常能激励我们继续学习的！</p>
+<p>而弱化停下脚步的理由。比如练习累了就合理休息一下，学习累了就暂时玩一下，如果觉得自己一个人学技术太孤独，就找一群小伙伴一起学习或者加入一个技术社区。目标要精心设置且合理，这样才能得到达到目标的成就感，不会因为达不到目标而气馁放弃。</p>
+<p><strong>愿你以梦为马，剑指天涯。</strong></p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2024 XCM 陕ICP备16008414号
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.23.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

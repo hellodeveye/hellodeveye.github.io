@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='1、了解消息中间件之前先了解一下什么是“同步”? 通常业务系统直接的调用如下图所示:
+假设系统A收到了一个请求，可能是用户通过浏览器或者APP发起的，这时候系统A收到请求后马上去调用系统B，然后系统B再把返回结果返回给系统A，系统A才能返回给用户。如下图所示：
+以上就是所谓的**“同步”**调用。这个同步的意思就是各个系统联动都是同步依次进行的，一个系统先动，然后立马带动另外一个系统一起动，最后大家依次干完活以后再返回结果。
+2、如何依托消息中间件实现异步？ 我们往系统A和系统B之间加入一个消息中间件，简称为“MQ”，也就是消息队列。
+加入消息队列之后如何通信呢？
+其实就是系统A执行完逻辑后给MQ中发送一条消息，然后就直接把结果返回给用户了。
+（注：前提是系统A返回给用户的结果不依赖于系统B的返回结果。假设系统B为短信系统，系统A向MQ发送一条发送短信的消息指令，系统A并不关心短信是否立即发送，只要最终在有效的时间内发送成功就行了。）
+如上图所示，系统B什么时候执行自己的任务呢？
+这时候系统B根据自己的情况，可能是系统A投递消息到MQ之后的1秒内，也可能是1分钟之后，多长时间都有可能，不管多长时间，系统B肯定会从MQ里获取到一条属于自己的消息。
+3、消息中间件到底有什么用？ 假设系统A要调用系统B干一些事，然后系统A先执行一些操作，需要耗费20ms，接着系统B执行一些操作，需要200ms，所以总共需要220ms。如下图所示：
+如果在系统A和系统中间加一个MQ呢？
+系统A干完自己的事情耗时20ms，然后发一个消息到MQ耗时5ms，然后就直接返回结果给用户，总计耗时25ms。系统B从MQ中获取消息花费200ms和用户就没有关系了。所以用户只需等待25ms就收到结果了。如下图所示：
+假设系统A调用系统B出现故障呢？因为系统A调用系统B肯定返回异常，此时系统A是不是也得返回异常给用户？而系统A是不是还要去处理这个异常？
+这一切是因为系统A和系统B通过同步调用的模式耦合在一起，所以系统B一旦出现故障，很肯能影响系统A也有故障，而且系统A还得去关心系统B的故障，去处理对应的异常。
+如果在系统A和系统B中间加一个消息中间件，系统A就不用关心系统B是否出现故障了，因为那是系统B自己的事，等系统B故障恢复以后，就继续执行它自己的事，此时就对系统A没任何影响了。
+为什么会有这样的效果呢？正式因为通过引入MQ，两个系统实现了异步化调用，也就实现了解耦，所以相互之间并没有任何影响。
+5、流量削峰 假设系统A是不操作数据库的，因此只要多部署几台机器，就可以抗下每秒1万的请求，比如部署个20台机器，就可以轻松抗下每秒上万请求。
+然后系统B是要操作一台数据库服务器的，那台数据库的上限是接收每秒6000请求，那么系统B无论部署多少台机器都没用，因为他依赖的数据库最多只能接收每秒6000请求。
+如下图所示：
+假设现在有1万的QPS请求到了系统A，由于系统A部署了20台机器，所以可以抗住1万QPS。然后系统A会瞬间把1万QPS转发给系统B，假设系统B也抗住了1万QPS，但是系统B对数据库发起了1万QPS的请求，数据库一定会瞬间被压垮。
+所以这时如果引入MQ，就可以解决这个问题了。MQ这个技术抗高并发的能力远远高于数据库，同样的机器配置下，如果数据库可以抗每秒6000请求，MQ至少可以抗每秒几万请求。
+为什么呢？因为数据库复杂啊，他要能够支持你执行复杂的SQL语句，支持事务等复杂的机制，支持你对数据进行增删改查，听着简单，其实是很复杂的！所以一般数据库单服务器也就支撑每秒几千的请求。
+所以只要你引入一个MQ，那么就可以让系统A把每秒1万请求都作为消息直接发送到MQ里，MQ可以轻松抗下来这每秒1万请求。
+接着，系统B只要慢慢的从MQ里获取消息然后执行数据库读写操作即可，这个获取消息的速度是系统B自己可以控制的，所以系统B完全可以用一个比较低的速率获取消息然后写入数据库，保证对数据库的QPS不要超过他的极限值6000。
+这个时候因为系统A发送消息到MQ很快，系统B从MQ消费消息很慢，所以MQ里自然会积压一些消息，不过不要紧，MQ一般都是基于磁盘来存储消息的，所以适当积压一些消息是可以的。当系统A的高峰过去，每秒可能就恢复到1000 QPS了，此时系统b还是以每秒6000QPS的速度获取消息写入数据库，那么自然MQ里积压的消息就会慢慢被消化掉了。
+所以这就是MQ进行流量削峰的效果，系统A发送过来的每秒1万请求是一个流量洪峰，然后MQ直接给扛下来了，都存储自己本地磁盘，这个过程就是流量削峰的过程，瞬间把一个洪峰给削下来了，让系统B后续慢慢获取消息来处理。
+6、总结 消息中间件的主要作用就是削峰解耦，提升系统的响应速度。'>
+<title>消息中间件是什么?</title>
+
+<link rel='canonical' href='https://xiaocm.com/p/%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%98%AF%E4%BB%80%E4%B9%88/'>
+
+<link rel="stylesheet" href="/scss/style.min.abbd69b2908fdfcd5179898beaafd374514a86538d81639ddd2c58c06ae54e40.css"><meta property='og:title' content='消息中间件是什么?'>
+<meta property='og:description' content='1、了解消息中间件之前先了解一下什么是“同步”? 通常业务系统直接的调用如下图所示:
+假设系统A收到了一个请求，可能是用户通过浏览器或者APP发起的，这时候系统A收到请求后马上去调用系统B，然后系统B再把返回结果返回给系统A，系统A才能返回给用户。如下图所示：
+以上就是所谓的**“同步”**调用。这个同步的意思就是各个系统联动都是同步依次进行的，一个系统先动，然后立马带动另外一个系统一起动，最后大家依次干完活以后再返回结果。
+2、如何依托消息中间件实现异步？ 我们往系统A和系统B之间加入一个消息中间件，简称为“MQ”，也就是消息队列。
+加入消息队列之后如何通信呢？
+其实就是系统A执行完逻辑后给MQ中发送一条消息，然后就直接把结果返回给用户了。
+（注：前提是系统A返回给用户的结果不依赖于系统B的返回结果。假设系统B为短信系统，系统A向MQ发送一条发送短信的消息指令，系统A并不关心短信是否立即发送，只要最终在有效的时间内发送成功就行了。）
+如上图所示，系统B什么时候执行自己的任务呢？
+这时候系统B根据自己的情况，可能是系统A投递消息到MQ之后的1秒内，也可能是1分钟之后，多长时间都有可能，不管多长时间，系统B肯定会从MQ里获取到一条属于自己的消息。
+3、消息中间件到底有什么用？ 假设系统A要调用系统B干一些事，然后系统A先执行一些操作，需要耗费20ms，接着系统B执行一些操作，需要200ms，所以总共需要220ms。如下图所示：
+如果在系统A和系统中间加一个MQ呢？
+系统A干完自己的事情耗时20ms，然后发一个消息到MQ耗时5ms，然后就直接返回结果给用户，总计耗时25ms。系统B从MQ中获取消息花费200ms和用户就没有关系了。所以用户只需等待25ms就收到结果了。如下图所示：
+假设系统A调用系统B出现故障呢？因为系统A调用系统B肯定返回异常，此时系统A是不是也得返回异常给用户？而系统A是不是还要去处理这个异常？
+这一切是因为系统A和系统B通过同步调用的模式耦合在一起，所以系统B一旦出现故障，很肯能影响系统A也有故障，而且系统A还得去关心系统B的故障，去处理对应的异常。
+如果在系统A和系统B中间加一个消息中间件，系统A就不用关心系统B是否出现故障了，因为那是系统B自己的事，等系统B故障恢复以后，就继续执行它自己的事，此时就对系统A没任何影响了。
+为什么会有这样的效果呢？正式因为通过引入MQ，两个系统实现了异步化调用，也就实现了解耦，所以相互之间并没有任何影响。
+5、流量削峰 假设系统A是不操作数据库的，因此只要多部署几台机器，就可以抗下每秒1万的请求，比如部署个20台机器，就可以轻松抗下每秒上万请求。
+然后系统B是要操作一台数据库服务器的，那台数据库的上限是接收每秒6000请求，那么系统B无论部署多少台机器都没用，因为他依赖的数据库最多只能接收每秒6000请求。
+如下图所示：
+假设现在有1万的QPS请求到了系统A，由于系统A部署了20台机器，所以可以抗住1万QPS。然后系统A会瞬间把1万QPS转发给系统B，假设系统B也抗住了1万QPS，但是系统B对数据库发起了1万QPS的请求，数据库一定会瞬间被压垮。
+所以这时如果引入MQ，就可以解决这个问题了。MQ这个技术抗高并发的能力远远高于数据库，同样的机器配置下，如果数据库可以抗每秒6000请求，MQ至少可以抗每秒几万请求。
+为什么呢？因为数据库复杂啊，他要能够支持你执行复杂的SQL语句，支持事务等复杂的机制，支持你对数据进行增删改查，听着简单，其实是很复杂的！所以一般数据库单服务器也就支撑每秒几千的请求。
+所以只要你引入一个MQ，那么就可以让系统A把每秒1万请求都作为消息直接发送到MQ里，MQ可以轻松抗下来这每秒1万请求。
+接着，系统B只要慢慢的从MQ里获取消息然后执行数据库读写操作即可，这个获取消息的速度是系统B自己可以控制的，所以系统B完全可以用一个比较低的速率获取消息然后写入数据库，保证对数据库的QPS不要超过他的极限值6000。
+这个时候因为系统A发送消息到MQ很快，系统B从MQ消费消息很慢，所以MQ里自然会积压一些消息，不过不要紧，MQ一般都是基于磁盘来存储消息的，所以适当积压一些消息是可以的。当系统A的高峰过去，每秒可能就恢复到1000 QPS了，此时系统b还是以每秒6000QPS的速度获取消息写入数据库，那么自然MQ里积压的消息就会慢慢被消化掉了。
+所以这就是MQ进行流量削峰的效果，系统A发送过来的每秒1万请求是一个流量洪峰，然后MQ直接给扛下来了，都存储自己本地磁盘，这个过程就是流量削峰的过程，瞬间把一个洪峰给削下来了，让系统B后续慢慢获取消息来处理。
+6、总结 消息中间件的主要作用就是削峰解耦，提升系统的响应速度。'>
+<meta property='og:url' content='https://xiaocm.com/p/%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%98%AF%E4%BB%80%E4%B9%88/'>
+<meta property='og:site_name' content='无常是常'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='RocketMQ' /><meta property='article:published_time' content='2020-05-13T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2020-05-13T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="消息中间件是什么?">
+<meta name="twitter:description" content="1、了解消息中间件之前先了解一下什么是“同步”? 通常业务系统直接的调用如下图所示:
+假设系统A收到了一个请求，可能是用户通过浏览器或者APP发起的，这时候系统A收到请求后马上去调用系统B，然后系统B再把返回结果返回给系统A，系统A才能返回给用户。如下图所示：
+以上就是所谓的**“同步”**调用。这个同步的意思就是各个系统联动都是同步依次进行的，一个系统先动，然后立马带动另外一个系统一起动，最后大家依次干完活以后再返回结果。
+2、如何依托消息中间件实现异步？ 我们往系统A和系统B之间加入一个消息中间件，简称为“MQ”，也就是消息队列。
+加入消息队列之后如何通信呢？
+其实就是系统A执行完逻辑后给MQ中发送一条消息，然后就直接把结果返回给用户了。
+（注：前提是系统A返回给用户的结果不依赖于系统B的返回结果。假设系统B为短信系统，系统A向MQ发送一条发送短信的消息指令，系统A并不关心短信是否立即发送，只要最终在有效的时间内发送成功就行了。）
+如上图所示，系统B什么时候执行自己的任务呢？
+这时候系统B根据自己的情况，可能是系统A投递消息到MQ之后的1秒内，也可能是1分钟之后，多长时间都有可能，不管多长时间，系统B肯定会从MQ里获取到一条属于自己的消息。
+3、消息中间件到底有什么用？ 假设系统A要调用系统B干一些事，然后系统A先执行一些操作，需要耗费20ms，接着系统B执行一些操作，需要200ms，所以总共需要220ms。如下图所示：
+如果在系统A和系统中间加一个MQ呢？
+系统A干完自己的事情耗时20ms，然后发一个消息到MQ耗时5ms，然后就直接返回结果给用户，总计耗时25ms。系统B从MQ中获取消息花费200ms和用户就没有关系了。所以用户只需等待25ms就收到结果了。如下图所示：
+假设系统A调用系统B出现故障呢？因为系统A调用系统B肯定返回异常，此时系统A是不是也得返回异常给用户？而系统A是不是还要去处理这个异常？
+这一切是因为系统A和系统B通过同步调用的模式耦合在一起，所以系统B一旦出现故障，很肯能影响系统A也有故障，而且系统A还得去关心系统B的故障，去处理对应的异常。
+如果在系统A和系统B中间加一个消息中间件，系统A就不用关心系统B是否出现故障了，因为那是系统B自己的事，等系统B故障恢复以后，就继续执行它自己的事，此时就对系统A没任何影响了。
+为什么会有这样的效果呢？正式因为通过引入MQ，两个系统实现了异步化调用，也就实现了解耦，所以相互之间并没有任何影响。
+5、流量削峰 假设系统A是不操作数据库的，因此只要多部署几台机器，就可以抗下每秒1万的请求，比如部署个20台机器，就可以轻松抗下每秒上万请求。
+然后系统B是要操作一台数据库服务器的，那台数据库的上限是接收每秒6000请求，那么系统B无论部署多少台机器都没用，因为他依赖的数据库最多只能接收每秒6000请求。
+如下图所示：
+假设现在有1万的QPS请求到了系统A，由于系统A部署了20台机器，所以可以抗住1万QPS。然后系统A会瞬间把1万QPS转发给系统B，假设系统B也抗住了1万QPS，但是系统B对数据库发起了1万QPS的请求，数据库一定会瞬间被压垮。
+所以这时如果引入MQ，就可以解决这个问题了。MQ这个技术抗高并发的能力远远高于数据库，同样的机器配置下，如果数据库可以抗每秒6000请求，MQ至少可以抗每秒几万请求。
+为什么呢？因为数据库复杂啊，他要能够支持你执行复杂的SQL语句，支持事务等复杂的机制，支持你对数据进行增删改查，听着简单，其实是很复杂的！所以一般数据库单服务器也就支撑每秒几千的请求。
+所以只要你引入一个MQ，那么就可以让系统A把每秒1万请求都作为消息直接发送到MQ里，MQ可以轻松抗下来这每秒1万请求。
+接着，系统B只要慢慢的从MQ里获取消息然后执行数据库读写操作即可，这个获取消息的速度是系统B自己可以控制的，所以系统B完全可以用一个比较低的速率获取消息然后写入数据库，保证对数据库的QPS不要超过他的极限值6000。
+这个时候因为系统A发送消息到MQ很快，系统B从MQ消费消息很慢，所以MQ里自然会积压一些消息，不过不要紧，MQ一般都是基于磁盘来存储消息的，所以适当积压一些消息是可以的。当系统A的高峰过去，每秒可能就恢复到1000 QPS了，此时系统b还是以每秒6000QPS的速度获取消息写入数据库，那么自然MQ里积压的消息就会慢慢被消化掉了。
+所以这就是MQ进行流量削峰的效果，系统A发送过来的每秒1万请求是一个流量洪峰，然后MQ直接给扛下来了，都存储自己本地磁盘，这个过程就是流量削峰的过程，瞬间把一个洪峰给削下来了，让系统B后续慢慢获取消息来处理。
+6、总结 消息中间件的主要作用就是削峰解耦，提升系统的响应速度。">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu87c10ff50ef4ab09ea180a96c581c02f_62603_300x0_resize_box_3.png" width="300"
+                            height="281" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">无常是常</a></h1>
+            <h2 class="site-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a 
+                        href='https://github.com/hellodeveye'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>Links</span>
+            </a>
+        </li>
+        
+    </ol>
+    <div class="menu-bottom-section">
+        <ol class="menu">
+
+            
+                <li id="dark-mode-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <span>暗色模式</span>
+                </li>
+            
+        </ol>
+    </div>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#1了解消息中间件之前先了解一下什么是同步">1、了解消息中间件之前先了解一下什么是“同步”?</a></li>
+        <li><a href="#2如何依托消息中间件实现异步">2、如何依托消息中间件实现异步？</a></li>
+        <li><a href="#3消息中间件到底有什么用">3、消息中间件到底有什么用？</a></li>
+        <li><a href="#5流量削峰">5、流量削峰</a></li>
+        <li><a href="#6总结">6、总结</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/rocketmq/" >
+                RocketMQ
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%98%AF%E4%BB%80%E4%B9%88/">消息中间件是什么?</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">May 13, 2020</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 1 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h3 id="1了解消息中间件之前先了解一下什么是同步">1、了解消息中间件之前先了解一下什么是“同步”?</h3>
+<p>通常业务系统直接的调用如下图所示:</p>
+<p><img src="http://qiniu.xiaocm.com/blog/img/20210513184840.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>假设系统A收到了一个请求，可能是用户通过浏览器或者APP发起的，这时候系统A收到请求后马上去调用系统B，然后系统B再把返回结果返回给系统A，系统A才能返回给用户。如下图所示：</p>
+<p><img src="http://qiniu.xiaocm.com/blog/img/20210513185350.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>以上就是所谓的**“同步”**调用。这个同步的意思就是各个系统联动都是同步依次进行的，一个系统先动，然后立马带动另外一个系统一起动，最后大家依次干完活以后再返回结果。</p>
+<h3 id="2如何依托消息中间件实现异步">2、如何依托消息中间件实现异步？</h3>
+<p>我们往系统A和系统B之间加入一个消息中间件，简称为“MQ”，也就是消息队列。</p>
+<p><img src="http://qiniu.xiaocm.com/blog/img/20210513191451.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>加入消息队列之后如何通信呢？</p>
+<p>其实就是系统A执行完逻辑后给MQ中发送一条消息，然后就直接把结果返回给用户了。</p>
+<p><strong>（注：前提是系统A返回给用户的结果不依赖于系统B的返回结果。假设系统B为短信系统，系统A向MQ发送一条发送短信的消息指令，系统A并不关心短信是否立即发送，只要最终在有效的时间内发送成功就行了。）</strong></p>
+<p><img src="http://qiniu.xiaocm.com/blog/img/20210513192217.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>如上图所示，系统B什么时候执行自己的任务呢？</p>
+<p>这时候系统B根据自己的情况，可能是系统A投递消息到MQ之后的1秒内，也可能是1分钟之后，多长时间都有可能，不管多长时间，系统B肯定会从MQ里获取到一条属于自己的消息。</p>
+<p><img src="http://qiniu.xiaocm.com/blog/img/20210513192841.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<h3 id="3消息中间件到底有什么用">3、消息中间件到底有什么用？</h3>
+<p>假设系统A要调用系统B干一些事，然后系统A先执行一些操作，需要耗费20ms，接着系统B执行一些操作，需要200ms，所以总共需要220ms。如下图所示：</p>
+<p><img src="http://qiniu.xiaocm.com/blog/img/20210513193519.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>如果在系统A和系统中间加一个MQ呢？</p>
+<p>系统A干完自己的事情耗时20ms，然后发一个消息到MQ耗时5ms，然后就直接返回结果给用户，总计耗时25ms。系统B从MQ中获取消息花费200ms和用户就没有关系了。所以用户只需等待25ms就收到结果了。如下图所示：</p>
+<p><img src="http://qiniu.xiaocm.com/blog/img/20210513214345.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>假设系统A调用系统B出现故障呢？因为系统A调用系统B肯定返回异常，此时系统A是不是也得返回异常给用户？而系统A是不是还要去处理这个异常？</p>
+<p><img src="http://qiniu.xiaocm.com/blog/img/20210513214749.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>这一切是因为系统A和系统B通过同步调用的模式耦合在一起，所以系统B一旦出现故障，很肯能影响系统A也有故障，而且系统A还得去关心系统B的故障，去处理对应的异常。</p>
+<p>如果在系统A和系统B中间加一个消息中间件，系统A就不用关心系统B是否出现故障了，因为那是系统B自己的事，等系统B故障恢复以后，就继续执行它自己的事，此时就对系统A没任何影响了。</p>
+<p><img src="http://qiniu.xiaocm.com/blog/img/20210513215346.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>为什么会有这样的效果呢？正式因为通过引入MQ，两个系统实现了异步化调用，也就实现了解耦，所以相互之间并没有任何影响。</p>
+<h3 id="5流量削峰">5、流量削峰</h3>
+<p>假设系统A是不操作数据库的，因此只要多部署几台机器，就可以抗下每秒1万的请求，比如部署个20台机器，就可以轻松抗下每秒上万请求。</p>
+<p>然后系统B是要操作一台数据库服务器的，那台数据库的上限是接收每秒6000请求，那么系统B无论部署多少台机器都没用，因为他依赖的数据库最多只能接收每秒6000请求。</p>
+<p>如下图所示：</p>
+<p><img src="http://qiniu.xiaocm.com/blog/img/20210513215857.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>假设现在有1万的QPS请求到了系统A，由于系统A部署了20台机器，所以可以抗住1万QPS。然后系统A会瞬间把1万QPS转发给系统B，假设系统B也抗住了1万QPS，但是系统B对数据库发起了1万QPS的请求，数据库一定会瞬间被压垮。</p>
+<p>所以这时如果引入MQ，就可以解决这个问题了。MQ这个技术抗高并发的能力远远高于数据库，同样的机器配置下，如果数据库可以抗每秒6000请求，MQ至少可以抗每秒几万请求。</p>
+<p>为什么呢？因为数据库复杂啊，他要能够支持你执行复杂的SQL语句，支持事务等复杂的机制，支持你对数据进行增删改查，听着简单，其实是很复杂的！所以一般数据库单服务器也就支撑每秒几千的请求。</p>
+<p>所以只要你引入一个MQ，那么就可以让系统A把每秒1万请求都作为消息直接发送到MQ里，MQ可以轻松抗下来这每秒1万请求。</p>
+<p><img src="http://qiniu.xiaocm.com/blog/img/20210513220548.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>接着，系统B只要慢慢的从MQ里获取消息然后执行数据库读写操作即可，这个获取消息的速度是系统B自己可以控制的，所以系统B完全可以用一个比较低的速率获取消息然后写入数据库，保证对数据库的QPS不要超过他的极限值6000。</p>
+<p><img src="http://qiniu.xiaocm.com/blog/img/20210513221033.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>这个时候因为系统A发送消息到MQ很快，系统B从MQ消费消息很慢，所以MQ里自然会积压一些消息，不过不要紧，MQ一般都是基于磁盘来存储消息的，所以适当积压一些消息是可以的。当系统A的高峰过去，每秒可能就恢复到1000 QPS了，此时系统b还是以每秒6000QPS的速度获取消息写入数据库，那么自然MQ里积压的消息就会慢慢被消化掉了。</p>
+<p>所以这就是MQ进行流量削峰的效果，<strong>系统A发送过来的每秒1万请求是一个流量洪峰，然后MQ直接给扛下来了，都存储自己本地磁盘，这个过程就是流量削峰的过程，瞬间把一个洪峰给削下来了，让系统B后续慢慢获取消息来处理。</strong></p>
+<h3 id="6总结">6、总结</h3>
+<p><strong>消息中间件的主要作用就是削峰解耦，提升系统的响应速度。</strong></p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/rocketmq/">RocketMQ</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6%E9%80%89%E5%9E%8B/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">消息中间件选型</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2024 XCM 陕ICP备16008414号
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.23.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
