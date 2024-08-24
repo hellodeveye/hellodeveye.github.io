@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Posts on 无常是常</title>
-        <link>http://localhost:1313/post/</link>
+        <link>https://xiaocm.com/post/</link>
         <description>Recent content in Posts on 无常是常</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>XCM 陕ICP备16008414号</copyright>
-        <lastBuildDate>Sun, 12 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Sun, 12 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://xiaocm.com/post/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>事务到底是隔离的还是不隔离的？</title>
-        <link>http://localhost:1313/p/%E4%BA%8B%E5%8A%A1%E5%88%B0%E5%BA%95%E6%98%AF%E9%9A%94%E7%A6%BB%E7%9A%84%E8%BF%98%E6%98%AF%E4%B8%8D%E9%9A%94%E7%A6%BB%E7%9A%84/</link>
+        <link>https://xiaocm.com/p/%E4%BA%8B%E5%8A%A1%E5%88%B0%E5%BA%95%E6%98%AF%E9%9A%94%E7%A6%BB%E7%9A%84%E8%BF%98%E6%98%AF%E4%B8%8D%E9%9A%94%E7%A6%BB%E7%9A%84/</link>
         <pubDate>Sun, 12 Jun 2022 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/%E4%BA%8B%E5%8A%A1%E5%88%B0%E5%BA%95%E6%98%AF%E9%9A%94%E7%A6%BB%E7%9A%84%E8%BF%98%E6%98%AF%E4%B8%8D%E9%9A%94%E7%A6%BB%E7%9A%84/</guid>
+        <guid>https://xiaocm.com/p/%E4%BA%8B%E5%8A%A1%E5%88%B0%E5%BA%95%E6%98%AF%E9%9A%94%E7%A6%BB%E7%9A%84%E8%BF%98%E6%98%AF%E4%B8%8D%E9%9A%94%E7%A6%BB%E7%9A%84/</guid>
         <description>&lt;p&gt;&lt;code&gt;begin/start transaction&lt;/code&gt;命令并不是一个事务的起点，在执行到它们之后的第一个操作InnoDB表的语句，事务才真正启动。使用&lt;code&gt;start transation with consistent snapshot &lt;/code&gt;这个命令可以马上启动一个事务。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;在MySQL中有两个视图的概念：&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
@@ -104,10 +104,10 @@ b. 若 row trx_id 不在数组中，表示这个版本是已经提交了的事�
         </item>
         <item>
         <title>行锁功过：怎么减少行锁对性能的影响？</title>
-        <link>http://localhost:1313/p/%E8%A1%8C%E9%94%81%E5%8A%9F%E8%BF%87%E6%80%8E%E4%B9%88%E5%87%8F%E5%B0%91%E8%A1%8C%E9%94%81%E5%AF%B9%E6%80%A7%E8%83%BD%E7%9A%84%E5%BD%B1%E5%93%8D/</link>
+        <link>https://xiaocm.com/p/%E8%A1%8C%E9%94%81%E5%8A%9F%E8%BF%87%E6%80%8E%E4%B9%88%E5%87%8F%E5%B0%91%E8%A1%8C%E9%94%81%E5%AF%B9%E6%80%A7%E8%83%BD%E7%9A%84%E5%BD%B1%E5%93%8D/</link>
         <pubDate>Sun, 12 Jun 2022 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/%E8%A1%8C%E9%94%81%E5%8A%9F%E8%BF%87%E6%80%8E%E4%B9%88%E5%87%8F%E5%B0%91%E8%A1%8C%E9%94%81%E5%AF%B9%E6%80%A7%E8%83%BD%E7%9A%84%E5%BD%B1%E5%93%8D/</guid>
+        <guid>https://xiaocm.com/p/%E8%A1%8C%E9%94%81%E5%8A%9F%E8%BF%87%E6%80%8E%E4%B9%88%E5%87%8F%E5%B0%91%E8%A1%8C%E9%94%81%E5%AF%B9%E6%80%A7%E8%83%BD%E7%9A%84%E5%BD%B1%E5%93%8D/</guid>
         <description>&lt;h2 id=&#34;从两阶段锁说起&#34;&gt;从两阶段锁说起&lt;/h2&gt;
 &lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20220614094047.png&#34;
 	
@@ -164,10 +164,10 @@ b. 若 row trx_id 不在数组中，表示这个版本是已经提交了的事�
         </item>
         <item>
         <title>深入浅出索引（下）</title>
-        <link>http://localhost:1313/p/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%B4%A2%E5%BC%95%E4%B8%8B/</link>
+        <link>https://xiaocm.com/p/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%B4%A2%E5%BC%95%E4%B8%8B/</link>
         <pubDate>Wed, 08 Jun 2022 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%B4%A2%E5%BC%95%E4%B8%8B/</guid>
+        <guid>https://xiaocm.com/p/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%B4%A2%E5%BC%95%E4%B8%8B/</guid>
         <description>&lt;h2 id=&#34;覆盖索引&#34;&gt;覆盖索引&lt;/h2&gt;
 &lt;p&gt;如果执行语句如:&lt;code&gt;select ID from T where k between 3 and 5&lt;/code&gt;，这是只需要查ID的值，而ID的值已经在k索引树上了，因此可以直接提供查询结果，不需要回表，这种情况我们称为&lt;strong&gt;覆盖索引&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;由于覆盖索引可以减少树的搜索次数，显著提升查询性能，所以使用覆盖索引是一个常用的性能优化手段。&lt;/strong&gt;&lt;/p&gt;
@@ -218,10 +218,10 @@ b. 若 row trx_id 不在数组中，表示这个版本是已经提交了的事�
         </item>
         <item>
         <title>深入浅出索引（上）</title>
-        <link>http://localhost:1313/p/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%B4%A2%E5%BC%95%E4%B8%8A/</link>
+        <link>https://xiaocm.com/p/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%B4%A2%E5%BC%95%E4%B8%8A/</link>
         <pubDate>Tue, 07 Jun 2022 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%B4%A2%E5%BC%95%E4%B8%8A/</guid>
+        <guid>https://xiaocm.com/p/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%B4%A2%E5%BC%95%E4%B8%8A/</guid>
         <description>&lt;p&gt;&lt;strong&gt;索引的出现其实就是为了提高数据查询的效率，就像书的目录一样。&lt;/strong&gt;&lt;/p&gt;
 &lt;h2 id=&#34;索引常见模型&#34;&gt;索引常见模型&lt;/h2&gt;
 &lt;h3 id=&#34;哈希表&#34;&gt;哈希表&lt;/h3&gt;
@@ -298,10 +298,10 @@ b. 若 row trx_id 不在数组中，表示这个版本是已经提交了的事�
         </item>
         <item>
         <title>事务隔离：为什么你改了我还看不见？</title>
-        <link>http://localhost:1313/p/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%A0%E6%94%B9%E4%BA%86%E6%88%91%E8%BF%98%E7%9C%8B%E4%B8%8D%E8%A7%81/</link>
+        <link>https://xiaocm.com/p/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%A0%E6%94%B9%E4%BA%86%E6%88%91%E8%BF%98%E7%9C%8B%E4%B8%8D%E8%A7%81/</link>
         <pubDate>Tue, 07 Jun 2022 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%A0%E6%94%B9%E4%BA%86%E6%88%91%E8%BF%98%E7%9C%8B%E4%B8%8D%E8%A7%81/</guid>
+        <guid>https://xiaocm.com/p/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%A0%E6%94%B9%E4%BA%86%E6%88%91%E8%BF%98%E7%9C%8B%E4%B8%8D%E8%A7%81/</guid>
         <description>&lt;p&gt;&lt;strong&gt;ACID (Atomicity、Consistency、Isolation、Durability)即原子性、一致性、隔离性、持久性。&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;当数据库上有多个事务同时执行的时候，就可能会出现脏读（dirty read）、不可重复读（nonrepeatable read）、幻读（phantom read）的问题。&lt;/p&gt;
 &lt;h3 id=&#34;隔离级别&#34;&gt;隔离级别&lt;/h3&gt;
@@ -366,10 +366,10 @@ b. 若 row trx_id 不在数组中，表示这个版本是已经提交了的事�
         </item>
         <item>
         <title>日志系统：一条SQL更新语句是如何执行的?</title>
-        <link>http://localhost:1313/p/%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E4%B8%80%E6%9D%A1sql%E6%9B%B4%E6%96%B0%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84/</link>
+        <link>https://xiaocm.com/p/%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E4%B8%80%E6%9D%A1sql%E6%9B%B4%E6%96%B0%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84/</link>
         <pubDate>Mon, 06 Jun 2022 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E4%B8%80%E6%9D%A1sql%E6%9B%B4%E6%96%B0%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84/</guid>
+        <guid>https://xiaocm.com/p/%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E4%B8%80%E6%9D%A1sql%E6%9B%B4%E6%96%B0%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84/</guid>
         <description>&lt;h3 id=&#34;redo-log重做日志&#34;&gt;redo log（重做日志）&lt;/h3&gt;
 &lt;p&gt;InnoDB 的 redo log 是固定大小的，比如可以配置为一组 4 个文件，每个文件的大小是 1GB，那么总共就可以记录 4GB 的操作。从头开始写，写到末尾就又回到开头循环写，如下面这个图所示。
 &lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20220606110553.png&#34;
@@ -445,10 +445,10 @@ b. 若 row trx_id 不在数组中，表示这个版本是已经提交了的事�
         </item>
         <item>
         <title>基础架构：一条SQL语句是如何执行的?</title>
-        <link>http://localhost:1313/p/%E5%9F%BA%E7%A1%80%E6%9E%B6%E6%9E%84%E4%B8%80%E6%9D%A1sql%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84/</link>
+        <link>https://xiaocm.com/p/%E5%9F%BA%E7%A1%80%E6%9E%B6%E6%9E%84%E4%B8%80%E6%9D%A1sql%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84/</link>
         <pubDate>Sun, 05 Jun 2022 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/%E5%9F%BA%E7%A1%80%E6%9E%B6%E6%9E%84%E4%B8%80%E6%9D%A1sql%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84/</guid>
+        <guid>https://xiaocm.com/p/%E5%9F%BA%E7%A1%80%E6%9E%B6%E6%9E%84%E4%B8%80%E6%9D%A1sql%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84/</guid>
         <description>&lt;h2 id=&#34;一条sql语句是如何执行的&#34;&gt;一条SQL语句是如何执行的?&lt;/h2&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -505,10 +505,10 @@ b. 若 row trx_id 不在数组中，表示这个版本是已经提交了的事�
         </item>
         <item>
         <title>数据复制</title>
-        <link>http://localhost:1313/p/%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6/</link>
+        <link>https://xiaocm.com/p/%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6/</link>
         <pubDate>Tue, 31 May 2022 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6/</guid>
+        <guid>https://xiaocm.com/p/%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6/</guid>
         <description>&lt;p&gt;数据复制方案，人们通常希望达到以下几个目的：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;使数据在地理位置上更接近用户，从而降低访问延迟。&lt;/li&gt;
@@ -647,10 +647,10 @@ b. 若 row trx_id 不在数组中，表示这个版本是已经提交了的事�
         </item>
         <item>
         <title>程序员的测试课</title>
-        <link>http://localhost:1313/p/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E6%B5%8B%E8%AF%95%E8%AF%BE/</link>
+        <link>https://xiaocm.com/p/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E6%B5%8B%E8%AF%95%E8%AF%BE/</link>
         <pubDate>Mon, 30 May 2022 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E6%B5%8B%E8%AF%95%E8%AF%BE/</guid>
+        <guid>https://xiaocm.com/p/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E6%B5%8B%E8%AF%95%E8%AF%BE/</guid>
         <description>&lt;h3 id=&#34;时代在要求我们写测试&#34;&gt;时代在要求我们写测试&lt;/h3&gt;
 &lt;p&gt;因为软件变得越来越复杂，测试可以让我们在复杂的软件开发中稳步前行。另一方面软件测试可以让我们在长期的过程中不断回归，让每一步走的更稳。&lt;/p&gt;
 &lt;p&gt;程序员圈子流传着一个关于测试的段子：** 每个程序员在修改代码时都希望有测试，而在写代码时，都不想写测试。**&lt;/p&gt;
@@ -707,19 +707,19 @@ b. 若 row trx_id 不在数组中，表示这个版本是已经提交了的事�
         </item>
         <item>
         <title>Netty</title>
-        <link>http://localhost:1313/p/netty/</link>
+        <link>https://xiaocm.com/p/netty/</link>
         <pubDate>Tue, 12 Apr 2022 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/netty/</guid>
+        <guid>https://xiaocm.com/p/netty/</guid>
         <description>&lt;iframe id=&#34;embed_dom&#34; name=&#34;embed_dom&#34; frameborder=&#34;0&#34; style=&#34;display:block;width:715px; height:245px;&#34; src=&#34;https://www.processon.com/embed/629f20a77d9c08075a36bd94&#34;&gt;&lt;/iframe&gt;
 </description>
         </item>
         <item>
         <title>我每天使用的11个Git Commands</title>
-        <link>http://localhost:1313/p/%E6%88%91%E6%AF%8F%E5%A4%A9%E4%BD%BF%E7%94%A8%E7%9A%8411%E4%B8%AAgit-commands/</link>
+        <link>https://xiaocm.com/p/%E6%88%91%E6%AF%8F%E5%A4%A9%E4%BD%BF%E7%94%A8%E7%9A%8411%E4%B8%AAgit-commands/</link>
         <pubDate>Tue, 12 Apr 2022 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/%E6%88%91%E6%AF%8F%E5%A4%A9%E4%BD%BF%E7%94%A8%E7%9A%8411%E4%B8%AAgit-commands/</guid>
+        <guid>https://xiaocm.com/p/%E6%88%91%E6%AF%8F%E5%A4%A9%E4%BD%BF%E7%94%A8%E7%9A%8411%E4%B8%AAgit-commands/</guid>
         <description>&lt;blockquote&gt;
 &lt;p&gt;本文是为我的年轻人（或任何新手）准备的，他们可以有效地使用git命令行，并简要介绍了我如何使用这些命令。
 &lt;a class=&#34;link&#34; href=&#34;https://medium.com/@mmpatil34/11-git-commands-i-use-daily-9bbd7590c8eb&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
@@ -814,10 +814,10 @@ b. 若 row trx_id 不在数组中，表示这个版本是已经提交了的事�
         </item>
         <item>
         <title>go反向代理quickstart</title>
-        <link>http://localhost:1313/p/go%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86quickstart/</link>
+        <link>https://xiaocm.com/p/go%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86quickstart/</link>
         <pubDate>Thu, 07 Apr 2022 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/go%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86quickstart/</guid>
+        <guid>https://xiaocm.com/p/go%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86quickstart/</guid>
         <description>&lt;p&gt;main.go&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -1136,10 +1136,10 @@ b. 若 row trx_id 不在数组中，表示这个版本是已经提交了的事�
         </item>
         <item>
         <title>Prometheus快速入门</title>
-        <link>http://localhost:1313/p/prometheus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/</link>
+        <link>https://xiaocm.com/p/prometheus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/</link>
         <pubDate>Mon, 28 Feb 2022 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/prometheus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/</guid>
+        <guid>https://xiaocm.com/p/prometheus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/</guid>
         <description>&lt;h1 id=&#34;prometheus快速入门&#34;&gt;Prometheus快速入门&lt;/h1&gt;
 &lt;h2 id=&#34;一背景&#34;&gt;一、背景&lt;/h2&gt;
 &lt;p&gt;我们日常开发和运维中，需要监控一些数据，根据这些数据进行分析或者应对策略，例如以下几个维度：&lt;/p&gt;
@@ -1599,10 +1599,10 @@ Prometheus不仅可以通过静态文件配置监控对象，还支持自动发�
         </item>
         <item>
         <title>心中需破除的三种贼</title>
-        <link>http://localhost:1313/p/%E5%BF%83%E4%B8%AD%E9%9C%80%E7%A0%B4%E9%99%A4%E7%9A%84%E4%B8%89%E7%A7%8D%E8%B4%BC/</link>
+        <link>https://xiaocm.com/p/%E5%BF%83%E4%B8%AD%E9%9C%80%E7%A0%B4%E9%99%A4%E7%9A%84%E4%B8%89%E7%A7%8D%E8%B4%BC/</link>
         <pubDate>Mon, 21 Feb 2022 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/%E5%BF%83%E4%B8%AD%E9%9C%80%E7%A0%B4%E9%99%A4%E7%9A%84%E4%B8%89%E7%A7%8D%E8%B4%BC/</guid>
+        <guid>https://xiaocm.com/p/%E5%BF%83%E4%B8%AD%E9%9C%80%E7%A0%B4%E9%99%A4%E7%9A%84%E4%B8%89%E7%A7%8D%E8%B4%BC/</guid>
         <description>&lt;p&gt;&lt;strong&gt;坐中静&lt;/strong&gt;，破焦虑之贼——可以用冥想打坐等方法让自己回到当下，人之所以会焦虑是基于过去的经验对未来产生的恐惧，能够活在当下的人不会焦虑。把每一天每一刻过好，人生自然就会好。
 &lt;strong&gt;舍中得&lt;/strong&gt;，破欲望之贼——人的痛苦多来自于欲望，即为贪婪和占有，也是一种匮乏的表现，如果能够学会舍，则内心越来越丰盛。没钱的时候把勤舍出去即为天道酬勤；有钱的时候把钱舍出去人就来了，是为轻财聚人；有人的时候，把爱舍出去，成功便有了；事业有成的时候，把智慧舍出去，喜悦就来了，这就是德行天下。
 &lt;strong&gt;事上练&lt;/strong&gt;，破犹豫之贼——这里讲的大概是王阳明的知行合一。光懂了很多道理是过不好这一生的，唯有践行其中的道理才能真正成事，只要想到就去做，犹豫纠结之贼就能破，达到知行合一的最高境界，则万事可成。&lt;/p&gt;
@@ -1616,10 +1616,10 @@ Prometheus不仅可以通过静态文件配置监控对象，还支持自动发�
         </item>
         <item>
         <title>MySQL常见问题处理</title>
-        <link>http://localhost:1313/p/mysql%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86/</link>
+        <link>https://xiaocm.com/p/mysql%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86/</link>
         <pubDate>Sun, 26 Sep 2021 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/mysql%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86/</guid>
+        <guid>https://xiaocm.com/p/mysql%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86/</guid>
         <description>&lt;ul&gt;
 &lt;li&gt;关于MySQL出现&lt;code&gt;lock wait timeout exceeded; try restarting transaction&lt;/code&gt; 的解决方案。&lt;/li&gt;
 &lt;/ul&gt;
@@ -1639,10 +1639,10 @@ Prometheus不仅可以通过静态文件配置监控对象，还支持自动发�
         </item>
         <item>
         <title>10x程序员总结</title>
-        <link>http://localhost:1313/p/10x%E7%A8%8B%E5%BA%8F%E5%91%98%E6%80%BB%E7%BB%93/</link>
+        <link>https://xiaocm.com/p/10x%E7%A8%8B%E5%BA%8F%E5%91%98%E6%80%BB%E7%BB%93/</link>
         <pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/10x%E7%A8%8B%E5%BA%8F%E5%91%98%E6%80%BB%E7%BB%93/</guid>
+        <guid>https://xiaocm.com/p/10x%E7%A8%8B%E5%BA%8F%E5%91%98%E6%80%BB%E7%BB%93/</guid>
         <description>&lt;h3 id=&#34;以终为始&#34;&gt;以终为始&lt;/h3&gt;
 &lt;p&gt;遇到问题不妨倒着去思考&lt;/p&gt;
 &lt;h3 id=&#34;任务分解&#34;&gt;任务分解&lt;/h3&gt;
@@ -1683,10 +1683,10 @@ Prometheus不仅可以通过静态文件配置监控对象，还支持自动发�
         </item>
         <item>
         <title>阅读清单</title>
-        <link>http://localhost:1313/p/%E9%98%85%E8%AF%BB%E6%B8%85%E5%8D%95/</link>
+        <link>https://xiaocm.com/p/%E9%98%85%E8%AF%BB%E6%B8%85%E5%8D%95/</link>
         <pubDate>Fri, 09 Apr 2021 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/%E9%98%85%E8%AF%BB%E6%B8%85%E5%8D%95/</guid>
+        <guid>https://xiaocm.com/p/%E9%98%85%E8%AF%BB%E6%B8%85%E5%8D%95/</guid>
         <description>&lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -1727,10 +1727,10 @@ Prometheus不仅可以通过静态文件配置监控对象，还支持自动发�
         </item>
         <item>
         <title>10x程序员</title>
-        <link>http://localhost:1313/p/10x%E7%A8%8B%E5%BA%8F%E5%91%98/</link>
+        <link>https://xiaocm.com/p/10x%E7%A8%8B%E5%BA%8F%E5%91%98/</link>
         <pubDate>Thu, 08 Apr 2021 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/10x%E7%A8%8B%E5%BA%8F%E5%91%98/</guid>
+        <guid>https://xiaocm.com/p/10x%E7%A8%8B%E5%BA%8F%E5%91%98/</guid>
         <description>&lt;blockquote&gt;
 &lt;p&gt;原文地址: &lt;a class=&#34;link&#34; href=&#34;http://antirez.com/news/112&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;http://antirez.com/news/112&lt;/a&gt;&lt;/p&gt;
@@ -1778,10 +1778,10 @@ Prometheus不仅可以通过静态文件配置监控对象，还支持自动发�
         </item>
         <item>
         <title>Thread详解</title>
-        <link>http://localhost:1313/p/thread%E8%AF%A6%E8%A7%A3/</link>
+        <link>https://xiaocm.com/p/thread%E8%AF%A6%E8%A7%A3/</link>
         <pubDate>Sat, 27 Mar 2021 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/thread%E8%AF%A6%E8%A7%A3/</guid>
+        <guid>https://xiaocm.com/p/thread%E8%AF%A6%E8%A7%A3/</guid>
         <description>&lt;blockquote&gt;
 &lt;p&gt;转载自: &lt;a class=&#34;link&#34; href=&#34;https://www.cnblogs.com/sanzao/p/10528677.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;https://www.cnblogs.com/sanzao/p/10528677.html&lt;/a&gt;&lt;/p&gt;
@@ -2756,10 +2756,10 @@ Prometheus不仅可以通过静态文件配置监控对象，还支持自动发�
         </item>
         <item>
         <title>Java将HTML转为图片</title>
-        <link>http://localhost:1313/p/java%E5%B0%86html%E8%BD%AC%E4%B8%BA%E5%9B%BE%E7%89%87/</link>
+        <link>https://xiaocm.com/p/java%E5%B0%86html%E8%BD%AC%E4%B8%BA%E5%9B%BE%E7%89%87/</link>
         <pubDate>Thu, 25 Mar 2021 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/java%E5%B0%86html%E8%BD%AC%E4%B8%BA%E5%9B%BE%E7%89%87/</guid>
+        <guid>https://xiaocm.com/p/java%E5%B0%86html%E8%BD%AC%E4%B8%BA%E5%9B%BE%E7%89%87/</guid>
         <description>&lt;p&gt;&lt;strong&gt;记录一个使用Java转图片的第三方工具&lt;/strong&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -2815,10 +2815,10 @@ Prometheus不仅可以通过静态文件配置监控对象，还支持自动发�
         </item>
         <item>
         <title>Java的字符串常量池位于哪里，堆或堆栈？</title>
-        <link>http://localhost:1313/p/java%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%B8%B8%E9%87%8F%E6%B1%A0%E4%BD%8D%E4%BA%8E%E5%93%AA%E9%87%8C%E5%A0%86%E6%88%96%E5%A0%86%E6%A0%88/</link>
+        <link>https://xiaocm.com/p/java%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%B8%B8%E9%87%8F%E6%B1%A0%E4%BD%8D%E4%BA%8E%E5%93%AA%E9%87%8C%E5%A0%86%E6%88%96%E5%A0%86%E6%A0%88/</link>
         <pubDate>Wed, 24 Mar 2021 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/java%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%B8%B8%E9%87%8F%E6%B1%A0%E4%BD%8D%E4%BA%8E%E5%93%AA%E9%87%8C%E5%A0%86%E6%88%96%E5%A0%86%E6%A0%88/</guid>
+        <guid>https://xiaocm.com/p/java%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%B8%B8%E9%87%8F%E6%B1%A0%E4%BD%8D%E4%BA%8E%E5%93%AA%E9%87%8C%E5%A0%86%E6%88%96%E5%A0%86%E6%A0%88/</guid>
         <description>&lt;blockquote&gt;
 &lt;p&gt;转载自: &lt;a class=&#34;link&#34; href=&#34;https://www.baeldung.com/java-string-constant-pool-heap-stack&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;https://www.baeldung.com/java-string-constant-pool-heap-stack&lt;/a&gt;&lt;/p&gt;
@@ -2850,10 +2850,10 @@ Prometheus不仅可以通过静态文件配置监控对象，还支持自动发�
         </item>
         <item>
         <title>后端学习路线</title>
-        <link>http://localhost:1313/p/%E5%90%8E%E7%AB%AF%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/</link>
+        <link>https://xiaocm.com/p/%E5%90%8E%E7%AB%AF%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/</link>
         <pubDate>Wed, 24 Mar 2021 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/%E5%90%8E%E7%AB%AF%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/</guid>
+        <guid>https://xiaocm.com/p/%E5%90%8E%E7%AB%AF%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/</guid>
         <description>&lt;h3 id=&#34;github的一个学习路线仓库&#34;&gt;GitHub的一个学习路线仓库&lt;/h3&gt;
 &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://github.com/kamranahmedse/developer-roadmap&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;https://github.com/kamranahmedse/developer-roadmap&lt;/a&gt;&lt;/p&gt;
@@ -2869,10 +2869,10 @@ Prometheus不仅可以通过静态文件配置监控对象，还支持自动发�
         </item>
         <item>
         <title>J.U.C 同步框架（AQS 框架）</title>
-        <link>http://localhost:1313/p/j.u.c-%E5%90%8C%E6%AD%A5%E6%A1%86%E6%9E%B6aqs-%E6%A1%86%E6%9E%B6/</link>
+        <link>https://xiaocm.com/p/j.u.c-%E5%90%8C%E6%AD%A5%E6%A1%86%E6%9E%B6aqs-%E6%A1%86%E6%9E%B6/</link>
         <pubDate>Mon, 22 Mar 2021 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/j.u.c-%E5%90%8C%E6%AD%A5%E6%A1%86%E6%9E%B6aqs-%E6%A1%86%E6%9E%B6/</guid>
+        <guid>https://xiaocm.com/p/j.u.c-%E5%90%8C%E6%AD%A5%E6%A1%86%E6%9E%B6aqs-%E6%A1%86%E6%9E%B6/</guid>
         <description>&lt;blockquote&gt;
 &lt;p&gt;转载自：&lt;a class=&#34;link&#34; href=&#34;https://www.cnblogs.com/dennyzhangdd/p/7218510.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;https://www.cnblogs.com/dennyzhangdd/p/7218510.html&lt;/a&gt;&lt;/p&gt;
@@ -3416,10 +3416,10 @@ Prometheus不仅可以通过静态文件配置监控对象，还支持自动发�
         </item>
         <item>
         <title>Docker安装软件集合</title>
-        <link>http://localhost:1313/p/docker%E5%AE%89%E8%A3%85%E8%BD%AF%E4%BB%B6%E9%9B%86%E5%90%88/</link>
+        <link>https://xiaocm.com/p/docker%E5%AE%89%E8%A3%85%E8%BD%AF%E4%BB%B6%E9%9B%86%E5%90%88/</link>
         <pubDate>Tue, 16 Mar 2021 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/docker%E5%AE%89%E8%A3%85%E8%BD%AF%E4%BB%B6%E9%9B%86%E5%90%88/</guid>
+        <guid>https://xiaocm.com/p/docker%E5%AE%89%E8%A3%85%E8%BD%AF%E4%BB%B6%E9%9B%86%E5%90%88/</guid>
         <description>&lt;h3 id=&#34;docker安装nginx&#34;&gt;Docker安装Nginx&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -3518,10 +3518,10 @@ Prometheus不仅可以通过静态文件配置监控对象，还支持自动发�
         </item>
         <item>
         <title>MySQL常用命令</title>
-        <link>http://localhost:1313/p/mysql%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</link>
+        <link>https://xiaocm.com/p/mysql%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</link>
         <pubDate>Tue, 16 Mar 2021 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/mysql%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</guid>
+        <guid>https://xiaocm.com/p/mysql%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</guid>
         <description>&lt;h3 id=&#34;创建表空间&#34;&gt;创建表空间&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -3545,10 +3545,10 @@ Prometheus不仅可以通过静态文件配置监控对象，还支持自动发�
         </item>
         <item>
         <title>Tomcat运维脚本</title>
-        <link>http://localhost:1313/p/tomcat%E8%BF%90%E7%BB%B4%E8%84%9A%E6%9C%AC/</link>
+        <link>https://xiaocm.com/p/tomcat%E8%BF%90%E7%BB%B4%E8%84%9A%E6%9C%AC/</link>
         <pubDate>Tue, 16 Mar 2021 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/tomcat%E8%BF%90%E7%BB%B4%E8%84%9A%E6%9C%AC/</guid>
+        <guid>https://xiaocm.com/p/tomcat%E8%BF%90%E7%BB%B4%E8%84%9A%E6%9C%AC/</guid>
         <description>&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
@@ -3697,10 +3697,10 @@ Prometheus不仅可以通过静态文件配置监控对象，还支持自动发�
         </item>
         <item>
         <title>《刻意练习》：以学习编程为例</title>
-        <link>http://localhost:1313/p/%E5%88%BB%E6%84%8F%E7%BB%83%E4%B9%A0%E4%BB%A5%E5%AD%A6%E4%B9%A0%E7%BC%96%E7%A8%8B%E4%B8%BA%E4%BE%8B/</link>
+        <link>https://xiaocm.com/p/%E5%88%BB%E6%84%8F%E7%BB%83%E4%B9%A0%E4%BB%A5%E5%AD%A6%E4%B9%A0%E7%BC%96%E7%A8%8B%E4%B8%BA%E4%BE%8B/</link>
         <pubDate>Sun, 17 Jan 2021 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/%E5%88%BB%E6%84%8F%E7%BB%83%E4%B9%A0%E4%BB%A5%E5%AD%A6%E4%B9%A0%E7%BC%96%E7%A8%8B%E4%B8%BA%E4%BE%8B/</guid>
+        <guid>https://xiaocm.com/p/%E5%88%BB%E6%84%8F%E7%BB%83%E4%B9%A0%E4%BB%A5%E5%AD%A6%E4%B9%A0%E7%BC%96%E7%A8%8B%E4%B8%BA%E4%BE%8B/</guid>
         <description>&lt;blockquote&gt;
 &lt;p&gt;转载自: &lt;a class=&#34;link&#34; href=&#34;%e8%bd%ac%e8%bd%bd%e4%ba%8e:https://juejin.im/post/5c3ca16ff265da617573f9a4&#34; &gt;https://juejin.im/post/5c3ca16ff265da617573f9a4&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -3742,10 +3742,10 @@ Prometheus不仅可以通过静态文件配置监控对象，还支持自动发�
         </item>
         <item>
         <title>Redis常用命令</title>
-        <link>http://localhost:1313/p/redis%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</link>
+        <link>https://xiaocm.com/p/redis%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</link>
         <pubDate>Wed, 28 Oct 2020 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/redis%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</guid>
+        <guid>https://xiaocm.com/p/redis%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</guid>
         <description>&lt;h3 id=&#34;工作中常用到的reids命令&#34;&gt;工作中常用到的Reids命令&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;模糊匹配&lt;em&gt;key&lt;/em&gt;并批量删除&lt;/li&gt;
@@ -3762,10 +3762,10 @@ Prometheus不仅可以通过静态文件配置监控对象，还支持自动发�
         </item>
         <item>
         <title>Git修改commit信息</title>
-        <link>http://localhost:1313/p/git%E4%BF%AE%E6%94%B9commit%E4%BF%A1%E6%81%AF/</link>
+        <link>https://xiaocm.com/p/git%E4%BF%AE%E6%94%B9commit%E4%BF%A1%E6%81%AF/</link>
         <pubDate>Fri, 23 Oct 2020 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/git%E4%BF%AE%E6%94%B9commit%E4%BF%A1%E6%81%AF/</guid>
+        <guid>https://xiaocm.com/p/git%E4%BF%AE%E6%94%B9commit%E4%BF%A1%E6%81%AF/</guid>
         <description>&lt;h4 id=&#34;修改commit信息主要有这几种情况&#34;&gt;修改commit信息主要有这几种情况:&lt;/h4&gt;
 &lt;ol&gt;
 &lt;li&gt;刚刚commit，还没有push，使用&lt;code&gt;git commit --amend&lt;/code&gt;&lt;/li&gt;
@@ -3780,10 +3780,10 @@ Prometheus不仅可以通过静态文件配置监控对象，还支持自动发�
         </item>
         <item>
         <title>Linux常用命令</title>
-        <link>http://localhost:1313/p/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</link>
+        <link>https://xiaocm.com/p/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</link>
         <pubDate>Sun, 27 Sep 2020 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</guid>
+        <guid>https://xiaocm.com/p/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</guid>
         <description>&lt;ul&gt;
 &lt;li&gt;查看配置文件只匹配不是以“#”开头的行&lt;/li&gt;
 &lt;/ul&gt;
@@ -3810,10 +3810,10 @@ Prometheus不仅可以通过静态文件配置监控对象，还支持自动发�
         </item>
         <item>
         <title>&#39;git commit之后，撤销commit&#39;</title>
-        <link>http://localhost:1313/p/git-commit%E4%B9%8B%E5%90%8E%E6%92%A4%E9%94%80commit/</link>
+        <link>https://xiaocm.com/p/git-commit%E4%B9%8B%E5%90%8E%E6%92%A4%E9%94%80commit/</link>
         <pubDate>Fri, 21 Aug 2020 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/git-commit%E4%B9%8B%E5%90%8E%E6%92%A4%E9%94%80commit/</guid>
+        <guid>https://xiaocm.com/p/git-commit%E4%B9%8B%E5%90%8E%E6%92%A4%E9%94%80commit/</guid>
         <description>&lt;h3 id=&#34;场景&#34;&gt;场景&lt;/h3&gt;
 &lt;p&gt;一般情况下，我们写完代码后会执行:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -3866,10 +3866,10 @@ Prometheus不仅可以通过静态文件配置监控对象，还支持自动发�
         </item>
         <item>
         <title>git rebase和git merge的区别</title>
-        <link>http://localhost:1313/p/git-rebase%E5%92%8Cgit-merge%E7%9A%84%E5%8C%BA%E5%88%AB/</link>
+        <link>https://xiaocm.com/p/git-rebase%E5%92%8Cgit-merge%E7%9A%84%E5%8C%BA%E5%88%AB/</link>
         <pubDate>Wed, 19 Aug 2020 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/git-rebase%E5%92%8Cgit-merge%E7%9A%84%E5%8C%BA%E5%88%AB/</guid>
+        <guid>https://xiaocm.com/p/git-rebase%E5%92%8Cgit-merge%E7%9A%84%E5%8C%BA%E5%88%AB/</guid>
         <description>&lt;h3 id=&#34;description&#34;&gt;Description&lt;/h3&gt;
 &lt;p&gt;&lt;code&gt;git rebase&lt;/code&gt; 和 &lt;code&gt;git merge&lt;/code&gt; 一样都是用于从一个分支获取并且合并到当前分支，但是他们采取不同的工作方式，以下面的一个工作场景说明其区别.&lt;/p&gt;
 &lt;p&gt;如图所示：你在一个feature分支进行新特性的开发，与此同时，master 分支的也有新的提交。&lt;/p&gt;
@@ -3981,10 +3981,10 @@ IF NO OK，随你便，可以使用rebase&lt;/p&gt;
         </item>
         <item>
         <title>Nginx反向代理配置</title>
-        <link>http://localhost:1313/p/nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%85%8D%E7%BD%AE/</link>
+        <link>https://xiaocm.com/p/nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%85%8D%E7%BD%AE/</link>
         <pubDate>Wed, 19 Aug 2020 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%85%8D%E7%BD%AE/</guid>
+        <guid>https://xiaocm.com/p/nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%85%8D%E7%BD%AE/</guid>
         <description>&lt;p&gt;使用nginx做反向代理的时候，可以简单的直接把请求原封不动的转发给下一个服务。设置&lt;code&gt;proxy_pass&lt;/code&gt;请求只会替换域名，如果要根据不同的url后缀来访问不同的服务，则需要通过如下方法：&lt;/p&gt;
 &lt;h3 id=&#34;方法一加&#34;&gt;方法一：加&amp;quot;/&amp;quot;&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -4114,10 +4114,10 @@ IF NO OK，随你便，可以使用rebase&lt;/p&gt;
         </item>
         <item>
         <title>Redis分布式锁</title>
-        <link>http://localhost:1313/p/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</link>
+        <link>https://xiaocm.com/p/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</link>
         <pubDate>Thu, 09 Jul 2020 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</guid>
+        <guid>https://xiaocm.com/p/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</guid>
         <description>&lt;h3 id=&#34;简介&#34;&gt;简介&lt;/h3&gt;
 &lt;p&gt;在一些分布式系统中，应用与应用之间是相互独立部署的，Java应用运行在不同的JVM中，所以，在操作一些共享资源的时候，使用JDK提供的Lock工具类时就有些力不从心，这时候就需要借助外力来实现分布式一致性问题。&lt;/p&gt;
 &lt;p&gt;通常会使用以下三种方式进行实现：&lt;/p&gt;
@@ -4241,10 +4241,10 @@ RedLock分析      [http://martin.kleppmann.com/2016/02/08/how-to-do-distributed
         </item>
         <item>
         <title>Redis哨兵</title>
-        <link>http://localhost:1313/p/redis%E5%93%A8%E5%85%B5/</link>
+        <link>https://xiaocm.com/p/redis%E5%93%A8%E5%85%B5/</link>
         <pubDate>Tue, 07 Jul 2020 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/redis%E5%93%A8%E5%85%B5/</guid>
+        <guid>https://xiaocm.com/p/redis%E5%93%A8%E5%85%B5/</guid>
         <description>&lt;h3 id=&#34;sentinel的分布式特征&#34;&gt;Sentinel的分布式特征&lt;/h3&gt;
 &lt;p&gt;Redis Sentinel是一个分布式系统：
 Sentinel本身的设计是在为多个Sentinel进程协同合作的配置中运行。&lt;/p&gt;
@@ -4408,10 +4408,10 @@ Sentinel本身的设计是在为多个Sentinel进程协同合作的配置中运�
         </item>
         <item>
         <title>消息中间件选型</title>
-        <link>http://localhost:1313/p/%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6%E9%80%89%E5%9E%8B/</link>
+        <link>https://xiaocm.com/p/%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6%E9%80%89%E5%9E%8B/</link>
         <pubDate>Thu, 14 May 2020 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6%E9%80%89%E5%9E%8B/</guid>
+        <guid>https://xiaocm.com/p/%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6%E9%80%89%E5%9E%8B/</guid>
         <description>&lt;p&gt;&lt;strong&gt;本文主要对比常用的三种中间件优劣势，包含RocketMQ、Kafka、RabbitMQ。&lt;/strong&gt;&lt;/p&gt;
 &lt;h2 id=&#34;kafka&#34;&gt;Kafka&lt;/h2&gt;
 &lt;h4 id=&#34;优势&#34;&gt;优势&lt;/h4&gt;
@@ -4464,10 +4464,10 @@ Sentinel本身的设计是在为多个Sentinel进程协同合作的配置中运�
         </item>
         <item>
         <title>消息中间件是什么?</title>
-        <link>http://localhost:1313/p/%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%98%AF%E4%BB%80%E4%B9%88/</link>
+        <link>https://xiaocm.com/p/%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%98%AF%E4%BB%80%E4%B9%88/</link>
         <pubDate>Wed, 13 May 2020 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%98%AF%E4%BB%80%E4%B9%88/</guid>
+        <guid>https://xiaocm.com/p/%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%98%AF%E4%BB%80%E4%B9%88/</guid>
         <description>&lt;h3 id=&#34;1了解消息中间件之前先了解一下什么是同步&#34;&gt;1、了解消息中间件之前先了解一下什么是“同步”?&lt;/h3&gt;
 &lt;p&gt;通常业务系统直接的调用如下图所示:&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20210513184840.png&#34;
@@ -4600,10 +4600,10 @@ Sentinel本身的设计是在为多个Sentinel进程协同合作的配置中运�
         </item>
         <item>
         <title>链表</title>
-        <link>http://localhost:1313/p/%E9%93%BE%E8%A1%A8/</link>
+        <link>https://xiaocm.com/p/%E9%93%BE%E8%A1%A8/</link>
         <pubDate>Tue, 03 Sep 2019 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/%E9%93%BE%E8%A1%A8/</guid>
+        <guid>https://xiaocm.com/p/%E9%93%BE%E8%A1%A8/</guid>
         <description>&lt;h3 id=&#34;反转链表&#34;&gt;反转链表&lt;/h3&gt;
 &lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20220302192225.gif&#34;
 	
@@ -4839,10 +4839,10 @@ Sentinel本身的设计是在为多个Sentinel进程协同合作的配置中运�
         </item>
         <item>
         <title>排序算法</title>
-        <link>http://localhost:1313/p/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</link>
+        <link>https://xiaocm.com/p/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</link>
         <pubDate>Tue, 03 Sep 2019 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</guid>
+        <guid>https://xiaocm.com/p/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</guid>
         <description>&lt;h3 id=&#34;排序算法&#34;&gt;排序算法&lt;/h3&gt;
 &lt;h4 id=&#34;冒泡排序&#34;&gt;冒泡排序&lt;/h4&gt;
 &lt;p&gt;双层循环,每次循环将最大的值放到数组的最后面,外层循环n次,内层循环n-i次完成排序,时间复杂度为O(n²)&lt;/p&gt;
@@ -5083,22 +5083,22 @@ Sentinel本身的设计是在为多个Sentinel进程协同合作的配置中运�
         </item>
         <item>
         <title>算法之旅</title>
-        <link>http://localhost:1313/p/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%97%85/</link>
+        <link>https://xiaocm.com/p/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%97%85/</link>
         <pubDate>Tue, 03 Sep 2019 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%97%85/</guid>
+        <guid>https://xiaocm.com/p/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%97%85/</guid>
         <description>&lt;ul&gt;
-&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;http://localhost:1313/2019/09/03/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/&#34; &gt;排序算法&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;http://localhost:1313/2019/09/03/%e9%93%be%e8%a1%a8/&#34; &gt;链表&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://xiaocm.com/2019/09/03/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/&#34; &gt;排序算法&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://xiaocm.com/2019/09/03/%e9%93%be%e8%a1%a8/&#34; &gt;链表&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 </description>
         </item>
         <item>
         <title>一份建议的Git Commit 模版</title>
-        <link>http://localhost:1313/p/%E4%B8%80%E4%BB%BD%E5%BB%BA%E8%AE%AE%E7%9A%84git-commit-%E6%A8%A1%E7%89%88/</link>
+        <link>https://xiaocm.com/p/%E4%B8%80%E4%BB%BD%E5%BB%BA%E8%AE%AE%E7%9A%84git-commit-%E6%A8%A1%E7%89%88/</link>
         <pubDate>Wed, 14 Aug 2019 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/%E4%B8%80%E4%BB%BD%E5%BB%BA%E8%AE%AE%E7%9A%84git-commit-%E6%A8%A1%E7%89%88/</guid>
+        <guid>https://xiaocm.com/p/%E4%B8%80%E4%BB%BD%E5%BB%BA%E8%AE%AE%E7%9A%84git-commit-%E6%A8%A1%E7%89%88/</guid>
         <description>&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -5130,10 +5130,10 @@ chore (更新grunt任务等; 不包括生产代码变动)&lt;/p&gt;
         </item>
         <item>
         <title>Git常用命令</title>
-        <link>http://localhost:1313/p/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</link>
+        <link>https://xiaocm.com/p/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</link>
         <pubDate>Mon, 18 Feb 2019 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</guid>
+        <guid>https://xiaocm.com/p/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</guid>
         <description>&lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/20210316200434.png&#34;
 	
 	
@@ -5349,10 +5349,10 @@ $ git archive&lt;/p&gt;
         </item>
         <item>
         <title>Nginx基本配置</title>
-        <link>http://localhost:1313/p/nginx%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/</link>
+        <link>https://xiaocm.com/p/nginx%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/</link>
         <pubDate>Fri, 18 Jan 2019 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/nginx%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/</guid>
+        <guid>https://xiaocm.com/p/nginx%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/</guid>
         <description>&lt;h3 id=&#34;1-nginx-常用操作整理&#34;&gt;1. Nginx 常用操作整理&lt;/h3&gt;
 &lt;h4 id=&#34;11-启动-nginx&#34;&gt;1.1 启动 Nginx&lt;/h4&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -5726,10 +5726,10 @@ fastcgi_pass 链接的是php-fpm的地址。其他几个参数我们以后再说
         </item>
         <item>
         <title>Redis复制</title>
-        <link>http://localhost:1313/p/redis%E5%A4%8D%E5%88%B6/</link>
+        <link>https://xiaocm.com/p/redis%E5%A4%8D%E5%88%B6/</link>
         <pubDate>Sat, 07 Jul 2018 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/redis%E5%A4%8D%E5%88%B6/</guid>
+        <guid>https://xiaocm.com/p/redis%E5%A4%8D%E5%88%B6/</guid>
         <description>&lt;h3 id=&#34;replication&#34;&gt;Replication&lt;/h3&gt;
 &lt;p&gt;Redis使用主从复制非常简单，它允许从实例成为主实例的副本，每当链接断开时，从节点将自动重新连接到主服务器上。并且无论主服务器发生什么情况，从节点都尝试完全复制所有数据。&lt;/p&gt;
 &lt;h3 id=&#34;redis主从复制使用以下三种机制&#34;&gt;Redis主从复制使用以下三种机制：&lt;/h3&gt;
@@ -5835,10 +5835,10 @@ fastcgi_pass 链接的是php-fpm的地址。其他几个参数我们以后再说
         </item>
         <item>
         <title>Redis安装与配置</title>
-        <link>http://localhost:1313/p/redis%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE/</link>
+        <link>https://xiaocm.com/p/redis%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE/</link>
         <pubDate>Fri, 06 Jul 2018 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/redis%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE/</guid>
+        <guid>https://xiaocm.com/p/redis%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE/</guid>
         <description>&lt;h3 id=&#34;下载&#34;&gt;下载&lt;/h3&gt;
 &lt;ol&gt;
 &lt;li&gt;从&lt;a class=&#34;link&#34; href=&#34;http://www.redis.io&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
@@ -6028,10 +6028,10 @@ master 连接口令 &lt;code&gt;masterauth&lt;/code&gt;&lt;/p&gt;
         </item>
         <item>
         <title>Redis持久化</title>
-        <link>http://localhost:1313/p/redis%E6%8C%81%E4%B9%85%E5%8C%96/</link>
+        <link>https://xiaocm.com/p/redis%E6%8C%81%E4%B9%85%E5%8C%96/</link>
         <pubDate>Fri, 06 Jul 2018 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/redis%E6%8C%81%E4%B9%85%E5%8C%96/</guid>
+        <guid>https://xiaocm.com/p/redis%E6%8C%81%E4%B9%85%E5%8C%96/</guid>
         <description>&lt;h2 id=&#34;redis的持久化机制-rdb&#34;&gt;Redis的持久化机制-RDB&lt;/h2&gt;
 &lt;h3 id=&#34;1什么是rdb&#34;&gt;1.什么是RDB&lt;/h3&gt;
 &lt;p&gt;The RDB persistence performs point-in-time snapshots of your dataset at specified intervals.(RDB持久化是以指定的时间间隔执行数据集的时间点快照。)
@@ -6195,10 +6195,10 @@ master 连接口令 &lt;code&gt;masterauth&lt;/code&gt;&lt;/p&gt;
         </item>
         <item>
         <title>随手记</title>
-        <link>http://localhost:1313/p/%E9%9A%8F%E6%89%8B%E8%AE%B0/</link>
+        <link>https://xiaocm.com/p/%E9%9A%8F%E6%89%8B%E8%AE%B0/</link>
         <pubDate>Wed, 06 Jun 2018 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/%E9%9A%8F%E6%89%8B%E8%AE%B0/</guid>
+        <guid>https://xiaocm.com/p/%E9%9A%8F%E6%89%8B%E8%AE%B0/</guid>
         <description>&lt;h3 id=&#34;三个有启发的学习方法&#34;&gt;三个有启发的学习方法&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;

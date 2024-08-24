@@ -2,318 +2,318 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/</loc>
+    <loc>https://xiaocm.com/</loc>
     <lastmod>2022-06-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/</loc>
+    <loc>https://xiaocm.com/categories/</loc>
     <lastmod>2022-06-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/mysql/</loc>
+    <loc>https://xiaocm.com/tags/mysql/</loc>
     <lastmod>2022-06-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/mysql%E5%AE%9E%E6%88%9845%E8%AE%B2/</loc>
+    <loc>https://xiaocm.com/categories/mysql%E5%AE%9E%E6%88%9845%E8%AE%B2/</loc>
     <lastmod>2022-06-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/post/</loc>
+    <loc>https://xiaocm.com/post/</loc>
     <lastmod>2022-06-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/</loc>
+    <loc>https://xiaocm.com/tags/</loc>
     <lastmod>2022-06-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/%E4%BA%8B%E5%8A%A1%E5%88%B0%E5%BA%95%E6%98%AF%E9%9A%94%E7%A6%BB%E7%9A%84%E8%BF%98%E6%98%AF%E4%B8%8D%E9%9A%94%E7%A6%BB%E7%9A%84/</loc>
+    <loc>https://xiaocm.com/p/%E4%BA%8B%E5%8A%A1%E5%88%B0%E5%BA%95%E6%98%AF%E9%9A%94%E7%A6%BB%E7%9A%84%E8%BF%98%E6%98%AF%E4%B8%8D%E9%9A%94%E7%A6%BB%E7%9A%84/</loc>
     <lastmod>2022-06-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/%E8%A1%8C%E9%94%81%E5%8A%9F%E8%BF%87%E6%80%8E%E4%B9%88%E5%87%8F%E5%B0%91%E8%A1%8C%E9%94%81%E5%AF%B9%E6%80%A7%E8%83%BD%E7%9A%84%E5%BD%B1%E5%93%8D/</loc>
+    <loc>https://xiaocm.com/p/%E8%A1%8C%E9%94%81%E5%8A%9F%E8%BF%87%E6%80%8E%E4%B9%88%E5%87%8F%E5%B0%91%E8%A1%8C%E9%94%81%E5%AF%B9%E6%80%A7%E8%83%BD%E7%9A%84%E5%BD%B1%E5%93%8D/</loc>
     <lastmod>2022-06-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%B4%A2%E5%BC%95%E4%B8%8B/</loc>
+    <loc>https://xiaocm.com/p/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%B4%A2%E5%BC%95%E4%B8%8B/</loc>
     <lastmod>2022-06-08T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%B4%A2%E5%BC%95%E4%B8%8A/</loc>
+    <loc>https://xiaocm.com/p/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA%E7%B4%A2%E5%BC%95%E4%B8%8A/</loc>
     <lastmod>2022-06-07T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%A0%E6%94%B9%E4%BA%86%E6%88%91%E8%BF%98%E7%9C%8B%E4%B8%8D%E8%A7%81/</loc>
+    <loc>https://xiaocm.com/p/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%A0%E6%94%B9%E4%BA%86%E6%88%91%E8%BF%98%E7%9C%8B%E4%B8%8D%E8%A7%81/</loc>
     <lastmod>2022-06-07T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E4%B8%80%E6%9D%A1sql%E6%9B%B4%E6%96%B0%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84/</loc>
+    <loc>https://xiaocm.com/p/%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E4%B8%80%E6%9D%A1sql%E6%9B%B4%E6%96%B0%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84/</loc>
     <lastmod>2022-06-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/%E5%9F%BA%E7%A1%80%E6%9E%B6%E6%9E%84%E4%B8%80%E6%9D%A1sql%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84/</loc>
+    <loc>https://xiaocm.com/p/%E5%9F%BA%E7%A1%80%E6%9E%B6%E6%9E%84%E4%B8%80%E6%9D%A1sql%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84/</loc>
     <lastmod>2022-06-05T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/ddia/</loc>
+    <loc>https://xiaocm.com/categories/ddia/</loc>
     <lastmod>2022-05-31T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/%E5%88%86%E5%B8%83%E5%BC%8F/</loc>
+    <loc>https://xiaocm.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/</loc>
     <lastmod>2022-05-31T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6/</loc>
+    <loc>https://xiaocm.com/p/%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6/</loc>
     <lastmod>2022-05-31T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/%E6%B5%8B%E8%AF%95/</loc>
+    <loc>https://xiaocm.com/tags/%E6%B5%8B%E8%AF%95/</loc>
     <lastmod>2022-05-30T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E6%B5%8B%E8%AF%95%E8%AF%BE/</loc>
+    <loc>https://xiaocm.com/categories/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E6%B5%8B%E8%AF%95%E8%AF%BE/</loc>
     <lastmod>2022-05-30T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E6%B5%8B%E8%AF%95%E8%AF%BE/</loc>
+    <loc>https://xiaocm.com/p/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E6%B5%8B%E8%AF%95%E8%AF%BE/</loc>
     <lastmod>2022-05-30T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/git/</loc>
+    <loc>https://xiaocm.com/tags/git/</loc>
     <lastmod>2022-04-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/git/</loc>
+    <loc>https://xiaocm.com/categories/git/</loc>
     <lastmod>2022-04-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/netty/</loc>
+    <loc>https://xiaocm.com/tags/netty/</loc>
     <lastmod>2022-04-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/netty/</loc>
+    <loc>https://xiaocm.com/categories/netty/</loc>
     <lastmod>2022-04-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/netty/</loc>
+    <loc>https://xiaocm.com/p/netty/</loc>
     <lastmod>2022-04-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/%E6%88%91%E6%AF%8F%E5%A4%A9%E4%BD%BF%E7%94%A8%E7%9A%8411%E4%B8%AAgit-commands/</loc>
+    <loc>https://xiaocm.com/p/%E6%88%91%E6%AF%8F%E5%A4%A9%E4%BD%BF%E7%94%A8%E7%9A%8411%E4%B8%AAgit-commands/</loc>
     <lastmod>2022-04-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/go/</loc>
+    <loc>https://xiaocm.com/tags/go/</loc>
     <lastmod>2022-04-07T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/go/</loc>
+    <loc>https://xiaocm.com/categories/go/</loc>
     <lastmod>2022-04-07T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/go%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86quickstart/</loc>
+    <loc>https://xiaocm.com/p/go%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86quickstart/</loc>
     <lastmod>2022-04-07T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/prometheus/</loc>
+    <loc>https://xiaocm.com/tags/prometheus/</loc>
     <lastmod>2022-02-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/prometheus/</loc>
+    <loc>https://xiaocm.com/categories/prometheus/</loc>
     <lastmod>2022-02-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/prometheus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/</loc>
+    <loc>https://xiaocm.com/p/prometheus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/</loc>
     <lastmod>2022-02-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/%E4%BA%BA%E7%94%9F/</loc>
+    <loc>https://xiaocm.com/tags/%E4%BA%BA%E7%94%9F/</loc>
     <lastmod>2022-02-21T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/%E4%BA%BA%E7%94%9F/</loc>
+    <loc>https://xiaocm.com/categories/%E4%BA%BA%E7%94%9F/</loc>
     <lastmod>2022-02-21T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/%E5%BF%83%E4%B8%AD%E9%9C%80%E7%A0%B4%E9%99%A4%E7%9A%84%E4%B8%89%E7%A7%8D%E8%B4%BC/</loc>
+    <loc>https://xiaocm.com/p/%E5%BF%83%E4%B8%AD%E9%9C%80%E7%A0%B4%E9%99%A4%E7%9A%84%E4%B8%89%E7%A7%8D%E8%B4%BC/</loc>
     <lastmod>2022-02-21T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/mysql/</loc>
+    <loc>https://xiaocm.com/categories/mysql/</loc>
     <lastmod>2021-09-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/mysql%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86/</loc>
+    <loc>https://xiaocm.com/p/mysql%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86/</loc>
     <lastmod>2021-09-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/10x%E7%A8%8B%E5%BA%8F%E5%91%98%E6%80%BB%E7%BB%93/</loc>
+    <loc>https://xiaocm.com/p/10x%E7%A8%8B%E5%BA%8F%E5%91%98%E6%80%BB%E7%BB%93/</loc>
     <lastmod>2021-04-13T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/%E8%AF%BB%E4%B9%A6/</loc>
+    <loc>https://xiaocm.com/tags/%E8%AF%BB%E4%B9%A6/</loc>
     <lastmod>2021-04-13T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/%E8%AF%BB%E4%B9%A6/</loc>
+    <loc>https://xiaocm.com/categories/%E8%AF%BB%E4%B9%A6/</loc>
     <lastmod>2021-04-13T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/%E9%98%85%E8%AF%BB%E6%B8%85%E5%8D%95/</loc>
+    <loc>https://xiaocm.com/p/%E9%98%85%E8%AF%BB%E6%B8%85%E5%8D%95/</loc>
     <lastmod>2021-04-09T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/10x%E7%A8%8B%E5%BA%8F%E5%91%98/</loc>
+    <loc>https://xiaocm.com/p/10x%E7%A8%8B%E5%BA%8F%E5%91%98/</loc>
     <lastmod>2021-04-08T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/%E5%85%B6%E4%BB%96/</loc>
+    <loc>https://xiaocm.com/tags/%E5%85%B6%E4%BB%96/</loc>
     <lastmod>2021-04-08T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/%E5%85%B6%E4%BB%96/</loc>
+    <loc>https://xiaocm.com/categories/%E5%85%B6%E4%BB%96/</loc>
     <lastmod>2021-04-08T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/java/</loc>
+    <loc>https://xiaocm.com/tags/java/</loc>
     <lastmod>2021-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/thread%E8%AF%A6%E8%A7%A3/</loc>
+    <loc>https://xiaocm.com/p/thread%E8%AF%A6%E8%A7%A3/</loc>
     <lastmod>2021-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</loc>
+    <loc>https://xiaocm.com/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</loc>
     <lastmod>2021-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</loc>
+    <loc>https://xiaocm.com/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</loc>
     <lastmod>2021-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/java/</loc>
+    <loc>https://xiaocm.com/categories/java/</loc>
     <lastmod>2021-03-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/java%E5%B0%86html%E8%BD%AC%E4%B8%BA%E5%9B%BE%E7%89%87/</loc>
+    <loc>https://xiaocm.com/p/java%E5%B0%86html%E8%BD%AC%E4%B8%BA%E5%9B%BE%E7%89%87/</loc>
     <lastmod>2021-03-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/java%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%B8%B8%E9%87%8F%E6%B1%A0%E4%BD%8D%E4%BA%8E%E5%93%AA%E9%87%8C%E5%A0%86%E6%88%96%E5%A0%86%E6%A0%88/</loc>
+    <loc>https://xiaocm.com/p/java%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%B8%B8%E9%87%8F%E6%B1%A0%E4%BD%8D%E4%BA%8E%E5%93%AA%E9%87%8C%E5%A0%86%E6%88%96%E5%A0%86%E6%A0%88/</loc>
     <lastmod>2021-03-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/string/</loc>
+    <loc>https://xiaocm.com/tags/string/</loc>
     <lastmod>2021-03-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/%E5%90%8E%E7%AB%AF%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/</loc>
+    <loc>https://xiaocm.com/p/%E5%90%8E%E7%AB%AF%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/</loc>
     <lastmod>2021-03-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/%E5%AD%A6%E4%B9%A0/</loc>
+    <loc>https://xiaocm.com/tags/%E5%AD%A6%E4%B9%A0/</loc>
     <lastmod>2021-03-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/%E5%AD%A6%E4%B9%A0/</loc>
+    <loc>https://xiaocm.com/categories/%E5%AD%A6%E4%B9%A0/</loc>
     <lastmod>2021-03-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/%E8%BD%AC%E8%BD%BD/</loc>
+    <loc>https://xiaocm.com/tags/%E8%BD%AC%E8%BD%BD/</loc>
     <lastmod>2021-03-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/j.u.c-%E5%90%8C%E6%AD%A5%E6%A1%86%E6%9E%B6aqs-%E6%A1%86%E6%9E%B6/</loc>
+    <loc>https://xiaocm.com/p/j.u.c-%E5%90%8C%E6%AD%A5%E6%A1%86%E6%9E%B6aqs-%E6%A1%86%E6%9E%B6/</loc>
     <lastmod>2021-03-22T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/juc/</loc>
+    <loc>https://xiaocm.com/tags/juc/</loc>
     <lastmod>2021-03-22T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/%E7%BF%BB%E8%AF%91/</loc>
+    <loc>https://xiaocm.com/tags/%E7%BF%BB%E8%AF%91/</loc>
     <lastmod>2021-03-22T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/--tomcat/</loc>
+    <loc>https://xiaocm.com/tags/--tomcat/</loc>
     <lastmod>2021-03-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/docker/</loc>
+    <loc>https://xiaocm.com/tags/docker/</loc>
     <lastmod>2021-03-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/docker/</loc>
+    <loc>https://xiaocm.com/categories/docker/</loc>
     <lastmod>2021-03-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/docker%E5%AE%89%E8%A3%85%E8%BD%AF%E4%BB%B6%E9%9B%86%E5%90%88/</loc>
+    <loc>https://xiaocm.com/p/docker%E5%AE%89%E8%A3%85%E8%BD%AF%E4%BB%B6%E9%9B%86%E5%90%88/</loc>
     <lastmod>2021-03-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/mysql%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</loc>
+    <loc>https://xiaocm.com/p/mysql%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</loc>
     <lastmod>2021-03-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/tomcat/</loc>
+    <loc>https://xiaocm.com/categories/tomcat/</loc>
     <lastmod>2021-03-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/tomcat%E8%BF%90%E7%BB%B4%E8%84%9A%E6%9C%AC/</loc>
+    <loc>https://xiaocm.com/p/tomcat%E8%BF%90%E7%BB%B4%E8%84%9A%E6%9C%AC/</loc>
     <lastmod>2021-03-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/%E5%88%BB%E6%84%8F%E7%BB%83%E4%B9%A0%E4%BB%A5%E5%AD%A6%E4%B9%A0%E7%BC%96%E7%A8%8B%E4%B8%BA%E4%BE%8B/</loc>
+    <loc>https://xiaocm.com/p/%E5%88%BB%E6%84%8F%E7%BB%83%E4%B9%A0%E4%BB%A5%E5%AD%A6%E4%B9%A0%E7%BC%96%E7%A8%8B%E4%B8%BA%E4%BE%8B/</loc>
     <lastmod>2021-01-17T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/redis/</loc>
+    <loc>https://xiaocm.com/tags/redis/</loc>
     <lastmod>2020-10-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/redis%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</loc>
+    <loc>https://xiaocm.com/p/redis%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</loc>
     <lastmod>2020-10-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/%E5%B7%A5%E4%BD%9C/</loc>
+    <loc>https://xiaocm.com/categories/%E5%B7%A5%E4%BD%9C/</loc>
     <lastmod>2020-10-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/git%E4%BF%AE%E6%94%B9commit%E4%BF%A1%E6%81%AF/</loc>
+    <loc>https://xiaocm.com/p/git%E4%BF%AE%E6%94%B9commit%E4%BF%A1%E6%81%AF/</loc>
     <lastmod>2020-10-23T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/linux/</loc>
+    <loc>https://xiaocm.com/tags/linux/</loc>
     <lastmod>2020-09-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/linux/</loc>
+    <loc>https://xiaocm.com/categories/linux/</loc>
     <lastmod>2020-09-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</loc>
+    <loc>https://xiaocm.com/p/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</loc>
     <lastmod>2020-09-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/git-commit%E4%B9%8B%E5%90%8E%E6%92%A4%E9%94%80commit/</loc>
+    <loc>https://xiaocm.com/p/git-commit%E4%B9%8B%E5%90%8E%E6%92%A4%E9%94%80commit/</loc>
     <lastmod>2020-08-21T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/git-rebase%E5%92%8Cgit-merge%E7%9A%84%E5%8C%BA%E5%88%AB/</loc>
+    <loc>https://xiaocm.com/p/git-rebase%E5%92%8Cgit-merge%E7%9A%84%E5%8C%BA%E5%88%AB/</loc>
     <lastmod>2020-08-19T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/nginx/</loc>
+    <loc>https://xiaocm.com/tags/nginx/</loc>
     <lastmod>2020-08-19T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/nginx/</loc>
+    <loc>https://xiaocm.com/categories/nginx/</loc>
     <lastmod>2020-08-19T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%85%8D%E7%BD%AE/</loc>
+    <loc>https://xiaocm.com/p/nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%85%8D%E7%BD%AE/</loc>
     <lastmod>2020-08-19T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/--redis/</loc>
+    <loc>https://xiaocm.com/tags/--redis/</loc>
     <lastmod>2020-07-09T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/redis/</loc>
+    <loc>https://xiaocm.com/categories/redis/</loc>
     <lastmod>2020-07-09T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</loc>
+    <loc>https://xiaocm.com/p/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</loc>
     <lastmod>2020-07-09T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/redis%E5%93%A8%E5%85%B5/</loc>
+    <loc>https://xiaocm.com/p/redis%E5%93%A8%E5%85%B5/</loc>
     <lastmod>2020-07-07T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/rocketmq/</loc>
+    <loc>https://xiaocm.com/tags/rocketmq/</loc>
     <lastmod>2020-05-14T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/rocketmq/</loc>
+    <loc>https://xiaocm.com/categories/rocketmq/</loc>
     <lastmod>2020-05-14T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6%E9%80%89%E5%9E%8B/</loc>
+    <loc>https://xiaocm.com/p/%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6%E9%80%89%E5%9E%8B/</loc>
     <lastmod>2020-05-14T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%98%AF%E4%BB%80%E4%B9%88/</loc>
+    <loc>https://xiaocm.com/p/%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%98%AF%E4%BB%80%E4%B9%88/</loc>
     <lastmod>2020-05-13T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/%E9%93%BE%E8%A1%A8/</loc>
+    <loc>https://xiaocm.com/p/%E9%93%BE%E8%A1%A8/</loc>
     <lastmod>2019-09-03T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</loc>
+    <loc>https://xiaocm.com/p/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</loc>
     <lastmod>2019-09-03T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/%E7%AE%97%E6%B3%95/</loc>
+    <loc>https://xiaocm.com/tags/%E7%AE%97%E6%B3%95/</loc>
     <lastmod>2019-09-03T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/%E7%AE%97%E6%B3%95/</loc>
+    <loc>https://xiaocm.com/categories/%E7%AE%97%E6%B3%95/</loc>
     <lastmod>2019-09-03T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%97%85/</loc>
+    <loc>https://xiaocm.com/p/%E7%AE%97%E6%B3%95%E4%B9%8B%E6%97%85/</loc>
     <lastmod>2019-09-03T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/%E4%B8%80%E4%BB%BD%E5%BB%BA%E8%AE%AE%E7%9A%84git-commit-%E6%A8%A1%E7%89%88/</loc>
+    <loc>https://xiaocm.com/p/%E4%B8%80%E4%BB%BD%E5%BB%BA%E8%AE%AE%E7%9A%84git-commit-%E6%A8%A1%E7%89%88/</loc>
     <lastmod>2019-08-14T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/archives/</loc>
+    <loc>https://xiaocm.com/archives/</loc>
     <lastmod>2019-05-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/page/</loc>
+    <loc>https://xiaocm.com/page/</loc>
     <lastmod>2019-05-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</loc>
+    <loc>https://xiaocm.com/p/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</loc>
     <lastmod>2019-02-18T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/nginx%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/</loc>
+    <loc>https://xiaocm.com/p/nginx%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/</loc>
     <lastmod>2019-01-18T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/redis%E5%A4%8D%E5%88%B6/</loc>
+    <loc>https://xiaocm.com/p/redis%E5%A4%8D%E5%88%B6/</loc>
     <lastmod>2018-07-07T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/redis%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE/</loc>
+    <loc>https://xiaocm.com/p/redis%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE/</loc>
     <lastmod>2018-07-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/redis%E6%8C%81%E4%B9%85%E5%8C%96/</loc>
+    <loc>https://xiaocm.com/p/redis%E6%8C%81%E4%B9%85%E5%8C%96/</loc>
     <lastmod>2018-07-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/%E9%9A%8F%E6%89%8B%E8%AE%B0/</loc>
+    <loc>https://xiaocm.com/tags/%E9%9A%8F%E6%89%8B%E8%AE%B0/</loc>
     <lastmod>2018-06-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/%E9%9A%8F%E6%89%8B%E8%AE%B0/</loc>
+    <loc>https://xiaocm.com/categories/%E9%9A%8F%E6%89%8B%E8%AE%B0/</loc>
     <lastmod>2018-06-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/p/%E9%9A%8F%E6%89%8B%E8%AE%B0/</loc>
+    <loc>https://xiaocm.com/p/%E9%9A%8F%E6%89%8B%E8%AE%B0/</loc>
     <lastmod>2018-06-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/links/</loc>
+    <loc>https://xiaocm.com/links/</loc>
   </url><url>
-    <loc>http://localhost:1313/search/</loc>
+    <loc>https://xiaocm.com/search/</loc>
   </url><url>
-    <loc>http://localhost:1313/categories/test/</loc>
+    <loc>https://xiaocm.com/categories/test/</loc>
   </url><url>
-    <loc>http://localhost:1313/%E5%85%B3%E4%BA%8E/</loc>
+    <loc>https://xiaocm.com/%E5%85%B3%E4%BA%8E/</loc>
   </url>
 </urlset>

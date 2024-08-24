@@ -2,202 +2,202 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Categories on 无常是常</title>
-        <link>http://localhost:1313/categories/</link>
+        <link>https://xiaocm.com/categories/</link>
         <description>Recent content in Categories on 无常是常</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>XCM 陕ICP备16008414号</copyright>
-        <lastBuildDate>Sun, 12 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/categories/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Sun, 12 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://xiaocm.com/categories/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>MySQL实战45讲</title>
-        <link>http://localhost:1313/categories/mysql%E5%AE%9E%E6%88%9845%E8%AE%B2/</link>
+        <link>https://xiaocm.com/categories/mysql%E5%AE%9E%E6%88%9845%E8%AE%B2/</link>
         <pubDate>Sun, 12 Jun 2022 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/mysql%E5%AE%9E%E6%88%9845%E8%AE%B2/</guid>
+        <guid>https://xiaocm.com/categories/mysql%E5%AE%9E%E6%88%9845%E8%AE%B2/</guid>
         <description></description>
         </item>
         <item>
         <title>Ddia</title>
-        <link>http://localhost:1313/categories/ddia/</link>
+        <link>https://xiaocm.com/categories/ddia/</link>
         <pubDate>Tue, 31 May 2022 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/ddia/</guid>
+        <guid>https://xiaocm.com/categories/ddia/</guid>
         <description></description>
         </item>
         <item>
         <title>程序员的测试课</title>
-        <link>http://localhost:1313/categories/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E6%B5%8B%E8%AF%95%E8%AF%BE/</link>
+        <link>https://xiaocm.com/categories/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E6%B5%8B%E8%AF%95%E8%AF%BE/</link>
         <pubDate>Mon, 30 May 2022 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E6%B5%8B%E8%AF%95%E8%AF%BE/</guid>
+        <guid>https://xiaocm.com/categories/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E6%B5%8B%E8%AF%95%E8%AF%BE/</guid>
         <description></description>
         </item>
         <item>
         <title>Git</title>
-        <link>http://localhost:1313/categories/git/</link>
+        <link>https://xiaocm.com/categories/git/</link>
         <pubDate>Tue, 12 Apr 2022 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/git/</guid>
+        <guid>https://xiaocm.com/categories/git/</guid>
         <description></description>
         </item>
         <item>
         <title>Netty</title>
-        <link>http://localhost:1313/categories/netty/</link>
+        <link>https://xiaocm.com/categories/netty/</link>
         <pubDate>Tue, 12 Apr 2022 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/netty/</guid>
+        <guid>https://xiaocm.com/categories/netty/</guid>
         <description></description>
         </item>
         <item>
         <title>Go</title>
-        <link>http://localhost:1313/categories/go/</link>
+        <link>https://xiaocm.com/categories/go/</link>
         <pubDate>Thu, 07 Apr 2022 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/go/</guid>
+        <guid>https://xiaocm.com/categories/go/</guid>
         <description></description>
         </item>
         <item>
         <title>Prometheus</title>
-        <link>http://localhost:1313/categories/prometheus/</link>
+        <link>https://xiaocm.com/categories/prometheus/</link>
         <pubDate>Mon, 28 Feb 2022 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/prometheus/</guid>
+        <guid>https://xiaocm.com/categories/prometheus/</guid>
         <description></description>
         </item>
         <item>
         <title>人生</title>
-        <link>http://localhost:1313/categories/%E4%BA%BA%E7%94%9F/</link>
+        <link>https://xiaocm.com/categories/%E4%BA%BA%E7%94%9F/</link>
         <pubDate>Mon, 21 Feb 2022 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/%E4%BA%BA%E7%94%9F/</guid>
+        <guid>https://xiaocm.com/categories/%E4%BA%BA%E7%94%9F/</guid>
         <description></description>
         </item>
         <item>
         <title>MySQL</title>
-        <link>http://localhost:1313/categories/mysql/</link>
+        <link>https://xiaocm.com/categories/mysql/</link>
         <pubDate>Sun, 26 Sep 2021 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/mysql/</guid>
+        <guid>https://xiaocm.com/categories/mysql/</guid>
         <description></description>
         </item>
         <item>
         <title>读书</title>
-        <link>http://localhost:1313/categories/%E8%AF%BB%E4%B9%A6/</link>
+        <link>https://xiaocm.com/categories/%E8%AF%BB%E4%B9%A6/</link>
         <pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/%E8%AF%BB%E4%B9%A6/</guid>
+        <guid>https://xiaocm.com/categories/%E8%AF%BB%E4%B9%A6/</guid>
         <description></description>
         </item>
         <item>
         <title>其他</title>
-        <link>http://localhost:1313/categories/%E5%85%B6%E4%BB%96/</link>
+        <link>https://xiaocm.com/categories/%E5%85%B6%E4%BB%96/</link>
         <pubDate>Thu, 08 Apr 2021 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/%E5%85%B6%E4%BB%96/</guid>
+        <guid>https://xiaocm.com/categories/%E5%85%B6%E4%BB%96/</guid>
         <description></description>
         </item>
         <item>
         <title>多线程</title>
-        <link>http://localhost:1313/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</link>
+        <link>https://xiaocm.com/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</link>
         <pubDate>Sat, 27 Mar 2021 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</guid>
+        <guid>https://xiaocm.com/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</guid>
         <description></description>
         </item>
         <item>
         <title>Java</title>
-        <link>http://localhost:1313/categories/java/</link>
+        <link>https://xiaocm.com/categories/java/</link>
         <pubDate>Thu, 25 Mar 2021 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/java/</guid>
+        <guid>https://xiaocm.com/categories/java/</guid>
         <description></description>
         </item>
         <item>
         <title>学习</title>
-        <link>http://localhost:1313/categories/%E5%AD%A6%E4%B9%A0/</link>
+        <link>https://xiaocm.com/categories/%E5%AD%A6%E4%B9%A0/</link>
         <pubDate>Wed, 24 Mar 2021 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/%E5%AD%A6%E4%B9%A0/</guid>
+        <guid>https://xiaocm.com/categories/%E5%AD%A6%E4%B9%A0/</guid>
         <description></description>
         </item>
         <item>
         <title>Docker</title>
-        <link>http://localhost:1313/categories/docker/</link>
+        <link>https://xiaocm.com/categories/docker/</link>
         <pubDate>Tue, 16 Mar 2021 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/docker/</guid>
+        <guid>https://xiaocm.com/categories/docker/</guid>
         <description></description>
         </item>
         <item>
         <title>Tomcat</title>
-        <link>http://localhost:1313/categories/tomcat/</link>
+        <link>https://xiaocm.com/categories/tomcat/</link>
         <pubDate>Tue, 16 Mar 2021 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/tomcat/</guid>
+        <guid>https://xiaocm.com/categories/tomcat/</guid>
         <description></description>
         </item>
         <item>
         <title>工作</title>
-        <link>http://localhost:1313/categories/%E5%B7%A5%E4%BD%9C/</link>
+        <link>https://xiaocm.com/categories/%E5%B7%A5%E4%BD%9C/</link>
         <pubDate>Wed, 28 Oct 2020 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/%E5%B7%A5%E4%BD%9C/</guid>
+        <guid>https://xiaocm.com/categories/%E5%B7%A5%E4%BD%9C/</guid>
         <description></description>
         </item>
         <item>
         <title>Linux</title>
-        <link>http://localhost:1313/categories/linux/</link>
+        <link>https://xiaocm.com/categories/linux/</link>
         <pubDate>Sun, 27 Sep 2020 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/linux/</guid>
+        <guid>https://xiaocm.com/categories/linux/</guid>
         <description></description>
         </item>
         <item>
         <title>Nginx</title>
-        <link>http://localhost:1313/categories/nginx/</link>
+        <link>https://xiaocm.com/categories/nginx/</link>
         <pubDate>Wed, 19 Aug 2020 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/nginx/</guid>
+        <guid>https://xiaocm.com/categories/nginx/</guid>
         <description></description>
         </item>
         <item>
         <title>Redis</title>
-        <link>http://localhost:1313/categories/redis/</link>
+        <link>https://xiaocm.com/categories/redis/</link>
         <pubDate>Thu, 09 Jul 2020 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/redis/</guid>
+        <guid>https://xiaocm.com/categories/redis/</guid>
         <description></description>
         </item>
         <item>
         <title>RocketMQ</title>
-        <link>http://localhost:1313/categories/rocketmq/</link>
+        <link>https://xiaocm.com/categories/rocketmq/</link>
         <pubDate>Thu, 14 May 2020 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/rocketmq/</guid>
+        <guid>https://xiaocm.com/categories/rocketmq/</guid>
         <description></description>
         </item>
         <item>
         <title>算法</title>
-        <link>http://localhost:1313/categories/%E7%AE%97%E6%B3%95/</link>
+        <link>https://xiaocm.com/categories/%E7%AE%97%E6%B3%95/</link>
         <pubDate>Tue, 03 Sep 2019 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/%E7%AE%97%E6%B3%95/</guid>
+        <guid>https://xiaocm.com/categories/%E7%AE%97%E6%B3%95/</guid>
         <description></description>
         </item>
         <item>
         <title>随手记</title>
-        <link>http://localhost:1313/categories/%E9%9A%8F%E6%89%8B%E8%AE%B0/</link>
+        <link>https://xiaocm.com/categories/%E9%9A%8F%E6%89%8B%E8%AE%B0/</link>
         <pubDate>Wed, 06 Jun 2018 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/%E9%9A%8F%E6%89%8B%E8%AE%B0/</guid>
+        <guid>https://xiaocm.com/categories/%E9%9A%8F%E6%89%8B%E8%AE%B0/</guid>
         <description></description>
         </item>
         <item>
         <title>Test</title>
-        <link>http://localhost:1313/categories/test/</link>
+        <link>https://xiaocm.com/categories/test/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/categories/test/</guid>
-        <description>&lt;img src="http://localhost:1313/categories/test/hutomo-abrianto-l2jk-uxb1BY-unsplash.jpg" alt="Featured image of post Test" /&gt;</description>
+        <guid>https://xiaocm.com/categories/test/</guid>
+        <description>&lt;img src="https://xiaocm.com/categories/test/hutomo-abrianto-l2jk-uxb1BY-unsplash.jpg" alt="Featured image of post Test" /&gt;</description>
         </item>
         
     </channel>
