@@ -278,10 +278,10 @@
     <loc>https://xiaocm.com/p/%E4%B8%80%E4%BB%BD%E5%BB%BA%E8%AE%AE%E7%9A%84git-commit-%E6%A8%A1%E7%89%88/</loc>
     <lastmod>2019-08-14T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://xiaocm.com/archives/</loc>
+    <loc>https://xiaocm.com/page/</loc>
     <lastmod>2019-05-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://xiaocm.com/page/</loc>
+    <loc>https://xiaocm.com/archives/</loc>
     <lastmod>2019-05-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://xiaocm.com/p/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</loc>
@@ -308,12 +308,12 @@
     <loc>https://xiaocm.com/p/%E9%9A%8F%E6%89%8B%E8%AE%B0/</loc>
     <lastmod>2018-06-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://xiaocm.com/links/</loc>
-  </url><url>
-    <loc>https://xiaocm.com/search/</loc>
-  </url><url>
     <loc>https://xiaocm.com/categories/test/</loc>
   </url><url>
     <loc>https://xiaocm.com/%E5%85%B3%E4%BA%8E/</loc>
+  </url><url>
+    <loc>https://xiaocm.com/search/</loc>
+  </url><url>
+    <loc>https://xiaocm.com/%E5%8F%8B%E9%93%BE/</loc>
   </url>
 </urlset>

@@ -3,7 +3,7 @@ languageCode: zh-cn
 theme: stack
 paginate: 10
 title: 无常是常
-copyright: XCM 陕ICP备16008414号
+copyright: xiaocm
 
 # Theme i18n support
 # Available values: ar, bn, ca, de, el, en, es, fr, hu, id, it, ja, ko, nl, pt-br, th, uk, zh-cn, zh-hk, zh-tw
@@ -48,7 +48,7 @@ params:
 
     footer:
         since: 2020
-        customText:
+        customText: 陕ICP备16008414号
 
     dateFormat:
         published: Jan 02, 2006
@@ -56,7 +56,7 @@ params:
 
     sidebar:
         emoji: 🍥
-        subtitle: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        subtitle:  
         avatar:
             enabled: true
             local: true
