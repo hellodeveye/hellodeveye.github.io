@@ -1,7 +1,7 @@
 baseurl: https://xiaocm.com
 languageCode: zh-cn
 theme: stack
-paginate: 3
+paginate: 10
 title: 无常是常
 copyright: XCM 陕ICP备16008414号
 
