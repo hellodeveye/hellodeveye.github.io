@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='转载自: https://www.baeldung.com/java-string-constant-pool-heap-stack
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content=' 转载自: https://www.baeldung.com/java-string-constant-pool-heap-stack
 1.简介 每当我们声明一个变量或创建一个对象时，它就会存储在内存中。在较高的级别上，Java将内存分为两个块：stack和heap。两种存储器均存储特定类型的数据，并且具有不同的存储和访问模式。
 2.字符串常量池 该字符串常量池是一个特殊的存储区。**当我们声明String时，JVM在池中创建对象并将其引用存储在堆栈中。**在内存中创建每个String对象之前，JVM执行一些步骤来减少内存开销。
 字符串常量池在其实现中使用HashMap。HashMap的每个存储桶均包含具有相同哈希码的String列表。在Java的早期版本中，池的存储区域是固定大小的，并且通常会导致*“无法为对象堆保留足够的空间”* 错误。
@@ -13,13 +13,14 @@
 线程完成执行后，将立即释放在堆栈上创建的变量。相反，垃圾收集器回收堆中的资源。同样，垃圾收集器从池中收集未引用的项目。
 **池的默认大小在不同平台上可能会有所不同。**无论如何，它仍然比可用堆栈大小大得多。在JDK 7之前，该池是permgen空间的一部分，从JDK 7到现在，它是主堆内存的一部分。
 3.结论 在这篇简短的文章中，我们了解了String常量池的存储区域。堆栈和堆具有不同的特性来存储和访问数据。从内存分配到其访问和可用性，堆是最适合存储String常量池的区域。
-实际上，池从未成为堆栈内存的一部分。'>
+实际上，池从未成为堆栈内存的一部分。
+'>
 <title>Java的字符串常量池位于哪里，堆或堆栈？</title>
 
 <link rel='canonical' href='https://xiaocm.com/p/java%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%B8%B8%E9%87%8F%E6%B1%A0%E4%BD%8D%E4%BA%8E%E5%93%AA%E9%87%8C%E5%A0%86%E6%88%96%E5%A0%86%E6%A0%88/'>
 
 <link rel="stylesheet" href="/scss/style.min.abbd69b2908fdfcd5179898beaafd374514a86538d81639ddd2c58c06ae54e40.css"><meta property='og:title' content='Java的字符串常量池位于哪里，堆或堆栈？'>
-<meta property='og:description' content='转载自: https://www.baeldung.com/java-string-constant-pool-heap-stack
+<meta property='og:description' content=' 转载自: https://www.baeldung.com/java-string-constant-pool-heap-stack
 1.简介 每当我们声明一个变量或创建一个对象时，它就会存储在内存中。在较高的级别上，Java将内存分为两个块：stack和heap。两种存储器均存储特定类型的数据，并且具有不同的存储和访问模式。
 2.字符串常量池 该字符串常量池是一个特殊的存储区。**当我们声明String时，JVM在池中创建对象并将其引用存储在堆栈中。**在内存中创建每个String对象之前，JVM执行一些步骤来减少内存开销。
 字符串常量池在其实现中使用HashMap。HashMap的每个存储桶均包含具有相同哈希码的String列表。在Java的早期版本中，池的存储区域是固定大小的，并且通常会导致*“无法为对象堆保留足够的空间”* 错误。
@@ -31,12 +32,13 @@
 线程完成执行后，将立即释放在堆栈上创建的变量。相反，垃圾收集器回收堆中的资源。同样，垃圾收集器从池中收集未引用的项目。
 **池的默认大小在不同平台上可能会有所不同。**无论如何，它仍然比可用堆栈大小大得多。在JDK 7之前，该池是permgen空间的一部分，从JDK 7到现在，它是主堆内存的一部分。
 3.结论 在这篇简短的文章中，我们了解了String常量池的存储区域。堆栈和堆具有不同的特性来存储和访问数据。从内存分配到其访问和可用性，堆是最适合存储String常量池的区域。
-实际上，池从未成为堆栈内存的一部分。'>
+实际上，池从未成为堆栈内存的一部分。
+'>
 <meta property='og:url' content='https://xiaocm.com/p/java%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%B8%B8%E9%87%8F%E6%B1%A0%E4%BD%8D%E4%BA%8E%E5%93%AA%E9%87%8C%E5%A0%86%E6%88%96%E5%A0%86%E6%A0%88/'>
 <meta property='og:site_name' content='无常是常'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='String' /><meta property='article:tag' content='Java' /><meta property='article:tag' content='转载' /><meta property='article:published_time' content='2021-03-24T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2021-03-24T00:00:00&#43;00:00'/>
 <meta name="twitter:title" content="Java的字符串常量池位于哪里，堆或堆栈？">
-<meta name="twitter:description" content="转载自: https://www.baeldung.com/java-string-constant-pool-heap-stack
+<meta name="twitter:description" content=" 转载自: https://www.baeldung.com/java-string-constant-pool-heap-stack
 1.简介 每当我们声明一个变量或创建一个对象时，它就会存储在内存中。在较高的级别上，Java将内存分为两个块：stack和heap。两种存储器均存储特定类型的数据，并且具有不同的存储和访问模式。
 2.字符串常量池 该字符串常量池是一个特殊的存储区。**当我们声明String时，JVM在池中创建对象并将其引用存储在堆栈中。**在内存中创建每个String对象之前，JVM执行一些步骤来减少内存开销。
 字符串常量池在其实现中使用HashMap。HashMap的每个存储桶均包含具有相同哈希码的String列表。在Java的早期版本中，池的存储区域是固定大小的，并且通常会导致*“无法为对象堆保留足够的空间”* 错误。
@@ -48,7 +50,8 @@
 线程完成执行后，将立即释放在堆栈上创建的变量。相反，垃圾收集器回收堆中的资源。同样，垃圾收集器从池中收集未引用的项目。
 **池的默认大小在不同平台上可能会有所不同。**无论如何，它仍然比可用堆栈大小大得多。在JDK 7之前，该池是permgen空间的一部分，从JDK 7到现在，它是主堆内存的一部分。
 3.结论 在这篇简短的文章中，我们了解了String常量池的存储区域。堆栈和堆具有不同的特性来存储和访问数据。从内存分配到其访问和可用性，堆是最适合存储String常量池的区域。
-实际上，池从未成为堆栈内存的一部分。">
+实际上，池从未成为堆栈内存的一部分。
+">
     </head>
     <body class="
     article-page
@@ -92,7 +95,7 @@
                     
                     
                         
-                        <img src="/img/avatar_hu87c10ff50ef4ab09ea180a96c581c02f_62603_300x0_resize_box_3.png" width="300"
+                        <img src="/img/avatar_hu_f06283ad9dc77cbf.png" width="300"
                             height="281" class="site-logo" loading="lazy" alt="Avatar">
                     
                 
@@ -369,8 +372,7 @@
     
     <blockquote>
 <p>转载自: <a class="link" href="https://www.baeldung.com/java-string-constant-pool-heap-stack"  target="_blank" rel="noopener"
-    >https://www.baeldung.com/java-string-constant-pool-heap-stack</a></p>
-</blockquote>
+    >https://www.baeldung.com/java-string-constant-pool-heap-stack</a></p></blockquote>
 <h3 id="1简介">1.简介</h3>
 <p>每当我们声明一个变量或创建一个对象时，它就会存储在内存中。在较高的级别上，Java将内存分为两个块：<code>stack</code>和<code>heap</code>。<strong>两种存储器均存储特定类型的数据</strong>，并且具有不同的存储和访问模式。</p>
 <h3 id="2字符串常量池">2.字符串常量池</h3>
@@ -479,12 +481,12 @@
         
             2020 - 
         
-        2024 xiaocm
+        2025 xiaocm
     </section>
     
     <section class="powerby">
         
-            <a href="https://beian.miit.gov.cn/" target="_blank" >陕ICP备16008414号</a>
+            <a href="https://beian.miit.gov.cn/" target="_blank" >陕ICP备16008414号</a> <br/>
         使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
         主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.23.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
     </section>

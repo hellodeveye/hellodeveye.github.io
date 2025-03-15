@@ -5,8 +5,7 @@
 Redis主从复制使用以下三种机制： 当主从实例连接良好时，主节点向从节点发送命令流来进行更新，是为了复制由于Key过期或回收等其他操作对数据产生影响。 当主从实例断开时，从节点重新连接后只会尝试获取链接断开期间错开的命令流。 如果无法进行部分重新同步，则会要求完全重新同步。 默认情况下，Redis会使用异步复制，Redis从节点会异步地确认接收的数据。因此，主节点不会等待从节点处理完成。但是，如果需要知道从节点都处理了那些命令，也可以选择同步复制。
 Redis 复制的几个特征： Redis是使用异步复制 一个主节点可以有多个从节点 从节点还可以有子节点，从Redis 4.0开始，所有子节点将从主节点接收完全相同的复制流。 Redis主从复制是无阻塞的，意味着在进行复制或同步是仍然可以进行数据查询 复制既可以用于可伸缩性，也可以用于只读查询的多个副本（读写分离） 可以配置主节点不进行数据保存或只启用AOF，然后将数据保存到副本，但是注意:当服务器重启后，从节点服务器重新同步数据时，同时会清空从节点数据。 Redis 复制的原理： 每个Redis Master 节点都有一个replication ID:这是一个较大的伪随机字符串，用于标记当前数据集。每个Master 还有一个偏移量，该偏移量会针对复制流中要发送到副本的每个字节的增量而增加。 以便更新副本的状态。即使未连接任何副本，复制偏移也会增加。
 1 2 3 4 5 6 7 8 9 10 11 12 13 14 # Replication role:master connected_slaves:1 slave0:ip=39.105.157.176,port=6379,state=online,offset=61238,lag=0 # 主 Replication ID master_replid:649255ffb2183786d00203aa51715169b06f4f47 # 副 Replication ID master_replid2:0000000000000000000000000000000000000000 master_repl_offset:61238 second_repl_offset:-1 repl_backlog_active:1 repl_backlog_size:1048576 repl_backlog_first_byte_offset:1 repl_backlog_histlen:61238 当从节点连接主节点时，会使用PSYNC命令来发送当前旧的主节点的Replication ID和offset，这样主节点只会同步相差的数据量，如果主节点缓冲区的副本引用（Replication ID）不存在，则会进行全量同步。
-全量同步的工作流程如下： 主节点开始后台生成RDB文件。同时，它开始缓冲从客户端收到的所有新写入命令。后台保存完成后，主数据库将数据库文件传输到从节点，从节点将其保存在磁盘上，然后将其加载到内存中。然后，主服务器将所有缓冲的命令发送到副本。
-Replication ID 说明： 如果两个实例具有相同的Replication ID和offset，则它们具有完全相同的数据。但是为什么会有两个Replication ID(主和副)？'>
+'>
 <title>Redis复制</title>
 
 <link rel='canonical' href='https://xiaocm.com/p/redis%E5%A4%8D%E5%88%B6/'>
@@ -16,8 +15,7 @@ Replication ID 说明： 如果两个实例具有相同的Replication ID和offse
 Redis主从复制使用以下三种机制： 当主从实例连接良好时，主节点向从节点发送命令流来进行更新，是为了复制由于Key过期或回收等其他操作对数据产生影响。 当主从实例断开时，从节点重新连接后只会尝试获取链接断开期间错开的命令流。 如果无法进行部分重新同步，则会要求完全重新同步。 默认情况下，Redis会使用异步复制，Redis从节点会异步地确认接收的数据。因此，主节点不会等待从节点处理完成。但是，如果需要知道从节点都处理了那些命令，也可以选择同步复制。
 Redis 复制的几个特征： Redis是使用异步复制 一个主节点可以有多个从节点 从节点还可以有子节点，从Redis 4.0开始，所有子节点将从主节点接收完全相同的复制流。 Redis主从复制是无阻塞的，意味着在进行复制或同步是仍然可以进行数据查询 复制既可以用于可伸缩性，也可以用于只读查询的多个副本（读写分离） 可以配置主节点不进行数据保存或只启用AOF，然后将数据保存到副本，但是注意:当服务器重启后，从节点服务器重新同步数据时，同时会清空从节点数据。 Redis 复制的原理： 每个Redis Master 节点都有一个replication ID:这是一个较大的伪随机字符串，用于标记当前数据集。每个Master 还有一个偏移量，该偏移量会针对复制流中要发送到副本的每个字节的增量而增加。 以便更新副本的状态。即使未连接任何副本，复制偏移也会增加。
 1 2 3 4 5 6 7 8 9 10 11 12 13 14 # Replication role:master connected_slaves:1 slave0:ip=39.105.157.176,port=6379,state=online,offset=61238,lag=0 # 主 Replication ID master_replid:649255ffb2183786d00203aa51715169b06f4f47 # 副 Replication ID master_replid2:0000000000000000000000000000000000000000 master_repl_offset:61238 second_repl_offset:-1 repl_backlog_active:1 repl_backlog_size:1048576 repl_backlog_first_byte_offset:1 repl_backlog_histlen:61238 当从节点连接主节点时，会使用PSYNC命令来发送当前旧的主节点的Replication ID和offset，这样主节点只会同步相差的数据量，如果主节点缓冲区的副本引用（Replication ID）不存在，则会进行全量同步。
-全量同步的工作流程如下： 主节点开始后台生成RDB文件。同时，它开始缓冲从客户端收到的所有新写入命令。后台保存完成后，主数据库将数据库文件传输到从节点，从节点将其保存在磁盘上，然后将其加载到内存中。然后，主服务器将所有缓冲的命令发送到副本。
-Replication ID 说明： 如果两个实例具有相同的Replication ID和offset，则它们具有完全相同的数据。但是为什么会有两个Replication ID(主和副)？'>
+'>
 <meta property='og:url' content='https://xiaocm.com/p/redis%E5%A4%8D%E5%88%B6/'>
 <meta property='og:site_name' content='无常是常'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='- Redis' /><meta property='article:published_time' content='2018-07-07T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2018-07-07T00:00:00&#43;00:00'/>
@@ -26,8 +24,7 @@ Replication ID 说明： 如果两个实例具有相同的Replication ID和offse
 Redis主从复制使用以下三种机制： 当主从实例连接良好时，主节点向从节点发送命令流来进行更新，是为了复制由于Key过期或回收等其他操作对数据产生影响。 当主从实例断开时，从节点重新连接后只会尝试获取链接断开期间错开的命令流。 如果无法进行部分重新同步，则会要求完全重新同步。 默认情况下，Redis会使用异步复制，Redis从节点会异步地确认接收的数据。因此，主节点不会等待从节点处理完成。但是，如果需要知道从节点都处理了那些命令，也可以选择同步复制。
 Redis 复制的几个特征： Redis是使用异步复制 一个主节点可以有多个从节点 从节点还可以有子节点，从Redis 4.0开始，所有子节点将从主节点接收完全相同的复制流。 Redis主从复制是无阻塞的，意味着在进行复制或同步是仍然可以进行数据查询 复制既可以用于可伸缩性，也可以用于只读查询的多个副本（读写分离） 可以配置主节点不进行数据保存或只启用AOF，然后将数据保存到副本，但是注意:当服务器重启后，从节点服务器重新同步数据时，同时会清空从节点数据。 Redis 复制的原理： 每个Redis Master 节点都有一个replication ID:这是一个较大的伪随机字符串，用于标记当前数据集。每个Master 还有一个偏移量，该偏移量会针对复制流中要发送到副本的每个字节的增量而增加。 以便更新副本的状态。即使未连接任何副本，复制偏移也会增加。
 1 2 3 4 5 6 7 8 9 10 11 12 13 14 # Replication role:master connected_slaves:1 slave0:ip=39.105.157.176,port=6379,state=online,offset=61238,lag=0 # 主 Replication ID master_replid:649255ffb2183786d00203aa51715169b06f4f47 # 副 Replication ID master_replid2:0000000000000000000000000000000000000000 master_repl_offset:61238 second_repl_offset:-1 repl_backlog_active:1 repl_backlog_size:1048576 repl_backlog_first_byte_offset:1 repl_backlog_histlen:61238 当从节点连接主节点时，会使用PSYNC命令来发送当前旧的主节点的Replication ID和offset，这样主节点只会同步相差的数据量，如果主节点缓冲区的副本引用（Replication ID）不存在，则会进行全量同步。
-全量同步的工作流程如下： 主节点开始后台生成RDB文件。同时，它开始缓冲从客户端收到的所有新写入命令。后台保存完成后，主数据库将数据库文件传输到从节点，从节点将其保存在磁盘上，然后将其加载到内存中。然后，主服务器将所有缓冲的命令发送到副本。
-Replication ID 说明： 如果两个实例具有相同的Replication ID和offset，则它们具有完全相同的数据。但是为什么会有两个Replication ID(主和副)？">
+">
     </head>
     <body class="
     article-page
@@ -71,7 +68,7 @@ Replication ID 说明： 如果两个实例具有相同的Replication ID和offse
                     
                     
                         
-                        <img src="/img/avatar_hu87c10ff50ef4ab09ea180a96c581c02f_62603_300x0_resize_box_3.png" width="300"
+                        <img src="/img/avatar_hu_f06283ad9dc77cbf.png" width="300"
                             height="281" class="site-logo" loading="lazy" alt="Avatar">
                     
                 
@@ -363,8 +360,7 @@ Replication ID 说明： 如果两个实例具有相同的Replication ID和offse
 <li>如果无法进行部分重新同步，则会要求完全重新同步。</li>
 </ul>
 <blockquote>
-<p>默认情况下，Redis会使用<em><strong>异步复制</strong></em>，Redis从节点会异步地确认接收的数据。因此，主节点不会等待从节点处理完成。但是，如果需要知道从节点都处理了那些命令，也可以选择同步复制。</p>
-</blockquote>
+<p>默认情况下，Redis会使用<em><strong>异步复制</strong></em>，Redis从节点会异步地确认接收的数据。因此，主节点不会等待从节点处理完成。但是，如果需要知道从节点都处理了那些命令，也可以选择同步复制。</p></blockquote>
 <h3 id="redis-复制的几个特征">Redis 复制的几个特征：</h3>
 <ol>
 <li>Redis是使用异步复制</li>
@@ -562,12 +558,12 @@ Replication ID 说明： 如果两个实例具有相同的Replication ID和offse
         
             2020 - 
         
-        2024 xiaocm
+        2025 xiaocm
     </section>
     
     <section class="powerby">
         
-            <a href="https://beian.miit.gov.cn/" target="_blank" >陕ICP备16008414号</a>
+            <a href="https://beian.miit.gov.cn/" target="_blank" >陕ICP备16008414号</a> <br/>
         使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
         主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.23.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
     </section>

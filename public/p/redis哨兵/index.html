@@ -8,9 +8,9 @@
 Sentinels默认情况下会监听TCP端口26379连接，因此必须打开26379端口。
 Sentinel的基础知识 一个健壮的集群至少需要三个Sentinel实例 应该将三个Sentinel实例部署在不同的机器上 因为Redis使用的是异步复制，所以不能保证在故障转移期间保证数据的写入。 配置哨兵 Redis的源码包包含一个sentinel.conf文件可用于配置Sentinel，典型的最小配置如下所示：
 1 2 3 4 sentinel monitor mymaster 127.0.0.1 6379 2 sentinel down-after-milliseconds mymaster 60000 sentinel failover-timeout mymaster 180000 sentinel parallel-syncs mymaster 1 sentinel monitor含义如下：
-1 sentinel monitor &amp;lt;master-group-name&amp;gt; &amp;lt;ip&amp;gt; &amp;lt;port&amp;gt; &amp;lt;quorum&amp;gt; &amp;lt;master-group-name&amp;gt; 指主节点名称，&amp;lt;ip&amp;gt; IP地址 &amp;lt;port&amp;gt;端口号，重点说一下&amp;lt;quorum&amp;gt;： 假如有5个Sentinel进程，并且给定主服务器的quorum置为2，则将发生以下情况：
+1 sentinel monitor &lt;master-group-name&gt; &lt;ip&gt; &lt;port&gt; &lt;quorum&gt; &lt;master-group-name&gt; 指主节点名称，&lt;ip&gt; IP地址 &lt;port&gt;端口号，重点说一下&lt;quorum&gt;： 假如有5个Sentinel进程，并且给定主服务器的quorum置为2，则将发生以下情况：
 如果有两个哨兵同时发现主节点不可访问，则其中一个哨兵将尝试启动故障转移。 如果有三个哨兵同时发现主节点不可访问，则将启动故障转移。 1 sentinel down-after-milliseconds down-after-milliseconds是指Sentinel在指定的时间内没有获得实例的响应，则认为实例已关闭。
-1 sentinel parallel-syncs parallel-syncs 设置每次可以对几个副本进行同步数据'>
+'>
 <title>Redis哨兵</title>
 
 <link rel='canonical' href='https://xiaocm.com/p/redis%E5%93%A8%E5%85%B5/'>
@@ -23,9 +23,9 @@ Sentinel的基础知识 一个健壮的集群至少需要三个Sentinel实例 �
 Sentinels默认情况下会监听TCP端口26379连接，因此必须打开26379端口。
 Sentinel的基础知识 一个健壮的集群至少需要三个Sentinel实例 应该将三个Sentinel实例部署在不同的机器上 因为Redis使用的是异步复制，所以不能保证在故障转移期间保证数据的写入。 配置哨兵 Redis的源码包包含一个sentinel.conf文件可用于配置Sentinel，典型的最小配置如下所示：
 1 2 3 4 sentinel monitor mymaster 127.0.0.1 6379 2 sentinel down-after-milliseconds mymaster 60000 sentinel failover-timeout mymaster 180000 sentinel parallel-syncs mymaster 1 sentinel monitor含义如下：
-1 sentinel monitor &amp;lt;master-group-name&amp;gt; &amp;lt;ip&amp;gt; &amp;lt;port&amp;gt; &amp;lt;quorum&amp;gt; &amp;lt;master-group-name&amp;gt; 指主节点名称，&amp;lt;ip&amp;gt; IP地址 &amp;lt;port&amp;gt;端口号，重点说一下&amp;lt;quorum&amp;gt;： 假如有5个Sentinel进程，并且给定主服务器的quorum置为2，则将发生以下情况：
+1 sentinel monitor &lt;master-group-name&gt; &lt;ip&gt; &lt;port&gt; &lt;quorum&gt; &lt;master-group-name&gt; 指主节点名称，&lt;ip&gt; IP地址 &lt;port&gt;端口号，重点说一下&lt;quorum&gt;： 假如有5个Sentinel进程，并且给定主服务器的quorum置为2，则将发生以下情况：
 如果有两个哨兵同时发现主节点不可访问，则其中一个哨兵将尝试启动故障转移。 如果有三个哨兵同时发现主节点不可访问，则将启动故障转移。 1 sentinel down-after-milliseconds down-after-milliseconds是指Sentinel在指定的时间内没有获得实例的响应，则认为实例已关闭。
-1 sentinel parallel-syncs parallel-syncs 设置每次可以对几个副本进行同步数据'>
+'>
 <meta property='og:url' content='https://xiaocm.com/p/redis%E5%93%A8%E5%85%B5/'>
 <meta property='og:site_name' content='无常是常'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='- Redis' /><meta property='article:published_time' content='2020-07-07T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2020-07-07T00:00:00&#43;00:00'/>
@@ -37,9 +37,9 @@ Sentinel的基础知识 一个健壮的集群至少需要三个Sentinel实例 �
 Sentinels默认情况下会监听TCP端口26379连接，因此必须打开26379端口。
 Sentinel的基础知识 一个健壮的集群至少需要三个Sentinel实例 应该将三个Sentinel实例部署在不同的机器上 因为Redis使用的是异步复制，所以不能保证在故障转移期间保证数据的写入。 配置哨兵 Redis的源码包包含一个sentinel.conf文件可用于配置Sentinel，典型的最小配置如下所示：
 1 2 3 4 sentinel monitor mymaster 127.0.0.1 6379 2 sentinel down-after-milliseconds mymaster 60000 sentinel failover-timeout mymaster 180000 sentinel parallel-syncs mymaster 1 sentinel monitor含义如下：
-1 sentinel monitor &amp;lt;master-group-name&amp;gt; &amp;lt;ip&amp;gt; &amp;lt;port&amp;gt; &amp;lt;quorum&amp;gt; &amp;lt;master-group-name&amp;gt; 指主节点名称，&amp;lt;ip&amp;gt; IP地址 &amp;lt;port&amp;gt;端口号，重点说一下&amp;lt;quorum&amp;gt;： 假如有5个Sentinel进程，并且给定主服务器的quorum置为2，则将发生以下情况：
+1 sentinel monitor &lt;master-group-name&gt; &lt;ip&gt; &lt;port&gt; &lt;quorum&gt; &lt;master-group-name&gt; 指主节点名称，&lt;ip&gt; IP地址 &lt;port&gt;端口号，重点说一下&lt;quorum&gt;： 假如有5个Sentinel进程，并且给定主服务器的quorum置为2，则将发生以下情况：
 如果有两个哨兵同时发现主节点不可访问，则其中一个哨兵将尝试启动故障转移。 如果有三个哨兵同时发现主节点不可访问，则将启动故障转移。 1 sentinel down-after-milliseconds down-after-milliseconds是指Sentinel在指定的时间内没有获得实例的响应，则认为实例已关闭。
-1 sentinel parallel-syncs parallel-syncs 设置每次可以对几个副本进行同步数据">
+">
     </head>
     <body class="
     article-page
@@ -83,7 +83,7 @@ Sentinel的基础知识 一个健壮的集群至少需要三个Sentinel实例 �
                     
                     
                         
-                        <img src="/img/avatar_hu87c10ff50ef4ab09ea180a96c581c02f_62603_300x0_resize_box_3.png" width="300"
+                        <img src="/img/avatar_hu_f06283ad9dc77cbf.png" width="300"
                             height="281" class="site-logo" loading="lazy" alt="Avatar">
                     
                 
@@ -631,12 +631,12 @@ Sentinel本身的设计是在为多个Sentinel进程协同合作的配置中运�
         
             2020 - 
         
-        2024 xiaocm
+        2025 xiaocm
     </section>
     
     <section class="powerby">
         
-            <a href="https://beian.miit.gov.cn/" target="_blank" >陕ICP备16008414号</a>
+            <a href="https://beian.miit.gov.cn/" target="_blank" >陕ICP备16008414号</a> <br/>
         使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
         主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.23.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
     </section>

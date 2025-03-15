@@ -26,8 +26,7 @@
 &lt;h2 id=&#34;快照在-mvcc-里是怎么工作的&#34;&gt;“快照”在 MVCC 里是怎么工作的？&lt;/h2&gt;
 &lt;p&gt;在可重复读隔离级别下，事务在启动的时候就“拍个快照”，这个快照时基于整库的。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;如果库有100G，那么启动一个事务就需要拷贝100G数据，这样实现是不现实的。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;如果库有100G，那么启动一个事务就需要拷贝100G数据，这样实现是不现实的。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;h3 id=&#34;快照是怎么实现的&#34;&gt;快照是怎么实现的？&lt;/h3&gt;
 &lt;p&gt;InnoDB 里面每个事务都有一个唯一的事务ID，叫做transaction id，它是在事务开始的时候向InnoDB 的事务系统申请的，&lt;strong&gt;是按照顺序严格递增的。&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。&lt;/p&gt;
@@ -120,8 +119,7 @@ b. 若 row trx_id 不在数组中，表示这个版本是已经提交了的事�
 &lt;p&gt;实际上事务B的update语句会被阻塞，直至事务A执行commit之后，事务B才能继续执行。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;在InnoDB事务中，行锁是在需要的时候才加上的，但并不是不需要了就立刻释放，而是等到事务结束才释放，这就是两阶段锁协议。&lt;/strong&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;如果你的事务中需要锁多个行，要把最可能造成冲突、最可能影响并发的锁尽量往后放。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;如果你的事务中需要锁多个行，要把最可能造成冲突、最可能影响并发的锁尽量往后放。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;h2 id=&#34;死锁和死锁检测&#34;&gt;死锁和死锁检测&lt;/h2&gt;
 &lt;p&gt;当并发系统出现资源循环依赖，就会导致这几个线程处于无限等待状态，称为&lt;strong&gt;死锁&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;http://qiniu.xiaocm.com/blog/img/20220614095944.png&#34;
@@ -142,8 +140,7 @@ b. 若 row trx_id 不在数组中，表示这个版本是已经提交了的事�
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;使用&lt;code&gt;show variables like &#39;innodb_deadlock_detect&#39;;&lt;/code&gt;可以查看系统参数。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;使用&lt;code&gt;show variables like &#39;innodb_deadlock_detect&#39;;&lt;/code&gt;可以查看系统参数。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;h2 id=&#34;问题&#34;&gt;问题&lt;/h2&gt;
 &lt;p&gt;如果你要删除一个表里面的前 10000 行数据，有以下三种方法可以做到：&lt;/p&gt;
 &lt;ul&gt;

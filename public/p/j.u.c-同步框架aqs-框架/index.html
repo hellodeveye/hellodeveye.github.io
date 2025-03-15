@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='转载自：https://www.cnblogs.com/dennyzhangdd/p/7218510.html
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content=' 转载自：https://www.cnblogs.com/dennyzhangdd/p/7218510.html
 一、论文简介 闲来无事，看看源码，发现了一篇JDK作者的论文《The java.util.concurrent Synchronizer Framework》主要描述了作者对 AbstractQueuedSynchronizer 同步器框架的设计和实现。权威性毋庸置疑！自然需要拜读一下，配上中文翻译，希望大家能有所收获。
 二、原文链接 论文英文版原文链接：http://gee.cs.oswego.edu/dl/papers/aqs.pdf
 http://gee.cs.oswego.edu/ 这个是老李头的主页，里面有他的部分贡献，感兴趣的可以关注一下，老李头确实比较厉害。
@@ -11,13 +11,13 @@ http://gee.cs.oswego.edu/ 这个是老李头的主页，里面有他的部分贡
 在这篇论文的下面部分会讨论这个框架的需求、设计与实现背后的主要思路、示例用法，以及性能指标的一些测量。
 2 需求 2.1 功能 同步器一般包含两种方法，一种是 acquire，另一种是 release。acquire 操作阻塞调用的线程，直到或除非同步状态允许其继续执行。而 release 操作则是通过某种方式改变同步状态，使得一或多个被 acquire 阻塞的线程继续执行。
 j.u.c 包中并没有对同步器的API做一个统一的定义。因此，有一些类定义了通用的接口（如 Lock），而另外一些则定义了其专有的版本。因此在不同的类中，acquire 和 release 操作的名字和形式会各有不同。例如：Lock.lock，Semaphore.acquire，CountDownLatch.await 和 FutureTask.get，在这个框架里，这些方法都是 acquire 操作。但是，J.U.C 为支持一系列常见的使用选项，在类间都有个一致约定。在有意义的情况下，每一个同步器都支持下面的操作：
-阻塞和非阻塞（例如 tryLock）同步 可选的超时设置，让调用者可以放弃等待 通过中断实现的任务取消，通常是分为两个版本，一个 acquire 可取消，而另一个不可以 同步器的实现根据其状态是否独占而有所不同。独占状态的同步器，在同一时间只有一个线程可以通过阻塞点，而共享状态的同步器可以同时有多个线程在执行。一般锁的实现类往往只维护独占状态，但是，例如计数信号量在数量许可的情况下，允许多个线程同时执行。为了使框架能得到广泛应用，这两种模式都要支持。'>
+'>
 <title>J.U.C 同步框架（AQS 框架）</title>
 
 <link rel='canonical' href='https://xiaocm.com/p/j.u.c-%E5%90%8C%E6%AD%A5%E6%A1%86%E6%9E%B6aqs-%E6%A1%86%E6%9E%B6/'>
 
 <link rel="stylesheet" href="/scss/style.min.abbd69b2908fdfcd5179898beaafd374514a86538d81639ddd2c58c06ae54e40.css"><meta property='og:title' content='J.U.C 同步框架（AQS 框架）'>
-<meta property='og:description' content='转载自：https://www.cnblogs.com/dennyzhangdd/p/7218510.html
+<meta property='og:description' content=' 转载自：https://www.cnblogs.com/dennyzhangdd/p/7218510.html
 一、论文简介 闲来无事，看看源码，发现了一篇JDK作者的论文《The java.util.concurrent Synchronizer Framework》主要描述了作者对 AbstractQueuedSynchronizer 同步器框架的设计和实现。权威性毋庸置疑！自然需要拜读一下，配上中文翻译，希望大家能有所收获。
 二、原文链接 论文英文版原文链接：http://gee.cs.oswego.edu/dl/papers/aqs.pdf
 http://gee.cs.oswego.edu/ 这个是老李头的主页，里面有他的部分贡献，感兴趣的可以关注一下，老李头确实比较厉害。
@@ -27,12 +27,12 @@ http://gee.cs.oswego.edu/ 这个是老李头的主页，里面有他的部分贡
 在这篇论文的下面部分会讨论这个框架的需求、设计与实现背后的主要思路、示例用法，以及性能指标的一些测量。
 2 需求 2.1 功能 同步器一般包含两种方法，一种是 acquire，另一种是 release。acquire 操作阻塞调用的线程，直到或除非同步状态允许其继续执行。而 release 操作则是通过某种方式改变同步状态，使得一或多个被 acquire 阻塞的线程继续执行。
 j.u.c 包中并没有对同步器的API做一个统一的定义。因此，有一些类定义了通用的接口（如 Lock），而另外一些则定义了其专有的版本。因此在不同的类中，acquire 和 release 操作的名字和形式会各有不同。例如：Lock.lock，Semaphore.acquire，CountDownLatch.await 和 FutureTask.get，在这个框架里，这些方法都是 acquire 操作。但是，J.U.C 为支持一系列常见的使用选项，在类间都有个一致约定。在有意义的情况下，每一个同步器都支持下面的操作：
-阻塞和非阻塞（例如 tryLock）同步 可选的超时设置，让调用者可以放弃等待 通过中断实现的任务取消，通常是分为两个版本，一个 acquire 可取消，而另一个不可以 同步器的实现根据其状态是否独占而有所不同。独占状态的同步器，在同一时间只有一个线程可以通过阻塞点，而共享状态的同步器可以同时有多个线程在执行。一般锁的实现类往往只维护独占状态，但是，例如计数信号量在数量许可的情况下，允许多个线程同时执行。为了使框架能得到广泛应用，这两种模式都要支持。'>
+'>
 <meta property='og:url' content='https://xiaocm.com/p/j.u.c-%E5%90%8C%E6%AD%A5%E6%A1%86%E6%9E%B6aqs-%E6%A1%86%E6%9E%B6/'>
 <meta property='og:site_name' content='无常是常'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='Java' /><meta property='article:tag' content='juc' /><meta property='article:tag' content='翻译' /><meta property='article:published_time' content='2021-03-22T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2021-03-22T00:00:00&#43;00:00'/>
 <meta name="twitter:title" content="J.U.C 同步框架（AQS 框架）">
-<meta name="twitter:description" content="转载自：https://www.cnblogs.com/dennyzhangdd/p/7218510.html
+<meta name="twitter:description" content=" 转载自：https://www.cnblogs.com/dennyzhangdd/p/7218510.html
 一、论文简介 闲来无事，看看源码，发现了一篇JDK作者的论文《The java.util.concurrent Synchronizer Framework》主要描述了作者对 AbstractQueuedSynchronizer 同步器框架的设计和实现。权威性毋庸置疑！自然需要拜读一下，配上中文翻译，希望大家能有所收获。
 二、原文链接 论文英文版原文链接：http://gee.cs.oswego.edu/dl/papers/aqs.pdf
 http://gee.cs.oswego.edu/ 这个是老李头的主页，里面有他的部分贡献，感兴趣的可以关注一下，老李头确实比较厉害。
@@ -42,7 +42,7 @@ http://gee.cs.oswego.edu/ 这个是老李头的主页，里面有他的部分贡
 在这篇论文的下面部分会讨论这个框架的需求、设计与实现背后的主要思路、示例用法，以及性能指标的一些测量。
 2 需求 2.1 功能 同步器一般包含两种方法，一种是 acquire，另一种是 release。acquire 操作阻塞调用的线程，直到或除非同步状态允许其继续执行。而 release 操作则是通过某种方式改变同步状态，使得一或多个被 acquire 阻塞的线程继续执行。
 j.u.c 包中并没有对同步器的API做一个统一的定义。因此，有一些类定义了通用的接口（如 Lock），而另外一些则定义了其专有的版本。因此在不同的类中，acquire 和 release 操作的名字和形式会各有不同。例如：Lock.lock，Semaphore.acquire，CountDownLatch.await 和 FutureTask.get，在这个框架里，这些方法都是 acquire 操作。但是，J.U.C 为支持一系列常见的使用选项，在类间都有个一致约定。在有意义的情况下，每一个同步器都支持下面的操作：
-阻塞和非阻塞（例如 tryLock）同步 可选的超时设置，让调用者可以放弃等待 通过中断实现的任务取消，通常是分为两个版本，一个 acquire 可取消，而另一个不可以 同步器的实现根据其状态是否独占而有所不同。独占状态的同步器，在同一时间只有一个线程可以通过阻塞点，而共享状态的同步器可以同时有多个线程在执行。一般锁的实现类往往只维护独占状态，但是，例如计数信号量在数量许可的情况下，允许多个线程同时执行。为了使框架能得到广泛应用，这两种模式都要支持。">
+">
     </head>
     <body class="
     article-page
@@ -86,7 +86,7 @@ j.u.c 包中并没有对同步器的API做一个统一的定义。因此，有�
                     
                     
                         
-                        <img src="/img/avatar_hu87c10ff50ef4ab09ea180a96c581c02f_62603_300x0_resize_box_3.png" width="300"
+                        <img src="/img/avatar_hu_f06283ad9dc77cbf.png" width="300"
                             height="281" class="site-logo" loading="lazy" alt="Avatar">
                     
                 
@@ -386,8 +386,7 @@ j.u.c 包中并没有对同步器的API做一个统一的定义。因此，有�
     
     <blockquote>
 <p>转载自：<a class="link" href="https://www.cnblogs.com/dennyzhangdd/p/7218510.html"  target="_blank" rel="noopener"
-    >https://www.cnblogs.com/dennyzhangdd/p/7218510.html</a></p>
-</blockquote>
+    >https://www.cnblogs.com/dennyzhangdd/p/7218510.html</a></p></blockquote>
 <h1 id="一论文简介">一、论文简介</h1>
 <p>闲来无事，看看源码，发现了一篇JDK作者的论文《The java.util.concurrent Synchronizer Framework》主要描述了作者对 <code>AbstractQueuedSynchronizer</code> 同步器框架的设计和实现。权威性毋庸置疑！自然需要拜读一下，配上中文翻译，希望大家能有所收获。</p>
 <h1 id="二原文链接">二、原文链接</h1>
@@ -687,137 +686,137 @@ j.u.c 包中并没有对同步器的API做一个统一的定义。因此，有�
 <p>这里比较了四种锁：内置锁，用的是 <code>synchronized</code> 块；互斥锁，用的是像第四节例子中的那样简单的 <code>Mutex</code> 类；可重入锁，用的是 <code>ReentrantLock</code>；以及公平锁，用的是 <code>ReentrantLock</code> 的公平模式。所有测试都运行在 J2SE1.5 JDK build46（大致与 beta2 相同）的 server 模式下。在收集测试数据前，测试程序先运行 20 次非竞争的测试，以排除 JVM “预热”（译者注：更多关于 “预热” 的内容，参见：Java 理论与实践: 动态编译与性能测量）过程的影响。除了公平模式下的测试只跑了一百万次迭代，其它每个线程中的测试都运行了一千万次迭代。</p>
 <p>该测试运行在四个 <code>x86</code> 机器和四个 <code>UltraSparc</code> 机器上。所有 <code>x86</code> 机器都运行的是 RedHat 基于 NPTL 2.4 内核和库的 Linux 系统。所有的 <code>UltraSparc</code> 机器都运行的是 <code>Solaris-9</code>。测试时所有系统的负载都很轻。根据该测试的特征，并不要求系统完全空闲（译者注：即测试时操作系统上有其它较轻的负载也不会影响本次测试的结果。）。“4P” 这个名字反映出双核超线程的Xeon更像是4路机器，而不是2路机器。这里没有将测试数据规范化。如下所示，同步的相对开销与处理器的数量、类型、速度之间不具备简单的关系。</p>
 <div class="table-wrapper"><table>
-<thead>
-<tr>
-<th>名字</th>
-<th>处理器数量</th>
-<th>类型</th>
-<th>速度(Mhz)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1P</td>
-<td>1</td>
-<td>Pentium3</td>
-<td>900</td>
-</tr>
-<tr>
-<td>2P</td>
-<td>2</td>
-<td>Pentium3</td>
-<td>1400</td>
-</tr>
-<tr>
-<td>2A</td>
-<td>2</td>
-<td>Athlon</td>
-<td>2000</td>
-</tr>
-<tr>
-<td>4P</td>
-<td>2HT</td>
-<td>Pentium4/Xeon</td>
-<td>2400</td>
-</tr>
-<tr>
-<td>1U</td>
-<td>1</td>
-<td>UltraSparc2</td>
-<td>650</td>
-</tr>
-<tr>
-<td>4U</td>
-<td>4</td>
-<td>UltraSparc2</td>
-<td>450</td>
-</tr>
-<tr>
-<td>8U</td>
-<td>8</td>
-<td>UltraSparc3</td>
-<td>750</td>
-</tr>
-<tr>
-<td>24U</td>
-<td>24</td>
-<td>UltraSparc3</td>
-<td>750</td>
-</tr>
-</tbody>
+  <thead>
+      <tr>
+          <th>名字</th>
+          <th>处理器数量</th>
+          <th>类型</th>
+          <th>速度(Mhz)</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>1P</td>
+          <td>1</td>
+          <td>Pentium3</td>
+          <td>900</td>
+      </tr>
+      <tr>
+          <td>2P</td>
+          <td>2</td>
+          <td>Pentium3</td>
+          <td>1400</td>
+      </tr>
+      <tr>
+          <td>2A</td>
+          <td>2</td>
+          <td>Athlon</td>
+          <td>2000</td>
+      </tr>
+      <tr>
+          <td>4P</td>
+          <td>2HT</td>
+          <td>Pentium4/Xeon</td>
+          <td>2400</td>
+      </tr>
+      <tr>
+          <td>1U</td>
+          <td>1</td>
+          <td>UltraSparc2</td>
+          <td>650</td>
+      </tr>
+      <tr>
+          <td>4U</td>
+          <td>4</td>
+          <td>UltraSparc2</td>
+          <td>450</td>
+      </tr>
+      <tr>
+          <td>8U</td>
+          <td>8</td>
+          <td>UltraSparc3</td>
+          <td>750</td>
+      </tr>
+      <tr>
+          <td>24U</td>
+          <td>24</td>
+          <td>UltraSparc3</td>
+          <td>750</td>
+      </tr>
+  </tbody>
 </table></div>
 <p><strong>表1 测试的平台</strong></p>
 <h3 id="51-开销">5.1 开销</h3>
 <p>无竞争情况下的开销是通过仅运行一个线程，将概率 <code>S</code> 为 1 时的每次迭代时间减去概率 <code>S</code> 为 0（访问共享内存的概率为 0）时的每次迭代时间得到的（译者注：这里的“概率S”即前文提到的 “概率 S”，概率为 0 时是没有锁操作的，概率为 1 时是每次都有锁操作，因此将概率为1时的耗时减去概率为 0 时的耗时就是整个锁操作的开销。）。表 2 以纳秒为单位显示了非竞争场景下每次锁操作的开销。<code>Mutex</code> 类最接近于框架的基本耗时，可重入锁的额外开销是记录当前所有者线程和错误检查的耗时，对于公平锁来说还包含开始时检查队列是否为空的耗时。</p>
 <p>表格 2 也展示与内置锁的 “快速路径（fast path）” 对比，<code>tryAcquire</code> 的耗时。这里的差异主要反映出了各锁和机器中使用的不同的原子指令以及内存屏障的耗时。在多处理器上，这些指令常常是完全优于所有其它指令的。内置锁和同步器类之间的主要差别，显然是由于 Hotspot 锁在锁定和解锁时都使用了一次<code>compareAndSet</code>，而同步器的 acquire 操作使用了一次 <code>compareAndSet</code> ，但 release 操作用的是一次volatile写（即，多处理器上的一次内存屏障以及所有处理器上的重排序限制）。每个锁的绝对的和相对耗时因机器的不同而不同。</p>
 <div class="table-wrapper"><table>
-<thead>
-<tr>
-<th>机器</th>
-<th>内置</th>
-<th>互斥</th>
-<th>可重入</th>
-<th>公平可重入</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1P</td>
-<td>18</td>
-<td>9</td>
-<td>31</td>
-<td>37</td>
-</tr>
-<tr>
-<td>2P</td>
-<td>58</td>
-<td>71</td>
-<td>77</td>
-<td>81</td>
-</tr>
-<tr>
-<td>2A</td>
-<td>13</td>
-<td>21</td>
-<td>31</td>
-<td>30</td>
-</tr>
-<tr>
-<td>4P</td>
-<td>116</td>
-<td>95</td>
-<td>109</td>
-<td>117</td>
-</tr>
-<tr>
-<td>1U</td>
-<td>90</td>
-<td>40</td>
-<td>58</td>
-<td>67</td>
-</tr>
-<tr>
-<td>4U</td>
-<td>122</td>
-<td>82</td>
-<td>100</td>
-<td>115</td>
-</tr>
-<tr>
-<td>8U</td>
-<td>160</td>
-<td>83</td>
-<td>103</td>
-<td>123</td>
-</tr>
-<tr>
-<td>24U</td>
-<td>161</td>
-<td>84</td>
-<td>108</td>
-<td>119</td>
-</tr>
-</tbody>
+  <thead>
+      <tr>
+          <th>机器</th>
+          <th>内置</th>
+          <th>互斥</th>
+          <th>可重入</th>
+          <th>公平可重入</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>1P</td>
+          <td>18</td>
+          <td>9</td>
+          <td>31</td>
+          <td>37</td>
+      </tr>
+      <tr>
+          <td>2P</td>
+          <td>58</td>
+          <td>71</td>
+          <td>77</td>
+          <td>81</td>
+      </tr>
+      <tr>
+          <td>2A</td>
+          <td>13</td>
+          <td>21</td>
+          <td>31</td>
+          <td>30</td>
+      </tr>
+      <tr>
+          <td>4P</td>
+          <td>116</td>
+          <td>95</td>
+          <td>109</td>
+          <td>117</td>
+      </tr>
+      <tr>
+          <td>1U</td>
+          <td>90</td>
+          <td>40</td>
+          <td>58</td>
+          <td>67</td>
+      </tr>
+      <tr>
+          <td>4U</td>
+          <td>122</td>
+          <td>82</td>
+          <td>100</td>
+          <td>115</td>
+      </tr>
+      <tr>
+          <td>8U</td>
+          <td>160</td>
+          <td>83</td>
+          <td>103</td>
+          <td>123</td>
+      </tr>
+      <tr>
+          <td>24U</td>
+          <td>161</td>
+          <td>84</td>
+          <td>108</td>
+          <td>119</td>
+      </tr>
+  </tbody>
 </table></div>
 <p><strong>表2 无竞争时的单锁开销（单位：纳秒）</strong></p>
 <p>从另一个极端看，表 3 展示了概率 <code>S</code> 为 1，运行 256 个并发线程时产生了大规模的锁竞争下每个锁的开销。在完全饱和的情况下，可闯入的FIFO锁比内置锁的开销少了一个数量级（也就是更大的吞吐量），比公平锁更是少了两个数量级。这表现出即使有着极大的竞争，在维持线程进展方面可闯入FIFO策略的效率。</p>
@@ -1008,12 +1007,12 @@ j.u.c 包中并没有对同步器的API做一个统一的定义。因此，有�
         
             2020 - 
         
-        2024 xiaocm
+        2025 xiaocm
     </section>
     
     <section class="powerby">
         
-            <a href="https://beian.miit.gov.cn/" target="_blank" >陕ICP备16008414号</a>
+            <a href="https://beian.miit.gov.cn/" target="_blank" >陕ICP备16008414号</a> <br/>
         使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
         主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.23.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
     </section>

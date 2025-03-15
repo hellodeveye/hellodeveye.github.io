@@ -27,7 +27,8 @@
 接着，系统B只要慢慢的从MQ里获取消息然后执行数据库读写操作即可，这个获取消息的速度是系统B自己可以控制的，所以系统B完全可以用一个比较低的速率获取消息然后写入数据库，保证对数据库的QPS不要超过他的极限值6000。
 这个时候因为系统A发送消息到MQ很快，系统B从MQ消费消息很慢，所以MQ里自然会积压一些消息，不过不要紧，MQ一般都是基于磁盘来存储消息的，所以适当积压一些消息是可以的。当系统A的高峰过去，每秒可能就恢复到1000 QPS了，此时系统b还是以每秒6000QPS的速度获取消息写入数据库，那么自然MQ里积压的消息就会慢慢被消化掉了。
 所以这就是MQ进行流量削峰的效果，系统A发送过来的每秒1万请求是一个流量洪峰，然后MQ直接给扛下来了，都存储自己本地磁盘，这个过程就是流量削峰的过程，瞬间把一个洪峰给削下来了，让系统B后续慢慢获取消息来处理。
-6、总结 消息中间件的主要作用就是削峰解耦，提升系统的响应速度。'>
+6、总结 消息中间件的主要作用就是削峰解耦，提升系统的响应速度。
+'>
 <title>消息中间件是什么?</title>
 
 <link rel='canonical' href='https://xiaocm.com/p/%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%98%AF%E4%BB%80%E4%B9%88/'>
@@ -59,7 +60,8 @@
 接着，系统B只要慢慢的从MQ里获取消息然后执行数据库读写操作即可，这个获取消息的速度是系统B自己可以控制的，所以系统B完全可以用一个比较低的速率获取消息然后写入数据库，保证对数据库的QPS不要超过他的极限值6000。
 这个时候因为系统A发送消息到MQ很快，系统B从MQ消费消息很慢，所以MQ里自然会积压一些消息，不过不要紧，MQ一般都是基于磁盘来存储消息的，所以适当积压一些消息是可以的。当系统A的高峰过去，每秒可能就恢复到1000 QPS了，此时系统b还是以每秒6000QPS的速度获取消息写入数据库，那么自然MQ里积压的消息就会慢慢被消化掉了。
 所以这就是MQ进行流量削峰的效果，系统A发送过来的每秒1万请求是一个流量洪峰，然后MQ直接给扛下来了，都存储自己本地磁盘，这个过程就是流量削峰的过程，瞬间把一个洪峰给削下来了，让系统B后续慢慢获取消息来处理。
-6、总结 消息中间件的主要作用就是削峰解耦，提升系统的响应速度。'>
+6、总结 消息中间件的主要作用就是削峰解耦，提升系统的响应速度。
+'>
 <meta property='og:url' content='https://xiaocm.com/p/%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%98%AF%E4%BB%80%E4%B9%88/'>
 <meta property='og:site_name' content='无常是常'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='RocketMQ' /><meta property='article:published_time' content='2020-05-13T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2020-05-13T00:00:00&#43;00:00'/>
@@ -90,7 +92,8 @@
 接着，系统B只要慢慢的从MQ里获取消息然后执行数据库读写操作即可，这个获取消息的速度是系统B自己可以控制的，所以系统B完全可以用一个比较低的速率获取消息然后写入数据库，保证对数据库的QPS不要超过他的极限值6000。
 这个时候因为系统A发送消息到MQ很快，系统B从MQ消费消息很慢，所以MQ里自然会积压一些消息，不过不要紧，MQ一般都是基于磁盘来存储消息的，所以适当积压一些消息是可以的。当系统A的高峰过去，每秒可能就恢复到1000 QPS了，此时系统b还是以每秒6000QPS的速度获取消息写入数据库，那么自然MQ里积压的消息就会慢慢被消化掉了。
 所以这就是MQ进行流量削峰的效果，系统A发送过来的每秒1万请求是一个流量洪峰，然后MQ直接给扛下来了，都存储自己本地磁盘，这个过程就是流量削峰的过程，瞬间把一个洪峰给削下来了，让系统B后续慢慢获取消息来处理。
-6、总结 消息中间件的主要作用就是削峰解耦，提升系统的响应速度。">
+6、总结 消息中间件的主要作用就是削峰解耦，提升系统的响应速度。
+">
     </head>
     <body class="
     article-page
@@ -134,7 +137,7 @@
                     
                     
                         
-                        <img src="/img/avatar_hu87c10ff50ef4ab09ea180a96c581c02f_62603_300x0_resize_box_3.png" width="300"
+                        <img src="/img/avatar_hu_f06283ad9dc77cbf.png" width="300"
                             height="281" class="site-logo" loading="lazy" alt="Avatar">
                     
                 
@@ -607,12 +610,12 @@
         
             2020 - 
         
-        2024 xiaocm
+        2025 xiaocm
     </section>
     
     <section class="powerby">
         
-            <a href="https://beian.miit.gov.cn/" target="_blank" >陕ICP备16008414号</a>
+            <a href="https://beian.miit.gov.cn/" target="_blank" >陕ICP备16008414号</a> <br/>
         使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
         主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.23.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
     </section>

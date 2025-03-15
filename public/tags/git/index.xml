@@ -16,8 +16,7 @@
         <description>&lt;blockquote&gt;
 &lt;p&gt;本文是为我的年轻人（或任何新手）准备的，他们可以有效地使用git命令行，并简要介绍了我如何使用这些命令。
 &lt;a class=&#34;link&#34; href=&#34;https://medium.com/@mmpatil34/11-git-commands-i-use-daily-9bbd7590c8eb&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;https://medium.com/@mmpatil34/11-git-commands-i-use-daily-9bbd7590c8eb&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
+    &gt;https://medium.com/@mmpatil34/11-git-commands-i-use-daily-9bbd7590c8eb&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
 &lt;h3 id=&#34;1-git-fetch-origin&#34;&gt;1. git fetch origin&lt;/h3&gt;
 &lt;p&gt;从特定的仓库拉取所有的branchs/tags, 这里的仓库是“origin”, 我每天从这个命令开始, 它可以让本地和远程仓库状态保持一致.&lt;/p&gt;
 &lt;h3 id=&#34;2-git-status&#34;&gt;2. git status&lt;/h3&gt;
@@ -29,15 +28,15 @@
 当本地有文件变动时,可以使用这个命令丢弃当前改变,恢复文件到之前状态.
 &lt;code&gt;git checkout &amp;lt;branch name&amp;gt;&lt;/code&gt;
 切换本地到指定分支.&lt;/p&gt;
-&lt;h3 id=&#34;4-git-pull-origin-branch-name&#34;&gt;4. git pull origin &lt;branch name&gt;&lt;/h3&gt;
+&lt;h3 id=&#34;4-git-pull-origin&#34;&gt;4. git pull origin &lt;branch name&gt;&lt;/h3&gt;
 &lt;p&gt;将更改从远程分支拉到本地分支，并在更改兼容的情况下调用&lt;code&gt;git merge&lt;/code&gt;。
 &lt;code&gt;git pull 和 git fetch&lt;/code&gt;的不同之处是:&lt;code&gt; git pull = git fetch + git merge&lt;/code&gt;&lt;/p&gt;
-&lt;h3 id=&#34;5-git-add-name-of-the-file&#34;&gt;5. git add &lt;name of the file&gt;&lt;/h3&gt;
+&lt;h3 id=&#34;5-git-add&#34;&gt;5. git add &lt;name of the file&gt;&lt;/h3&gt;
 &lt;p&gt;文件修改完成后,就可以使用&lt;code&gt;git add&lt;/code&gt;命令将文件添加到特定提交中,使用&lt;code&gt;git status&lt;/code&gt;命令可以很方便的获取到要添加指定提交的文件名.&lt;/p&gt;
 &lt;h3 id=&#34;6-git-commit&#34;&gt;6. git commit&lt;/h3&gt;
 &lt;p&gt;&lt;code&gt;git commit -m &amp;quot;&amp;lt;提交内容的描述&amp;gt;&amp;quot;&lt;/code&gt;
 提交本地改变,并指定和提交内容相关的描述.&lt;/p&gt;
-&lt;h3 id=&#34;7-git-push-origin-branch-name&#34;&gt;7. git push origin &lt;branch name&gt;&lt;/h3&gt;
+&lt;h3 id=&#34;7-git-push-origin&#34;&gt;7. git push origin &lt;branch name&gt;&lt;/h3&gt;
 &lt;p&gt;将本地提交推送到远程存储库,这里的仓库是“origin”.&lt;/p&gt;
 &lt;h3 id=&#34;8-git-cherry-pick&#34;&gt;8. git cherry-pick&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -96,7 +95,7 @@
 &lt;p&gt;&lt;code&gt;-m&lt;/code&gt;配置项告诉 Git，应该采用哪个分支的变动。它的参数parent-number是一个从1开始的整数，代表原始提交的父分支编号。&lt;/p&gt;
 &lt;p&gt;上面命令表示，Cherry pick 采用提交commitHash来自编号1的父分支的变动。
 一般来说，1号父分支是接受变动的分支（the branch being merged into），2号父分支是作为变动来源的分支（the branch being merged from）。&lt;/p&gt;
-&lt;h3 id=&#34;9-git-revert-commit-id&#34;&gt;9. git revert &lt;commit id&gt;&lt;/h3&gt;
+&lt;h3 id=&#34;9-git-revert&#34;&gt;9. git revert &lt;commit id&gt;&lt;/h3&gt;
 &lt;p&gt;引入一个新的提交来撤回已经push的提交.&lt;/p&gt;
 &lt;h3 id=&#34;10-git-reset--soft-head1&#34;&gt;10. git reset — soft HEAD~1&lt;/h3&gt;
 &lt;p&gt;撤消一次本地提交而不会丢失文件中的变更.&lt;/p&gt;
@@ -119,8 +118,7 @@
 &lt;/ol&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;注意：&lt;/strong&gt;
-其中1、2两种情况的修改方式是一样的，但是git log的记录是不同的,第三种方式也是把需要修改的记录调整为最新的提交，然后使用2的方式修改。&lt;/p&gt;
-&lt;/blockquote&gt;
+其中1、2两种情况的修改方式是一样的，但是git log的记录是不同的,第三种方式也是把需要修改的记录调整为最新的提交，然后使用2的方式修改。&lt;/p&gt;&lt;/blockquote&gt;
 </description>
         </item>
         <item>
@@ -152,19 +150,16 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;这样就可以撤回你的提交，并且不会丢失提交前修改的内容.&lt;/p&gt;
 &lt;h3 id=&#34;理解&#34;&gt;理解&lt;/h3&gt;
-&lt;p&gt;HEAD^ 代表上一个版本，同等于HEAD~1，如果进行了两次提交，可以写成HEAD~2&lt;/p&gt;
+&lt;p&gt;HEAD^ 代表上一个版本，同等于HEAD&lt;del&gt;1，如果进行了两次提交，可以写成HEAD&lt;/del&gt;2&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;参数&lt;/strong&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;--mixed&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;--mixed&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;默认参数，不删除工作空间改动的代码，只撤回提交，并且撤回&lt;code&gt;git add .&lt;/code&gt;操作&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;--soft&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;--soft&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;不删除工作空间改动的代码，撤销提交，但是不撤回&lt;code&gt;git add .&lt;/code&gt; 操作&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;--hard&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;--hard&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;删除工作空间改动的代码，撤销commit，撤销&lt;code&gt;git add .&lt;/code&gt;，直接回退到上次&lt;code&gt;commit&lt;/code&gt;&lt;/p&gt;
 &lt;h3 id=&#34;最后&#34;&gt;最后&lt;/h3&gt;
 &lt;p&gt;如果commit注释写错了，只是想改一下注释，只需要：&lt;/p&gt;
@@ -290,8 +285,7 @@ IF NO OK，随你便，可以使用rebase&lt;/p&gt;
 &lt;a class=&#34;link&#34; href=&#34;https://git-scm.com/book/zh/v2/Git-&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;https://git-scm.com/book/zh/v2/Git-&lt;/a&gt;分支-变基
 &lt;a class=&#34;link&#34; href=&#34;https://git-scm.com/book/zh/v2/Git-&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;https://git-scm.com/book/zh/v2/Git-&lt;/a&gt;分支-分支的新建与合并#_basic_merging&lt;/p&gt;
-&lt;/blockquote&gt;
+    &gt;https://git-scm.com/book/zh/v2/Git-&lt;/a&gt;分支-分支的新建与合并#_basic_merging&lt;/p&gt;&lt;/blockquote&gt;
 </description>
         </item>
         <item>
@@ -315,8 +309,7 @@ docs (文档改动)
 style (格式化, 缺失分号等; 不包括生产代码变动)
 refactor (重构代码)
 test (添加缺失的测试, 重构测试, 不包括生产代码变动)
-chore (更新grunt任务等; 不包括生产代码变动)&lt;/p&gt;
-&lt;/blockquote&gt;
+chore (更新grunt任务等; 不包括生产代码变动)&lt;/p&gt;&lt;/blockquote&gt;
 &lt;ul&gt;
 &lt;li&gt;主题和内容以一个空行分隔&lt;/li&gt;
 &lt;li&gt;主题限制为最大50个字&lt;/li&gt;
@@ -350,8 +343,7 @@ $ git init&lt;/p&gt;
 &lt;p&gt;&lt;font color=gray&gt;# 新建一个目录，将其初始化为Git代码库&lt;/font&gt;&lt;br&gt;
 $ git init [project-name]&lt;/p&gt;
 &lt;p&gt;&lt;font color=gray&gt;# 下载一个项目和它的整个代码历史&lt;/font&gt;&lt;br&gt;
-$ git clone [url]&lt;/p&gt;
-&lt;/blockquote&gt;
+$ git clone [url]&lt;/p&gt;&lt;/blockquote&gt;
 &lt;h3 id=&#34;二配置&#34;&gt;二、配置&lt;/h3&gt;
 &lt;p&gt;Git的设置文件为.gitconfig，它可以在用户主目录下（全局配置），也可以在项目目录下（项目配置）&lt;/p&gt;
 &lt;blockquote&gt;
@@ -361,8 +353,7 @@ $ git config &amp;ndash;list&lt;/p&gt;
 $ git config -e [&amp;ndash;global]&lt;/p&gt;
 &lt;p&gt;&lt;font color=gray&gt;# 设置提交代码时的用户信息&lt;/font&gt;&lt;br&gt;
 $ git config [&amp;ndash;global] user.name &amp;ldquo;[name]&amp;rdquo;&lt;br&gt;
-$ git config [&amp;ndash;global] user.email &amp;ldquo;[email   address]&amp;rdquo;&lt;/p&gt;
-&lt;/blockquote&gt;
+$ git config [&amp;ndash;global] user.email &amp;ldquo;[email   address]&amp;rdquo;&lt;/p&gt;&lt;/blockquote&gt;
 &lt;h3 id=&#34;三增加删除文件&#34;&gt;三、增加/删除文件&lt;/h3&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;font color=gray&gt;# 添加指定文件到暂存区&lt;/font&gt;&lt;br&gt;
@@ -379,8 +370,7 @@ $ git rm [file1] [file2] &amp;hellip;&lt;/p&gt;
 &lt;p&gt;&lt;font color=gray&gt;# 停止追踪指定文件，但该文件会保留在工作区&lt;/font&gt;&lt;br&gt;
 $ git rm &amp;ndash;cached [file]&lt;/p&gt;
 &lt;p&gt;&lt;font color=gray&gt;# 改名文件，并且将这个改名放入暂存区&lt;/font&gt;&lt;br&gt;
-$ git mv [file-original] [file-renamed]&lt;/p&gt;
-&lt;/blockquote&gt;
+$ git mv [file-original] [file-renamed]&lt;/p&gt;&lt;/blockquote&gt;
 &lt;h3 id=&#34;四代码提交&#34;&gt;四、代码提交&lt;/h3&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;font color=gray&gt;# 提交暂存区到仓库区&lt;/font&gt;&lt;br&gt;
@@ -395,8 +385,7 @@ $ git commit -v&lt;/p&gt;
 &lt;font color=gray&gt;# 如果代码没有任何新变化，则用来改写上一次commit的提交信息&lt;/font&gt;&lt;br&gt;
 $ git commit &amp;ndash;amend -m [message]&lt;/p&gt;
 &lt;p&gt;&lt;font color=gray&gt;# 重做上一次commit，并包括指定文件的新变化&lt;/font&gt;&lt;br&gt;
-$ git commit &amp;ndash;amend [file1] [file2] &amp;hellip;&lt;/p&gt;
-&lt;/blockquote&gt;
+$ git commit &amp;ndash;amend [file1] [file2] &amp;hellip;&lt;/p&gt;&lt;/blockquote&gt;
 &lt;h3 id=&#34;五分支&#34;&gt;五、分支&lt;/h3&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;font color=gray&gt;# 列出所有本地分支&lt;/font&gt;&lt;br&gt;
@@ -427,8 +416,7 @@ $ git cherry-pick [commit]&lt;/p&gt;
 $ git branch -d [branch-name]&lt;/p&gt;
 &lt;p&gt;&lt;font color=gray&gt;# 删除远程分支&lt;/font&gt;&lt;br&gt;
 $ git push origin &amp;ndash;delete [branch-name]&lt;br&gt;
-$ git branch -dr [remote/branch]&lt;/p&gt;
-&lt;/blockquote&gt;
+$ git branch -dr [remote/branch]&lt;/p&gt;&lt;/blockquote&gt;
 &lt;h3 id=&#34;六标签&#34;&gt;六、标签&lt;/h3&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;font color=gray&gt;# 列出所有tag&lt;/font&gt;&lt;br&gt;
@@ -448,8 +436,7 @@ $ git push [remote] [tag]&lt;/p&gt;
 &lt;p&gt;&lt;font color=gray&gt;# 提交所有tag&lt;/font&gt;&lt;br&gt;
 $ git push [remote] &amp;ndash;tags&lt;/p&gt;
 &lt;p&gt;&lt;font color=gray&gt;# 新建一个分支，指向某个tag&lt;/font&gt;&lt;br&gt;
-$ git checkout -b [branch] [tag]&lt;/p&gt;
-&lt;/blockquote&gt;
+$ git checkout -b [branch] [tag]&lt;/p&gt;&lt;/blockquote&gt;
 &lt;h3 id=&#34;七查看信息&#34;&gt;七、查看信息&lt;/h3&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;font color=gray&gt;# 显示有变更的文件&lt;/font&gt;&lt;br&gt;
@@ -494,8 +481,7 @@ $ git show [commit]:[filename]&lt;/p&gt;
 &lt;p&gt;&lt;font color=gray&gt;# 显示当前分支的最近几次提交&lt;/font&gt;&lt;br&gt;
 $ git reflog&lt;/p&gt;
 &lt;p&gt;&lt;font color=gray&gt;# 从本地master拉取代码更新当前分支：branch 一般为master&lt;/font&gt;&lt;br&gt;
-$ git rebase [branch]&lt;/p&gt;
-&lt;/blockquote&gt;
+$ git rebase [branch]&lt;/p&gt;&lt;/blockquote&gt;
 &lt;h3 id=&#34;八远程同步&#34;&gt;八、远程同步&lt;/h3&gt;
 &lt;blockquote&gt;
 &lt;p&gt;$ git remote update  &amp;ndash;更新远程仓储&lt;br&gt;
@@ -514,8 +500,7 @@ $ git push [remote] [branch]&lt;/p&gt;
 &lt;p&gt;&lt;font color=gray&gt;# 强行推送当前分支到远程仓库，即使有冲突&lt;/font&gt;&lt;br&gt;
 $ git push [remote] &amp;ndash;force&lt;/p&gt;
 &lt;p&gt;&lt;font color=gray&gt;# 推送所有分支到远程仓库&lt;/font&gt;&lt;br&gt;
-$ git push [remote] &amp;ndash;all&lt;/p&gt;
-&lt;/blockquote&gt;
+$ git push [remote] &amp;ndash;all&lt;/p&gt;&lt;/blockquote&gt;
 &lt;h3 id=&#34;九撤销&#34;&gt;九、撤销&lt;/h3&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;font color=gray&gt;# 恢复暂存区的指定文件到工作区&lt;/font&gt;&lt;br&gt;
@@ -539,13 +524,11 @@ $ git reset &amp;ndash;keep [commit]&lt;/p&gt;
 $ git revert [commit]&lt;/p&gt;
 &lt;p&gt;&lt;font color=gray&gt;# 暂时将未提交的变化移除，稍后再移入&lt;/font&gt;&lt;br&gt;
 $ git stash&lt;br&gt;
-$ git stash pop&lt;/p&gt;
-&lt;/blockquote&gt;
+$ git stash pop&lt;/p&gt;&lt;/blockquote&gt;
 &lt;h3 id=&#34;十其他&#34;&gt;十、其他&lt;/h3&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;font color=gray&gt;# 生成一个可供发布的压缩包&lt;/font&gt;&lt;br&gt;
-$ git archive&lt;/p&gt;
-&lt;/blockquote&gt;
+$ git archive&lt;/p&gt;&lt;/blockquote&gt;
 </description>
         </item>
         

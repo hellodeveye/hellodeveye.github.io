@@ -15,8 +15,7 @@
         <guid>https://xiaocm.com/p/thread%E8%AF%A6%E8%A7%A3/</guid>
         <description>&lt;blockquote&gt;
 &lt;p&gt;转载自: &lt;a class=&#34;link&#34; href=&#34;https://www.cnblogs.com/sanzao/p/10528677.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;https://www.cnblogs.com/sanzao/p/10528677.html&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
+    &gt;https://www.cnblogs.com/sanzao/p/10528677.html&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;本文主要结合 &lt;code&gt;java.lang.Thread&lt;/code&gt; 源码，梳理 Java 线程的整体脉络；&lt;/p&gt;
 &lt;h2 id=&#34;一线程概述&#34;&gt;一、线程概述&lt;/h2&gt;
 &lt;p&gt;对于 Java 中的线程主要是依赖于系统的 API 实现的，这一点可以从 &lt;code&gt;java.lang.Thread&lt;/code&gt;；源码中关键的方法都是 &lt;code&gt;native&lt;/code&gt; 方法看出，也可以直接查看 OpenJDK 源码看出来，这一点后面还会讲到；对于 JDK1.8 而言，他的 Windows 版和 Linux 版使用的都是 &lt;strong&gt;1:1 线程模型&lt;/strong&gt;，即系统内核线程和轻量级进程的比是 &lt;code&gt;1:1&lt;/code&gt;；&lt;/p&gt;

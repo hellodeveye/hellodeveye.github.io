@@ -15,8 +15,7 @@
         <guid>https://xiaocm.com/p/java%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%B8%B8%E9%87%8F%E6%B1%A0%E4%BD%8D%E4%BA%8E%E5%93%AA%E9%87%8C%E5%A0%86%E6%88%96%E5%A0%86%E6%A0%88/</guid>
         <description>&lt;blockquote&gt;
 &lt;p&gt;转载自: &lt;a class=&#34;link&#34; href=&#34;https://www.baeldung.com/java-string-constant-pool-heap-stack&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;https://www.baeldung.com/java-string-constant-pool-heap-stack&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
+    &gt;https://www.baeldung.com/java-string-constant-pool-heap-stack&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
 &lt;h3 id=&#34;1简介&#34;&gt;1.简介&lt;/h3&gt;
 &lt;p&gt;每当我们声明一个变量或创建一个对象时，它就会存储在内存中。在较高的级别上，Java将内存分为两个块：&lt;code&gt;stack&lt;/code&gt;和&lt;code&gt;heap&lt;/code&gt;。&lt;strong&gt;两种存储器均存储特定类型的数据&lt;/strong&gt;，并且具有不同的存储和访问模式。&lt;/p&gt;
 &lt;h3 id=&#34;2字符串常量池&#34;&gt;2.字符串常量池&lt;/h3&gt;

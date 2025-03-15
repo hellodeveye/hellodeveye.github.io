@@ -2,23 +2,26 @@
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='记录一个使用Java转图片的第三方工具
-1 2 3 4 5 6 &amp;lt;!-- https://mvnrepository.com/artifact/net.sf.cssbox/cssbox --&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;net.sf.cssbox&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;cssbox&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;5.0.0&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; 使用方法很简单，伪代码如下:
-1 2 3 4 5 6 7 8 9 10 11 12 ImageRenderer render = new ImageRenderer(); ByteArrayOutputStream os = new ByteArrayOutputStream(); //创建一个临时的HTML文件 Path tempFile = Files.createTempFile(IdWorker.getMillisecond(), &amp;#34;.html&amp;#34;); //将HTML字节流写入到临时文件中 Files.write(tempFile,createHtml()); render.renderURL(tempFile.toUri().toString(), os); String fileName = &amp;#34;test.png&amp;#34;; //将图片上传到OSS AliyunOSSUtil.upload(AliyunOSSUtil.toOSSFilePath(fileName, sysUser.tenantId()), new ByteArrayInputStream(os.toByteArray())); //删除临时文件 Files.deleteIfExists(tempFile); 我的方案是使用freemarker模板引擎先将数据渲染到成html文件，然后通过html文件生成一个图片，将图片上传到OSS中，最后删除临时生成的html文件。'>
+1 2 3 4 5 6 &lt;!-- https://mvnrepository.com/artifact/net.sf.cssbox/cssbox --&gt; &lt;dependency&gt; &lt;groupId&gt;net.sf.cssbox&lt;/groupId&gt; &lt;artifactId&gt;cssbox&lt;/artifactId&gt; &lt;version&gt;5.0.0&lt;/version&gt; &lt;/dependency&gt; 使用方法很简单，伪代码如下:
+1 2 3 4 5 6 7 8 9 10 11 12 ImageRenderer render = new ImageRenderer(); ByteArrayOutputStream os = new ByteArrayOutputStream(); //创建一个临时的HTML文件 Path tempFile = Files.createTempFile(IdWorker.getMillisecond(), &#34;.html&#34;); //将HTML字节流写入到临时文件中 Files.write(tempFile,createHtml()); render.renderURL(tempFile.toUri().toString(), os); String fileName = &#34;test.png&#34;; //将图片上传到OSS AliyunOSSUtil.upload(AliyunOSSUtil.toOSSFilePath(fileName, sysUser.tenantId()), new ByteArrayInputStream(os.toByteArray())); //删除临时文件 Files.deleteIfExists(tempFile); 我的方案是使用freemarker模板引擎先将数据渲染到成html文件，然后通过html文件生成一个图片，将图片上传到OSS中，最后删除临时生成的html文件。
+'>
 <title>Java将HTML转为图片</title>
 
 <link rel='canonical' href='https://xiaocm.com/p/java%E5%B0%86html%E8%BD%AC%E4%B8%BA%E5%9B%BE%E7%89%87/'>
 
 <link rel="stylesheet" href="/scss/style.min.abbd69b2908fdfcd5179898beaafd374514a86538d81639ddd2c58c06ae54e40.css"><meta property='og:title' content='Java将HTML转为图片'>
 <meta property='og:description' content='记录一个使用Java转图片的第三方工具
-1 2 3 4 5 6 &amp;lt;!-- https://mvnrepository.com/artifact/net.sf.cssbox/cssbox --&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;net.sf.cssbox&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;cssbox&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;5.0.0&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; 使用方法很简单，伪代码如下:
-1 2 3 4 5 6 7 8 9 10 11 12 ImageRenderer render = new ImageRenderer(); ByteArrayOutputStream os = new ByteArrayOutputStream(); //创建一个临时的HTML文件 Path tempFile = Files.createTempFile(IdWorker.getMillisecond(), &amp;#34;.html&amp;#34;); //将HTML字节流写入到临时文件中 Files.write(tempFile,createHtml()); render.renderURL(tempFile.toUri().toString(), os); String fileName = &amp;#34;test.png&amp;#34;; //将图片上传到OSS AliyunOSSUtil.upload(AliyunOSSUtil.toOSSFilePath(fileName, sysUser.tenantId()), new ByteArrayInputStream(os.toByteArray())); //删除临时文件 Files.deleteIfExists(tempFile); 我的方案是使用freemarker模板引擎先将数据渲染到成html文件，然后通过html文件生成一个图片，将图片上传到OSS中，最后删除临时生成的html文件。'>
+1 2 3 4 5 6 &lt;!-- https://mvnrepository.com/artifact/net.sf.cssbox/cssbox --&gt; &lt;dependency&gt; &lt;groupId&gt;net.sf.cssbox&lt;/groupId&gt; &lt;artifactId&gt;cssbox&lt;/artifactId&gt; &lt;version&gt;5.0.0&lt;/version&gt; &lt;/dependency&gt; 使用方法很简单，伪代码如下:
+1 2 3 4 5 6 7 8 9 10 11 12 ImageRenderer render = new ImageRenderer(); ByteArrayOutputStream os = new ByteArrayOutputStream(); //创建一个临时的HTML文件 Path tempFile = Files.createTempFile(IdWorker.getMillisecond(), &#34;.html&#34;); //将HTML字节流写入到临时文件中 Files.write(tempFile,createHtml()); render.renderURL(tempFile.toUri().toString(), os); String fileName = &#34;test.png&#34;; //将图片上传到OSS AliyunOSSUtil.upload(AliyunOSSUtil.toOSSFilePath(fileName, sysUser.tenantId()), new ByteArrayInputStream(os.toByteArray())); //删除临时文件 Files.deleteIfExists(tempFile); 我的方案是使用freemarker模板引擎先将数据渲染到成html文件，然后通过html文件生成一个图片，将图片上传到OSS中，最后删除临时生成的html文件。
+'>
 <meta property='og:url' content='https://xiaocm.com/p/java%E5%B0%86html%E8%BD%AC%E4%B8%BA%E5%9B%BE%E7%89%87/'>
 <meta property='og:site_name' content='无常是常'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='Java' /><meta property='article:published_time' content='2021-03-25T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2021-03-25T00:00:00&#43;00:00'/>
 <meta name="twitter:title" content="Java将HTML转为图片">
 <meta name="twitter:description" content="记录一个使用Java转图片的第三方工具
-1 2 3 4 5 6 &amp;lt;!-- https://mvnrepository.com/artifact/net.sf.cssbox/cssbox --&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;net.sf.cssbox&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;cssbox&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;5.0.0&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; 使用方法很简单，伪代码如下:
-1 2 3 4 5 6 7 8 9 10 11 12 ImageRenderer render = new ImageRenderer(); ByteArrayOutputStream os = new ByteArrayOutputStream(); //创建一个临时的HTML文件 Path tempFile = Files.createTempFile(IdWorker.getMillisecond(), &amp;#34;.html&amp;#34;); //将HTML字节流写入到临时文件中 Files.write(tempFile,createHtml()); render.renderURL(tempFile.toUri().toString(), os); String fileName = &amp;#34;test.png&amp;#34;; //将图片上传到OSS AliyunOSSUtil.upload(AliyunOSSUtil.toOSSFilePath(fileName, sysUser.tenantId()), new ByteArrayInputStream(os.toByteArray())); //删除临时文件 Files.deleteIfExists(tempFile); 我的方案是使用freemarker模板引擎先将数据渲染到成html文件，然后通过html文件生成一个图片，将图片上传到OSS中，最后删除临时生成的html文件。">
+1 2 3 4 5 6 &lt;!-- https://mvnrepository.com/artifact/net.sf.cssbox/cssbox --&gt; &lt;dependency&gt; &lt;groupId&gt;net.sf.cssbox&lt;/groupId&gt; &lt;artifactId&gt;cssbox&lt;/artifactId&gt; &lt;version&gt;5.0.0&lt;/version&gt; &lt;/dependency&gt; 使用方法很简单，伪代码如下:
+1 2 3 4 5 6 7 8 9 10 11 12 ImageRenderer render = new ImageRenderer(); ByteArrayOutputStream os = new ByteArrayOutputStream(); //创建一个临时的HTML文件 Path tempFile = Files.createTempFile(IdWorker.getMillisecond(), &#34;.html&#34;); //将HTML字节流写入到临时文件中 Files.write(tempFile,createHtml()); render.renderURL(tempFile.toUri().toString(), os); String fileName = &#34;test.png&#34;; //将图片上传到OSS AliyunOSSUtil.upload(AliyunOSSUtil.toOSSFilePath(fileName, sysUser.tenantId()), new ByteArrayInputStream(os.toByteArray())); //删除临时文件 Files.deleteIfExists(tempFile); 我的方案是使用freemarker模板引擎先将数据渲染到成html文件，然后通过html文件生成一个图片，将图片上传到OSS中，最后删除临时生成的html文件。
+">
     </head>
     <body class="
     article-page
@@ -62,7 +65,7 @@
                     
                     
                         
-                        <img src="/img/avatar_hu87c10ff50ef4ab09ea180a96c581c02f_62603_300x0_resize_box_3.png" width="300"
+                        <img src="/img/avatar_hu_f06283ad9dc77cbf.png" width="300"
                             height="281" class="site-logo" loading="lazy" alt="Avatar">
                     
                 
@@ -432,12 +435,12 @@
         
             2020 - 
         
-        2024 xiaocm
+        2025 xiaocm
     </section>
     
     <section class="powerby">
         
-            <a href="https://beian.miit.gov.cn/" target="_blank" >陕ICP备16008414号</a>
+            <a href="https://beian.miit.gov.cn/" target="_blank" >陕ICP备16008414号</a> <br/>
         使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
         主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.23.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
     </section>

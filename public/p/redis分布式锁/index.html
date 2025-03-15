@@ -11,9 +11,8 @@
 客户端A获取主节点的锁 主节点将Key同步到从节点之前发生宕机 从节点切换成主节点 客户端B获取到相同资源的锁，此时A和B同时持有锁，违反了安全性 单实例方案 假设可以克服以上单节点不足的问题，我们可以使用以下命令实现分布式锁：
 1 SET resource_name my_random_value NX PX 30000 该命令仅在Key不存在(NX)、且到期时间(PX)为30000毫秒的情况下才设置Key。Key的值为一个随机数，该值要求必须全局唯一，使用全局唯一值是为了在删除Key的时候，Key的值是我们之前设置的值时，才删除Key。(Tips:我们总不能删除其他客户端设置的Key吧？)
 可以使用以下Lua脚本完成，因为Lua脚本可以保证两个操作的原子性。
-1 2 3 4 5 if redis.call(&amp;#34;get&amp;#34;,KEYS[1]) == ARGV[1] then return redis.call(&amp;#34;del&amp;#34;,KEYS[1]) else return 0 end RedLock算法 在算法的分布式版本中，我们假设有5个Master节点，这些节点是完全独立的，我们将各个节点部署在不同的服务器中，以保证他们同时出现故障的概率。
-为了获取锁，客户端执行以下操作：
-客户端获取当前时间的时间戳 客户端尝试在N（N=5）个节点上以相同的Key和Value获取一个锁(此处和单实例方式相同) 客户端通过从当前时间中减去在步骤1中获得的时间戳，来计算获取锁所花费的时间，当客户端能够在大多数实例（至少3个）中获取锁时 ，并且获取锁所花费的总时间小于锁有效时间，则认为已获取锁。 如果获取了锁，则将其有效时间视为初始有效时间减去经过的时间 如果客户端由于某种原因（无法锁定N / 2 &#43; 1实例或有效时间为负数）而未能获得该锁，它将尝试解锁所有实例 释放锁 释放锁很简单，只需在所有实例中释放锁（即使之前在某个实例中没有获取到锁）。'>
+1 2 3 4 5 if redis.call(&#34;get&#34;,KEYS[1]) == ARGV[1] then return redis.call(&#34;del&#34;,KEYS[1]) else return 0 end RedLock算法 在算法的分布式版本中，我们假设有5个Master节点，这些节点是完全独立的，我们将各个节点部署在不同的服务器中，以保证他们同时出现故障的概率。
+'>
 <title>Redis分布式锁</title>
 
 <link rel='canonical' href='https://xiaocm.com/p/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/'>
@@ -29,9 +28,8 @@
 客户端A获取主节点的锁 主节点将Key同步到从节点之前发生宕机 从节点切换成主节点 客户端B获取到相同资源的锁，此时A和B同时持有锁，违反了安全性 单实例方案 假设可以克服以上单节点不足的问题，我们可以使用以下命令实现分布式锁：
 1 SET resource_name my_random_value NX PX 30000 该命令仅在Key不存在(NX)、且到期时间(PX)为30000毫秒的情况下才设置Key。Key的值为一个随机数，该值要求必须全局唯一，使用全局唯一值是为了在删除Key的时候，Key的值是我们之前设置的值时，才删除Key。(Tips:我们总不能删除其他客户端设置的Key吧？)
 可以使用以下Lua脚本完成，因为Lua脚本可以保证两个操作的原子性。
-1 2 3 4 5 if redis.call(&amp;#34;get&amp;#34;,KEYS[1]) == ARGV[1] then return redis.call(&amp;#34;del&amp;#34;,KEYS[1]) else return 0 end RedLock算法 在算法的分布式版本中，我们假设有5个Master节点，这些节点是完全独立的，我们将各个节点部署在不同的服务器中，以保证他们同时出现故障的概率。
-为了获取锁，客户端执行以下操作：
-客户端获取当前时间的时间戳 客户端尝试在N（N=5）个节点上以相同的Key和Value获取一个锁(此处和单实例方式相同) 客户端通过从当前时间中减去在步骤1中获得的时间戳，来计算获取锁所花费的时间，当客户端能够在大多数实例（至少3个）中获取锁时 ，并且获取锁所花费的总时间小于锁有效时间，则认为已获取锁。 如果获取了锁，则将其有效时间视为初始有效时间减去经过的时间 如果客户端由于某种原因（无法锁定N / 2 &#43; 1实例或有效时间为负数）而未能获得该锁，它将尝试解锁所有实例 释放锁 释放锁很简单，只需在所有实例中释放锁（即使之前在某个实例中没有获取到锁）。'>
+1 2 3 4 5 if redis.call(&#34;get&#34;,KEYS[1]) == ARGV[1] then return redis.call(&#34;del&#34;,KEYS[1]) else return 0 end RedLock算法 在算法的分布式版本中，我们假设有5个Master节点，这些节点是完全独立的，我们将各个节点部署在不同的服务器中，以保证他们同时出现故障的概率。
+'>
 <meta property='og:url' content='https://xiaocm.com/p/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/'>
 <meta property='og:site_name' content='无常是常'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='- Redis' /><meta property='article:published_time' content='2020-07-09T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2020-07-09T00:00:00&#43;00:00'/>
@@ -46,9 +44,8 @@
 客户端A获取主节点的锁 主节点将Key同步到从节点之前发生宕机 从节点切换成主节点 客户端B获取到相同资源的锁，此时A和B同时持有锁，违反了安全性 单实例方案 假设可以克服以上单节点不足的问题，我们可以使用以下命令实现分布式锁：
 1 SET resource_name my_random_value NX PX 30000 该命令仅在Key不存在(NX)、且到期时间(PX)为30000毫秒的情况下才设置Key。Key的值为一个随机数，该值要求必须全局唯一，使用全局唯一值是为了在删除Key的时候，Key的值是我们之前设置的值时，才删除Key。(Tips:我们总不能删除其他客户端设置的Key吧？)
 可以使用以下Lua脚本完成，因为Lua脚本可以保证两个操作的原子性。
-1 2 3 4 5 if redis.call(&amp;#34;get&amp;#34;,KEYS[1]) == ARGV[1] then return redis.call(&amp;#34;del&amp;#34;,KEYS[1]) else return 0 end RedLock算法 在算法的分布式版本中，我们假设有5个Master节点，这些节点是完全独立的，我们将各个节点部署在不同的服务器中，以保证他们同时出现故障的概率。
-为了获取锁，客户端执行以下操作：
-客户端获取当前时间的时间戳 客户端尝试在N（N=5）个节点上以相同的Key和Value获取一个锁(此处和单实例方式相同) 客户端通过从当前时间中减去在步骤1中获得的时间戳，来计算获取锁所花费的时间，当客户端能够在大多数实例（至少3个）中获取锁时 ，并且获取锁所花费的总时间小于锁有效时间，则认为已获取锁。 如果获取了锁，则将其有效时间视为初始有效时间减去经过的时间 如果客户端由于某种原因（无法锁定N / 2 &#43; 1实例或有效时间为负数）而未能获得该锁，它将尝试解锁所有实例 释放锁 释放锁很简单，只需在所有实例中释放锁（即使之前在某个实例中没有获取到锁）。">
+1 2 3 4 5 if redis.call(&#34;get&#34;,KEYS[1]) == ARGV[1] then return redis.call(&#34;del&#34;,KEYS[1]) else return 0 end RedLock算法 在算法的分布式版本中，我们假设有5个Master节点，这些节点是完全独立的，我们将各个节点部署在不同的服务器中，以保证他们同时出现故障的概率。
+">
     </head>
     <body class="
     article-page
@@ -92,7 +89,7 @@
                     
                     
                         
-                        <img src="/img/avatar_hu87c10ff50ef4ab09ea180a96c581c02f_62603_300x0_resize_box_3.png" width="300"
+                        <img src="/img/avatar_hu_f06283ad9dc77cbf.png" width="300"
                             height="281" class="site-logo" loading="lazy" alt="Avatar">
                     
                 
@@ -382,40 +379,40 @@
 </ul>
 <p>下面简单对比几种方式的优缺点：</p>
 <div class="table-wrapper"><table>
-<thead>
-<tr>
-<th>方式</th>
-<th>优点</th>
-<th>缺点</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>数据库</td>
-<td>实现简单、易于理解</td>
-<td>对数据库压力大</td>
-</tr>
-<tr>
-<td>Redis</td>
-<td>易于理解</td>
-<td>自己实现、不支持阻塞</td>
-</tr>
-<tr>
-<td>Zookeeper</td>
-<td>支持阻塞</td>
-<td>需要理解Zookeeper、程序复杂</td>
-</tr>
-<tr>
-<td>Curator</td>
-<td>提供锁的方法</td>
-<td>依赖Zookeeper、强一致</td>
-</tr>
-<tr>
-<td>Redisson</td>
-<td>提供锁的方法、可阻塞</td>
-<td></td>
-</tr>
-</tbody>
+  <thead>
+      <tr>
+          <th>方式</th>
+          <th>优点</th>
+          <th>缺点</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>数据库</td>
+          <td>实现简单、易于理解</td>
+          <td>对数据库压力大</td>
+      </tr>
+      <tr>
+          <td>Redis</td>
+          <td>易于理解</td>
+          <td>自己实现、不支持阻塞</td>
+      </tr>
+      <tr>
+          <td>Zookeeper</td>
+          <td>支持阻塞</td>
+          <td>需要理解Zookeeper、程序复杂</td>
+      </tr>
+      <tr>
+          <td>Curator</td>
+          <td>提供锁的方法</td>
+          <td>依赖Zookeeper、强一致</td>
+      </tr>
+      <tr>
+          <td>Redisson</td>
+          <td>提供锁的方法、可阻塞</td>
+          <td></td>
+      </tr>
+  </tbody>
 </table></div>
 <h3 id="安全和活性的保证">安全和活性的保证</h3>
 <p>Redis官方文档提出以下三点作为分布式锁的最低保证：</p>
@@ -489,8 +486,7 @@
 <blockquote>
 <p>参考Redis官方文档 <a class="link" href="https://redis.io/topics/distlock"  target="_blank" rel="noopener"
     >https://redis.io/topics/distlock</a>
-RedLock分析      [http://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html][http://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html]</p>
-</blockquote>
+RedLock分析      [http://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html][http://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html]</p></blockquote>
 
 </section>
 
@@ -598,12 +594,12 @@ RedLock分析      [http://martin.kleppmann.com/2016/02/08/how-to-do-distributed
         
             2020 - 
         
-        2024 xiaocm
+        2025 xiaocm
     </section>
     
     <section class="powerby">
         
-            <a href="https://beian.miit.gov.cn/" target="_blank" >陕ICP备16008414号</a>
+            <a href="https://beian.miit.gov.cn/" target="_blank" >陕ICP备16008414号</a> <br/>
         使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
         主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.23.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
     </section>

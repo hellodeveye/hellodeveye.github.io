@@ -2,29 +2,32 @@
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='Redis的持久化机制-RDB 1.什么是RDB The RDB persistence performs point-in-time snapshots of your dataset at specified intervals.(RDB持久化是以指定的时间间隔执行数据集的时间点快照。) 简单来说，RDB是每隔一段时间，会把内存中的数据写入磁盘的临时文件作为快照，恢复时把快照文件读取到内存中。如果机器宕机，那么内存中的数据就会丢失，使用RDB机制后，重启后数据会恢复。
-2.备份与恢复 内存备份 &amp;ndash;&amp;gt; 磁盘临时文件 临时文件 &amp;ndash;&amp;gt; 恢复到内存
+2.备份与恢复 内存备份 &ndash;&gt; 磁盘临时文件 临时文件 &ndash;&gt; 恢复到内存
 3.RDB优劣势 优势
 每隔一段时间全量备份 容灾简单，适合进行远程冷备份 子进程备份的时候，主进程不会有任何IO操作（不会有写入或修改），保证备份数据的完整性 相对AOF来说，当有更大的文件时候可以快速重启恢复 劣势
-发生故障时，可能会丢失最后一次备份数据 子进程所占用的内存会和父进程一模一样，会造成CPU负担 由于定时全量备份是重量级操作，所以对于实时备份，就无法处理了 4.RDB的配置 保存位置可以自定义配置: 1 dir /var/redis/6379/dump.rdb 保存机制 1 2 3 4 5 6 7 8 # save &amp;lt;seconds&amp;gt; &amp;lt;changes&amp;gt; # 900秒（15分钟）后，如果至少有 1 个Key发生改变 # 300秒（5分钟）后，如果至少有 10 个Key发生改变 # 60秒（1分钟）后，如果至少有 10000 个Key发生改变 save 900 1 save 300 10 save 60 10000 Redis的持久化机制-AOF 1.'>
+发生故障时，可能会丢失最后一次备份数据 子进程所占用的内存会和父进程一模一样，会造成CPU负担 由于定时全量备份是重量级操作，所以对于实时备份，就无法处理了 4.RDB的配置 保存位置可以自定义配置: 1 dir /var/redis/6379/dump.rdb 保存机制 1 2 3 4 5 6 7 8 # save &lt;seconds&gt; &lt;changes&gt; # 900秒（15分钟）后，如果至少有 1 个Key发生改变 # 300秒（5分钟）后，如果至少有 10 个Key发生改变 # 60秒（1分钟）后，如果至少有 10000 个Key发生改变 save 900 1 save 300 10 save 60 10000 Redis的持久化机制-AOF 1.什么是AOF The AOF persistence logs every write operation received by the server, that will be played again at server startup, reconstructing the original dataset. Commands are logged using the same format as the Redis protocol itself, in an append-only fashion. Redis is able to rewrite the log in the background when it gets too big.
+'>
 <title>Redis持久化</title>
 
 <link rel='canonical' href='https://xiaocm.com/p/redis%E6%8C%81%E4%B9%85%E5%8C%96/'>
 
 <link rel="stylesheet" href="/scss/style.min.abbd69b2908fdfcd5179898beaafd374514a86538d81639ddd2c58c06ae54e40.css"><meta property='og:title' content='Redis持久化'>
 <meta property='og:description' content='Redis的持久化机制-RDB 1.什么是RDB The RDB persistence performs point-in-time snapshots of your dataset at specified intervals.(RDB持久化是以指定的时间间隔执行数据集的时间点快照。) 简单来说，RDB是每隔一段时间，会把内存中的数据写入磁盘的临时文件作为快照，恢复时把快照文件读取到内存中。如果机器宕机，那么内存中的数据就会丢失，使用RDB机制后，重启后数据会恢复。
-2.备份与恢复 内存备份 &amp;ndash;&amp;gt; 磁盘临时文件 临时文件 &amp;ndash;&amp;gt; 恢复到内存
+2.备份与恢复 内存备份 &ndash;&gt; 磁盘临时文件 临时文件 &ndash;&gt; 恢复到内存
 3.RDB优劣势 优势
 每隔一段时间全量备份 容灾简单，适合进行远程冷备份 子进程备份的时候，主进程不会有任何IO操作（不会有写入或修改），保证备份数据的完整性 相对AOF来说，当有更大的文件时候可以快速重启恢复 劣势
-发生故障时，可能会丢失最后一次备份数据 子进程所占用的内存会和父进程一模一样，会造成CPU负担 由于定时全量备份是重量级操作，所以对于实时备份，就无法处理了 4.RDB的配置 保存位置可以自定义配置: 1 dir /var/redis/6379/dump.rdb 保存机制 1 2 3 4 5 6 7 8 # save &amp;lt;seconds&amp;gt; &amp;lt;changes&amp;gt; # 900秒（15分钟）后，如果至少有 1 个Key发生改变 # 300秒（5分钟）后，如果至少有 10 个Key发生改变 # 60秒（1分钟）后，如果至少有 10000 个Key发生改变 save 900 1 save 300 10 save 60 10000 Redis的持久化机制-AOF 1.'>
+发生故障时，可能会丢失最后一次备份数据 子进程所占用的内存会和父进程一模一样，会造成CPU负担 由于定时全量备份是重量级操作，所以对于实时备份，就无法处理了 4.RDB的配置 保存位置可以自定义配置: 1 dir /var/redis/6379/dump.rdb 保存机制 1 2 3 4 5 6 7 8 # save &lt;seconds&gt; &lt;changes&gt; # 900秒（15分钟）后，如果至少有 1 个Key发生改变 # 300秒（5分钟）后，如果至少有 10 个Key发生改变 # 60秒（1分钟）后，如果至少有 10000 个Key发生改变 save 900 1 save 300 10 save 60 10000 Redis的持久化机制-AOF 1.什么是AOF The AOF persistence logs every write operation received by the server, that will be played again at server startup, reconstructing the original dataset. Commands are logged using the same format as the Redis protocol itself, in an append-only fashion. Redis is able to rewrite the log in the background when it gets too big.
+'>
 <meta property='og:url' content='https://xiaocm.com/p/redis%E6%8C%81%E4%B9%85%E5%8C%96/'>
 <meta property='og:site_name' content='无常是常'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='- Redis' /><meta property='article:published_time' content='2018-07-06T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2018-07-06T00:00:00&#43;00:00'/>
 <meta name="twitter:title" content="Redis持久化">
 <meta name="twitter:description" content="Redis的持久化机制-RDB 1.什么是RDB The RDB persistence performs point-in-time snapshots of your dataset at specified intervals.(RDB持久化是以指定的时间间隔执行数据集的时间点快照。) 简单来说，RDB是每隔一段时间，会把内存中的数据写入磁盘的临时文件作为快照，恢复时把快照文件读取到内存中。如果机器宕机，那么内存中的数据就会丢失，使用RDB机制后，重启后数据会恢复。
-2.备份与恢复 内存备份 &amp;ndash;&amp;gt; 磁盘临时文件 临时文件 &amp;ndash;&amp;gt; 恢复到内存
+2.备份与恢复 内存备份 &ndash;&gt; 磁盘临时文件 临时文件 &ndash;&gt; 恢复到内存
 3.RDB优劣势 优势
 每隔一段时间全量备份 容灾简单，适合进行远程冷备份 子进程备份的时候，主进程不会有任何IO操作（不会有写入或修改），保证备份数据的完整性 相对AOF来说，当有更大的文件时候可以快速重启恢复 劣势
-发生故障时，可能会丢失最后一次备份数据 子进程所占用的内存会和父进程一模一样，会造成CPU负担 由于定时全量备份是重量级操作，所以对于实时备份，就无法处理了 4.RDB的配置 保存位置可以自定义配置: 1 dir /var/redis/6379/dump.rdb 保存机制 1 2 3 4 5 6 7 8 # save &amp;lt;seconds&amp;gt; &amp;lt;changes&amp;gt; # 900秒（15分钟）后，如果至少有 1 个Key发生改变 # 300秒（5分钟）后，如果至少有 10 个Key发生改变 # 60秒（1分钟）后，如果至少有 10000 个Key发生改变 save 900 1 save 300 10 save 60 10000 Redis的持久化机制-AOF 1.">
+发生故障时，可能会丢失最后一次备份数据 子进程所占用的内存会和父进程一模一样，会造成CPU负担 由于定时全量备份是重量级操作，所以对于实时备份，就无法处理了 4.RDB的配置 保存位置可以自定义配置: 1 dir /var/redis/6379/dump.rdb 保存机制 1 2 3 4 5 6 7 8 # save &lt;seconds&gt; &lt;changes&gt; # 900秒（15分钟）后，如果至少有 1 个Key发生改变 # 300秒（5分钟）后，如果至少有 10 个Key发生改变 # 60秒（1分钟）后，如果至少有 10000 个Key发生改变 save 900 1 save 300 10 save 60 10000 Redis的持久化机制-AOF 1.什么是AOF The AOF persistence logs every write operation received by the server, that will be played again at server startup, reconstructing the original dataset. Commands are logged using the same format as the Redis protocol itself, in an append-only fashion. Redis is able to rewrite the log in the background when it gets too big.
+">
     </head>
     <body class="
     article-page
@@ -68,7 +71,7 @@
                     
                     
                         
-                        <img src="/img/avatar_hu87c10ff50ef4ab09ea180a96c581c02f_62603_300x0_resize_box_3.png" width="300"
+                        <img src="/img/avatar_hu_f06283ad9dc77cbf.png" width="300"
                             height="281" class="site-logo" loading="lazy" alt="Avatar">
                     
                 
@@ -619,12 +622,12 @@
         
             2020 - 
         
-        2024 xiaocm
+        2025 xiaocm
     </section>
     
     <section class="powerby">
         
-            <a href="https://beian.miit.gov.cn/" target="_blank" >陕ICP备16008414号</a>
+            <a href="https://beian.miit.gov.cn/" target="_blank" >陕ICP备16008414号</a> <br/>
         使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
         主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.23.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
     </section>
