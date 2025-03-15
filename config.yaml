@@ -1,7 +1,8 @@
 baseurl: https://xiaocm.com
 languageCode: zh-cn
 theme: stack
-paginate: 10
+pagination:
+  pagerSize: 10
 title: 无常是常
 copyright: xiaocm
 
